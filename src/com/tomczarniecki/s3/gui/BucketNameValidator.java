@@ -40,7 +40,7 @@ class BucketNameValidator {
     private final BucketNameUtils names;
 
     public BucketNameValidator(Controller controller) {
-        this.validNamePattern = Pattern.compile("^[a-z0-9][a-z0-9\\.\\-]+$");
+        this.validNamePattern = Pattern.compile("^[a-z0-9][a-z0-9\\.\\-]+?[a-z0-9]$");
         this.ipAddressPattern = Pattern.compile("^\\d+\\.\\d+\\.\\d+.\\d+$");
         this.names = new BucketNameUtils();
         this.controller = controller;
@@ -48,14 +48,11 @@ class BucketNameValidator {
 
     public String validate(String bucketName) {
         if (!validNamePattern.matcher(bucketName).matches()) {
-            return "Folder names can only contain lowercase alphanumeric characters,\n" +
-                    "periods and dashes, and must start with a letter or a digit.";
+            return "Folder names can only contain lowercase letters, digits, periods\n" +
+                    "and dashes, and must start and end with a letter or a digit.";
         }
         if (ipAddressPattern.matcher(bucketName).matches()) {
             return "Folder names cannot be in an IP address format.";
-        }
-        if (bucketName.endsWith("-") || bucketName.endsWith(".")) {
-            return "Folder names cannot end with a dash or a period.";
         }
         try {
             names.validateBucketName(bucketName);
