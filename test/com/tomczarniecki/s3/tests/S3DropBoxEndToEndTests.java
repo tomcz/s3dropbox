@@ -25,40 +25,32 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.tomczarniecki.s3;
+package com.tomczarniecki.s3.tests;
 
-import com.tomczarniecki.s3.gui.Constants;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-public class ApplicationRunner {
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assume.assumeThat;
 
-    private S3DropBoxDriver driver;
+public class S3DropBoxEndToEndTests {
 
-    public void connectToAmazon() {
-        driver = new S3DropBoxDriver(10000);
+    private ApplicationRunner application = new ApplicationRunner();
 
-        Runnable main = new Runnable() {
-            public void run() {
-                Main.main();
-            }
-        };
-
-        Thread thread = new Thread(main, "startup");
-        thread.setDaemon(true);
-        thread.start();
-
-        driver.hasTitle(String.format(Constants.FOLDER_NAME, Constants.ALL_FOLDERS));
-        driver.hasColumnTitles();
+    @BeforeClass
+    public static void checkIfCanRun() {
+        assumeThat(Boolean.getBoolean("ignore.integration.tests"), equalTo(false));
     }
 
-    public void showsBuckets(String... bucketNames) {
-        for (String bucketName : bucketNames) {
-            driver.showsRowWith(bucketName, "", "");
-        }
+    @After
+    public void stopApplication() {
+        application.stop();
     }
 
-    public void stop() {
-        if (driver != null) {
-            driver.dispose();
-        }
+    @Test
+    public void connectsToAmazonAndShowsCurrentBucketList() {
+        application.connectToAmazon();
+        application.showsBuckets("watchitlater", "watchitlater_test", "watchitlater_development");
     }
 }

@@ -26,7 +26,7 @@ AMAZON_SECRET_ACCESS_KEY
 USE_SSL
 
     * Optional entry.
-    * Version 1.6+ of the S3DropBox use HTTPS by default. Older versions used HTTP.
+    * Versions 1.6+ of the S3DropBox use HTTPS by default. Older versions used HTTP.
     * If you want to use HTTPS then simply set this option to either 'true' or 'yes'.
     * If you want to use HTTP then simply set this option to either 'false' or 'no'.
 
