@@ -51,6 +51,6 @@ public class S3DropBoxEndToEndTests {
     @Test
     public void connectsToAmazonAndShowsCurrentBucketList() {
         application.connectToAmazon();
-        application.showsBuckets("watchitlater", "watchitlater_test", "watchitlater_development");
+        application.showsBuckets("watchitlater", "watchitlater-test", "watchitlater-dev");
     }
 }
