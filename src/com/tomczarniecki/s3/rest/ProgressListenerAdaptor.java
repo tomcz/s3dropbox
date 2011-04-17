@@ -30,11 +30,13 @@ package com.tomczarniecki.s3.rest;
 import com.amazonaws.services.s3.model.ProgressEvent;
 import com.tomczarniecki.s3.ProgressListener;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class ProgressListenerAdaptor implements com.amazonaws.services.s3.model.ProgressListener {
 
     private final ProgressListener delegate;
     private final long totalBytesToTransfer;
-    private long bytesTransferred = 0;
+    private AtomicLong bytesTransferred = new AtomicLong(0);
 
     public ProgressListenerAdaptor(ProgressListener delegate, long totalBytesToTransfer) {
         this.totalBytesToTransfer = totalBytesToTransfer;
@@ -42,7 +44,7 @@ public class ProgressListenerAdaptor implements com.amazonaws.services.s3.model.
     }
 
     public void progressChanged(ProgressEvent progressEvent) {
-        bytesTransferred += progressEvent.getBytesTransfered();
-        delegate.processed(bytesTransferred, totalBytesToTransfer);
+        long currentTotal = bytesTransferred.addAndGet(progressEvent.getBytesTransfered());
+        delegate.processed(currentTotal, totalBytesToTransfer);
     }
 }

@@ -29,26 +29,18 @@
 package com.tomczarniecki.s3.rest;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AbortMultipartUploadRequest;
 import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadResult;
 import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.PartETag;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.model.UploadPartRequest;
-import com.amazonaws.services.s3.model.UploadPartResult;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.Service;
-import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
@@ -57,15 +49,12 @@ import static com.tomczarniecki.s3.Lists.newArrayList;
 
 public class WebClientService implements Service {
 
-    private static final long MAX_SINGLE_UPLOAD_FILE_SIZE = 64 * FileUtils.ONE_MB;
-    private static final long MULTIPART_CHUNK_SIZE = 5 * FileUtils.ONE_MB;
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private final AmazonS3 client;
+    private final TransferManager transferManager;
 
     public WebClientService(Configuration configuration) {
-        this.client = new NtlmFriendlyAmazonS3Client(configuration);
+        client = new NtlmFriendlyAmazonS3Client(configuration);
+        transferManager = new TransferManager(client);
     }
 
     public List<S3Bucket> listAllMyBuckets() {
@@ -110,75 +99,14 @@ public class WebClientService implements Service {
     }
 
     public void createObject(String bucketName, String objectKey, File source, ProgressListener listener) {
-        if (source.length() <= MAX_SINGLE_UPLOAD_FILE_SIZE) {
-            singleRequestUpload(bucketName, objectKey, source, listener);
-        } else {
-            multipartFileUpload(bucketName, objectKey, source, listener);
-        }
-    }
-
-    private void singleRequestUpload(String bucketName, String objectKey, File source, ProgressListener listener) {
         ProgressListenerAdaptor adaptor = new ProgressListenerAdaptor(listener, source.length());
-        client.putObject(new PutObjectRequest(bucketName, objectKey, source).withProgressListener(adaptor));
-    }
-
-    private void multipartFileUpload(String bucketName, String objectKey, File source, ProgressListener listener) {
-        String uploadId = initiateMultipartUpload(bucketName, objectKey);
+        PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, source).withProgressListener(adaptor);
         try {
-            List<PartETag> uploadETags = uploadParts(uploadId, bucketName, objectKey, source, listener);
-            completeUpload(bucketName, objectKey, uploadId, uploadETags);
+            Upload upload = transferManager.upload(request);
+            upload.waitForCompletion();
 
-        } catch (RuntimeException e) {
-            abortUpload(bucketName, objectKey, uploadId);
-            throw e;
-        }
-    }
-
-    private String initiateMultipartUpload(String bucketName, String objectKey) {
-        InitiateMultipartUploadRequest request = new InitiateMultipartUploadRequest(bucketName, objectKey);
-        InitiateMultipartUploadResult result = client.initiateMultipartUpload(request);
-        return result.getUploadId();
-    }
-
-    private List<PartETag> uploadParts(String uploadId, String bucketName, String objectKey, File source,
-                                       ProgressListener listener) {
-
-        List<PartETag> uploadETags = newArrayList();
-
-        long filePosition = 0;
-        long fileLength = source.length();
-
-        ProgressListenerAdaptor adaptor = new ProgressListenerAdaptor(listener, fileLength);
-
-        for (int i = 1; filePosition < fileLength; i++) {
-            long partSize = Math.min(MULTIPART_CHUNK_SIZE, fileLength - filePosition);
-
-            UploadPartRequest request = new UploadPartRequest()
-                    .withBucketName(bucketName)
-                    .withKey(objectKey)
-                    .withUploadId(uploadId)
-                    .withPartNumber(i)
-                    .withFile(source)
-                    .withFileOffset(filePosition)
-                    .withPartSize(partSize)
-                    .withProgressListener(adaptor);
-
-            UploadPartResult result = client.uploadPart(request);
-            uploadETags.add(result.getPartETag());
-        }
-        return uploadETags;
-    }
-
-    private void completeUpload(String bucketName, String objectKey, String uploadId, List<PartETag> uploadETags) {
-        client.completeMultipartUpload(new CompleteMultipartUploadRequest(bucketName, objectKey, uploadId, uploadETags));
-    }
-
-    private void abortUpload(String bucketName, String objectKey, String uploadId) {
-        try {
-            client.abortMultipartUpload(new AbortMultipartUploadRequest(bucketName, objectKey, uploadId));
-        } catch (RuntimeException e) {
-            logger.warn("Unable to abort upload for bucket [" + bucketName + "], object ["
-                    + objectKey + "] and upload id [" + uploadId + "]", e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
