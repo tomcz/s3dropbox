@@ -48,11 +48,11 @@ class BucketNameValidator {
 
     public String validate(String bucketName) {
         if (!validNamePattern.matcher(bucketName).matches()) {
-            return "Folder names can only contain lowercase letters, digits, periods\n" +
+            return "Folder name can only contain lowercase letters, digits, periods\n" +
                     "and dashes, and must start and end with a letter or a digit.";
         }
         if (ipAddressPattern.matcher(bucketName).matches()) {
-            return "Folder names cannot be in an IP address format.";
+            return "Folder name cannot be in an IP address format.";
         }
         try {
             names.validateBucketName(bucketName);
