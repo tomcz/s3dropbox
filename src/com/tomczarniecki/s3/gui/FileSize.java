@@ -27,7 +27,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import com.tomczarniecki.s3.Lists;
+import com.tomczarniecki.s3.Generics;
 import com.tomczarniecki.s3.Pair;
 import org.apache.commons.io.FileUtils;
 
@@ -40,7 +40,7 @@ class FileSize {
     private final DecimalFormat format;
 
     public FileSize() {
-        sizes = Lists.newArrayList();
+        sizes = Generics.newArrayList();
         sizes.add(Pair.create("GB", FileUtils.ONE_GB));
         sizes.add(Pair.create("MB", FileUtils.ONE_MB));
         sizes.add(Pair.create("KB", FileUtils.ONE_KB));

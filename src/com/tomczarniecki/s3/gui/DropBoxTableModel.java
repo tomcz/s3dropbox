@@ -28,7 +28,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import com.tomczarniecki.s3.Lists;
+import com.tomczarniecki.s3.Generics;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 
@@ -41,7 +41,7 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
     public static final String BUCKET_ICON = "folder.gif";
     public static final String OBJECT_ICON = "floppy.gif";
 
-    private final List<DropBoxTableItem> items = Lists.newArrayList();
+    private final List<DropBoxTableItem> items = Generics.newArrayList();
 
     private final ImageIcon bucketIcon;
     private final ImageIcon objectIcon;
@@ -91,7 +91,7 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
     }
 
     public List<String> getCurrentNames() {
-        List<String> result = Lists.newArrayList();
+        List<String> result = Generics.newArrayList();
         for (DropBoxTableItem item : items) {
             if (!Constants.BACK_LINK.equals(item.name)) {
                 result.add(item.name);

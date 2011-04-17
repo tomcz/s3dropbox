@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Thomas Czarniecki
+ * Copyright (c) 2011, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -28,15 +28,17 @@
 package com.tomczarniecki.s3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Lists {
+public class Generics {
 
     public static <T> List<T> newArrayList() {
         return new ArrayList<T>();
     }
 
-    public static <T> List<T> createWithSize(int size) {
-        return new ArrayList<T>(size);
+    public static <K, V> Map<K, V> newHashMap() {
+        return new HashMap<K, V>();
     }
 }

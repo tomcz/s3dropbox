@@ -27,7 +27,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import com.tomczarniecki.s3.Lists;
+import com.tomczarniecki.s3.Generics;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.Service;
@@ -53,7 +53,7 @@ public class ControllerTests {
     public void shouldNotifyListenersWhenBucketsAreUpdated() {
         ControllerListener listener = mock(ControllerListener.class);
 
-        List<S3Bucket> buckets = Lists.newArrayList();
+        List<S3Bucket> buckets = Generics.newArrayList();
         given(service.listAllMyBuckets()).willReturn(buckets);
 
         Controller controller = new Controller(service);
@@ -67,7 +67,7 @@ public class ControllerTests {
     public void shouldNotifyListenersWhenObjectsAreLoaded() {
         ControllerListener listener = mock(ControllerListener.class);
 
-        List<S3Object> objects = Lists.newArrayList();
+        List<S3Object> objects = Generics.newArrayList();
         given(service.listObjectsInBucket("bucket")).willReturn(objects);
 
         Controller controller = new Controller(service);

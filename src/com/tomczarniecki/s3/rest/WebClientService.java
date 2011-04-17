@@ -31,10 +31,12 @@ package com.tomczarniecki.s3.rest;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.tomczarniecki.s3.Generics;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
@@ -45,20 +47,20 @@ import org.joda.time.DateTimeZone;
 import java.io.File;
 import java.util.List;
 
-import static com.tomczarniecki.s3.Lists.newArrayList;
-
 public class WebClientService implements Service {
 
     private final AmazonS3 client;
+    private final MimeTypes mimeTypes;
     private final TransferManager transferManager;
 
     public WebClientService(Configuration configuration) {
         client = new NtlmFriendlyAmazonS3Client(configuration);
         transferManager = new TransferManager(client);
+        mimeTypes = new MimeTypes();
     }
 
     public List<S3Bucket> listAllMyBuckets() {
-        List<S3Bucket> buckets = newArrayList();
+        List<S3Bucket> buckets = Generics.newArrayList();
         for (Bucket bucket : client.listBuckets()) {
             buckets.add(new S3Bucket(bucket.getName()));
         }
@@ -78,7 +80,7 @@ public class WebClientService implements Service {
     }
 
     public List<S3Object> listObjectsInBucket(String bucketName) {
-        List<S3Object> objects = newArrayList();
+        List<S3Object> objects = Generics.newArrayList();
         ObjectListing objectListing = client.listObjects(bucketName);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             DateTime lastModified = new DateTime(summary.getLastModified());
@@ -99,8 +101,13 @@ public class WebClientService implements Service {
     }
 
     public void createObject(String bucketName, String objectKey, File source, ProgressListener listener) {
-        ProgressListenerAdaptor adaptor = new ProgressListenerAdaptor(listener, source.length());
-        PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, source).withProgressListener(adaptor);
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(mimeTypes.get(source.getName()));
+
+        PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, source);
+        request.setProgressListener(new ProgressListenerAdaptor(listener, source.length()));
+        request.setMetadata(metadata);
+
         try {
             Upload upload = transferManager.upload(request);
             upload.waitForCompletion();
