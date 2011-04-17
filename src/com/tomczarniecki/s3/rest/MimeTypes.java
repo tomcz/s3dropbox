@@ -229,8 +229,7 @@ public class MimeTypes {
     }
 
     public String get(String filename) {
-        String extension = FilenameUtils.getExtension(filename).toLowerCase();
-        String mimeType = types.get(extension);
+        String mimeType = types.get(FilenameUtils.getExtension(filename).toLowerCase());
         return (mimeType != null) ? mimeType : DEFAULT_MIME_TYPE;
     }
 }
