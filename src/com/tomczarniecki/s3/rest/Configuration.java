@@ -47,21 +47,24 @@ public class Configuration {
     private final String ntlmDomain;
 
     private final String useSecureProtocol;
+    private final String useHostedBucketStyle;
 
     public Configuration(String accessKeyId, String secretAccessKey) {
-        this(accessKeyId, secretAccessKey, "", "", "", "", "", "", "true");
+        this(accessKeyId, secretAccessKey, "", "", "", "", "", "", "true", "true");
     }
 
     public Configuration(String accessKeyId, String secretAccessKey,
                          String proxyHost, String proxyPort,
                          String proxyUserName, String proxyPassword,
                          String ntlmHost, String ntlmDomain,
-                         String useSecureProtocol) {
+                         String useSecureProtocol,
+                         String useHostedBucketStyle) {
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
         this.signature = new Signature();
 
+        this.useHostedBucketStyle = useHostedBucketStyle;
         this.useSecureProtocol = useSecureProtocol;
 
         this.proxyHost = proxyHost;
@@ -124,5 +127,13 @@ public class Configuration {
 
     public boolean shouldUseSecureProtocol() {
         return BooleanUtils.toBoolean(useSecureProtocol);
+    }
+
+    public String getUseHostedBucketStyle() {
+        return useHostedBucketStyle;
+    }
+
+    public boolean shouldUseHostedBucketStyle() {
+        return BooleanUtils.toBoolean(useHostedBucketStyle);
     }
 }

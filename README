@@ -30,6 +30,15 @@ USE_SSL
     * If you want to use HTTPS then simply set this option to either 'true' or 'yes'.
     * If you want to use HTTP then simply set this option to either 'false' or 'no'.
 
+HOSTED_STYLE
+
+    * NEW in version 1.6
+    * Optional entry, 'true' by default.
+    * When 'true' the S3DropBox creates virtual hosted-style request URLs.
+      For example: http://yourbucket.s3.amazonaws.com/yourobject
+    * When 'false' the S3DropBox creates path-style request URLs.
+      http://s3.amazonaws.com/yourbucket/yourobject
+
 PROXY_HOST and PROXY_PORT
 
     * Optional entries.

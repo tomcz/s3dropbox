@@ -11,7 +11,7 @@ public class WebRequestBuilderTests {
     @Test
     public void shouldCreateCorrectInsecureUrlToObject() throws Exception {
         Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
-                "", "", "", "", "", "", "false");
+                "", "", "", "", "", "", "false", "false");
 
         WebRequestBuilder builder = new WebRequestBuilder(credentials);
         String url = builder.createURL(Parameters.forObject(Method.GET, "johnsmith", "/cute/puppy.jpg"));
@@ -22,7 +22,7 @@ public class WebRequestBuilderTests {
     @Test
     public void shouldCreateCorrectSecureUrlToObject() throws Exception {
         Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
-                "", "", "", "", "", "", "true");
+                "", "", "", "", "", "", "true", "false");
 
         WebRequestBuilder builder = new WebRequestBuilder(credentials);
         String url = builder.createURL(Parameters.forObject(Method.GET, "johnsmith", "/cute/puppy.jpg"));
@@ -31,9 +31,19 @@ public class WebRequestBuilderTests {
     }
 
     @Test
+    public void shouldCreateCorrectURLInVirtualHostedStyle() throws Exception {
+        Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
+
+        WebRequestBuilder builder = new WebRequestBuilder(credentials);
+        String url = builder.createURL(Parameters.forObject(Method.GET, "johnsmith", "/cute/puppy.jpg"));
+
+        assertThat(url, is("https://johnsmith.s3.amazonaws.com/cute/puppy.jpg"));
+    }
+
+    @Test
     public void shouldCreateExpectedPublicUrlToObject() throws Exception {
         Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
-                "", "", "", "", "", "", "false");
+                "", "", "", "", "", "", "false", "false");
 
         Parameters parameters = Parameters.forObject(Method.GET, "johnsmith", "/cute/puppy.jpg", 1234L);
 
@@ -46,6 +56,28 @@ public class WebRequestBuilderTests {
         String url = builder.createURL(parameters, query);
 
         String expected = "http://s3.amazonaws.com/johnsmith/cute/puppy.jpg" +
+                "?AWSAccessKeyId=0PN5J17HBGZHT7JJ3X82" +
+                "&Expires=1234" +
+                "&Signature=HWHkXHVSQazVDcxkZaCkVlGz7vg%3D";
+
+        assertThat(url, is(expected));
+    }
+
+    @Test
+    public void shouldCreateExpectedPublicVirtualHostedUrlToObject() throws Exception {
+        Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
+
+        Parameters parameters = Parameters.forObject(Method.GET, "johnsmith", "/cute/puppy.jpg", 1234L);
+
+        QueryString query = new QueryString();
+        query.add("AWSAccessKeyId", credentials.getAccessKeyId());
+        query.add("Expires", "1234");
+        query.add("Signature", credentials.sign(parameters));
+
+        WebRequestBuilder builder = new WebRequestBuilder(credentials);
+        String url = builder.createURL(parameters, query);
+
+        String expected = "https://johnsmith.s3.amazonaws.com/cute/puppy.jpg" +
                 "?AWSAccessKeyId=0PN5J17HBGZHT7JJ3X82" +
                 "&Expires=1234" +
                 "&Signature=HWHkXHVSQazVDcxkZaCkVlGz7vg%3D";

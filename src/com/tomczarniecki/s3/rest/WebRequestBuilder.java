@@ -36,12 +36,12 @@ public class WebRequestBuilder {
 
     private final S3Dates dates = new S3Dates();
 
-    private final Configuration credentials;
+    private final Configuration configuration;
     private final String protocol;
 
-    public WebRequestBuilder(Configuration credentials) {
-        this.protocol = credentials.shouldUseSecureProtocol() ? SECURE_PROTOCOL : INSECURE_PROTOCOL;
-        this.credentials = credentials;
+    public WebRequestBuilder(Configuration configuration) {
+        this.protocol = configuration.shouldUseSecureProtocol() ? SECURE_PROTOCOL : INSECURE_PROTOCOL;
+        this.configuration = configuration;
     }
 
     public WebRequest build(Parameters parameters) {
@@ -62,20 +62,28 @@ public class WebRequestBuilder {
 
     public String createURL(Parameters parameters, QueryString query) {
         StringBuilder buf = new StringBuilder();
-        buf.append(protocol);
-        buf.append("://");
-        buf.append(DEFAULT_HOST);
-        buf.append(createPath(parameters, query));
+        buf.append(protocol).append("://");
+        appendHost(buf, parameters);
+        createPath(buf, parameters, query);
         return buf.toString();
     }
 
-    private String createPath(Parameters parameters, QueryString query) {
-        String path = parameters.toPath();
-        if (query.isEmpty()) {
-            return path;
+    private void appendHost(StringBuilder buf, Parameters parameters) {
+        if (configuration.shouldUseHostedBucketStyle() && parameters.hasBucketName()) {
+            buf.append(parameters.getBucketName());
+            buf.append(".");
         }
-        String join = path.contains("?") ? "&" : "?";
-        return path + join + query;
+        buf.append(DEFAULT_HOST);
+    }
+
+    private void createPath(StringBuilder buf, Parameters parameters, QueryString query) {
+        String path = parameters.toPath(!configuration.shouldUseHostedBucketStyle());
+        if (query.isEmpty()) {
+            buf.append(path);
+        } else {
+            String join = path.contains("?") ? "&" : "?";
+            buf.append(path).append(join).append(query);
+        }
     }
 
     private void ensureDateHeaderExists(Parameters parameters) {
@@ -86,7 +94,7 @@ public class WebRequestBuilder {
     }
 
     private void setAuthHeader(WebRequest method, Parameters parameters) {
-        String value = "AWS " + credentials.getAccessKeyId() + ":" + credentials.sign(parameters);
+        String value = "AWS " + configuration.getAccessKeyId() + ":" + configuration.sign(parameters);
         method.addHeader("Authorization", value);
     }
 }

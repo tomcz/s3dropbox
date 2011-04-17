@@ -41,7 +41,7 @@ public class ConfigurationFactory {
         PROXY_HOST, PROXY_PORT,
         PROXY_USERNAME, PROXY_PASSWORD,
         NTLM_HOST, NTLM_DOMAIN,
-        USE_SSL
+        USE_SSL, HOSTED_STYLE
     }
 
     private final File source;
@@ -61,7 +61,8 @@ public class ConfigurationFactory {
                 getOptional(props, Keys.PROXY_PASSWORD),
                 getOptional(props, Keys.NTLM_HOST),
                 getOptional(props, Keys.NTLM_DOMAIN),
-                props.getProperty(Keys.USE_SSL.name(), "true"));
+                props.getProperty(Keys.USE_SSL.name(), "true"),
+                props.getProperty(Keys.HOSTED_STYLE.name(), "true"));
     }
 
     public void save(Configuration credentials) {
@@ -75,6 +76,7 @@ public class ConfigurationFactory {
         props.setProperty(Keys.NTLM_HOST.name(), credentials.getNtlmHost());
         props.setProperty(Keys.NTLM_DOMAIN.name(), credentials.getNtlmDomain());
         props.setProperty(Keys.USE_SSL.name(), credentials.getUseSecureProtocol());
+        props.setProperty(Keys.HOSTED_STYLE.name(), credentials.getUseHostedBucketStyle());
         Files.saveProperties(source, props);
     }
 

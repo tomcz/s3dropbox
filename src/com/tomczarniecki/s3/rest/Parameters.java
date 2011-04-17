@@ -93,9 +93,17 @@ public class Parameters {
         return headers;
     }
 
-    public String toPath() {
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public boolean hasBucketName() {
+        return StringUtils.isNotEmpty(bucketName);
+    }
+
+    public String toPath(boolean useBucketName) {
         StringBuilder buf = new StringBuilder();
-        appendPath(buf);
+        appendPath(buf, useBucketName);
         return buf.toString();
     }
 
@@ -116,7 +124,7 @@ public class Parameters {
             }
             buf.append("\n");
         }
-        appendPath(buf);
+        appendPath(buf, true);
         return buf.toString();
     }
 
@@ -164,9 +172,9 @@ public class Parameters {
         return StringUtils.join(results, ",");
     }
 
-    private void appendPath(StringBuilder buf) {
+    private void appendPath(StringBuilder buf, boolean useBucketName) {
         buf.append("/");
-        if (StringUtils.isNotEmpty(bucketName)) {
+        if (useBucketName && hasBucketName()) {
             buf.append(bucketName);
             buf.append("/");
         }

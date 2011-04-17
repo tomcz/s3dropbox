@@ -71,15 +71,16 @@ public class WebClient {
     }
 
     private HttpMethod newMethod(WebRequest request) {
+        String url = request.getUrl();
         switch (request.getMethod()) {
             case HEAD:
-                return new HeadMethod(request.getUrl());
+                return new HeadMethod(url);
             case GET:
-                return new GetMethod(request.getUrl());
+                return new GetMethod(url);
             case PUT:
-                return new PutMethod(request.getUrl());
+                return new PutMethod(url);
             case DELETE:
-                return new DeleteMethod(request.getUrl());
+                return new DeleteMethod(url);
             default:
                 throw new IllegalArgumentException("Unexpected method: " + request.getMethod());
         }
