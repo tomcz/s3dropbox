@@ -111,18 +111,26 @@ class ProgressDialog extends JDialog implements ProgressListener {
     }
 
     public void next() {
-        progress.setValue(0);
-        progress.setIndeterminate(true);
+        worker.executeOnEventLoop(new Runnable() {
+            public void run() {
+                progress.setValue(0);
+                progress.setIndeterminate(true);
+            }
+        });
     }
 
-    public void processed(long count, long length) {
-        if (progress.isIndeterminate()) {
-            progress.setMinimum(0);
-            progress.setMaximum((int) length);
-            progress.setStringPainted(true);
-            progress.setIndeterminate(false);
-        }
-        progress.setValue((int) count);
+    public void processed(final long count, final long length) {
+        worker.executeOnEventLoop(new Runnable() {
+            public void run() {
+                if (progress.isIndeterminate()) {
+                    progress.setMinimum(0);
+                    progress.setMaximum((int) length);
+                    progress.setStringPainted(true);
+                    progress.setIndeterminate(false);
+                }
+                progress.setValue((int) count);
+            }
+        });
     }
 
     private class CloseButtonClick implements ActionListener {

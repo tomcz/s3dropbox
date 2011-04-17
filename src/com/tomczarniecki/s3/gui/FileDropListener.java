@@ -58,7 +58,11 @@ class FileDropListener implements FileDrop.Listener {
 
     public void filesDropped(final File[] files) {
         if (controller.isShowingObjects()) {
-            uploadFiles(files);
+            worker.executeInBackground(new Runnable() {
+                public void run() {
+                    uploadFiles(files);
+                }
+            });
         } else {
             worker.executeOnEventLoop(new Runnable() {
                 public void run() {
@@ -68,28 +72,33 @@ class FileDropListener implements FileDrop.Listener {
         }
     }
 
-    private void selectBucketAndUploadFiles(File[] files) {
+    private void selectBucketAndUploadFiles(final File[] files) {
         List<String> names = model.getCurrentNames();
-        String bucketName = display.selectOption("Select Folder", "Please choose a folder for your files.", names);
+        final String bucketName = display.selectOption("Select Folder", "Please choose a folder for your files.", names);
         if (bucketName != null) {
-            controller.selectBucket(bucketName);
-            controller.showObjects();
-            uploadFiles(files);
+            worker.executeInBackground(new Runnable() {
+                public void run() {
+                    controller.selectBucket(bucketName);
+                    controller.showObjects();
+                    uploadFiles(files);
+                }
+            });
         }
     }
 
     private void uploadFiles(final File[] files) {
-        worker.executeInBackground(new Runnable() {
-            public void run() {
-                dialog.begin();
-                try {
-                    uploadFiles(resolveKeys(files));
-                    dialog.append("\nDone");
-                } finally {
-                    dialog.finish();
-                }
-            }
-        });
+        dialog.begin();
+        try {
+            uploadFiles(resolveKeys(files));
+            dialog.append("\nDone");
+
+        } catch (Exception e) {
+            logger.warn("Upload failed", e);
+            dialog.append(" ERROR\n --> %s\n", e.toString());
+
+        } finally {
+            dialog.finish();
+        }
     }
 
     private void uploadFiles(List<Pair<String, File>> files) {
@@ -125,7 +134,7 @@ class FileDropListener implements FileDrop.Listener {
             controller.createObject(bucketName, objectKey, file, dialog);
             dialog.append(" OK\n");
 
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
             logger.warn("Upload failed for " + file, e);
             dialog.append(" ERROR\n --> %s\n", e.toString());
         }

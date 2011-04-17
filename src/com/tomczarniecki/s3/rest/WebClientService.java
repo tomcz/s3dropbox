@@ -76,8 +76,7 @@ public class WebClientService implements Service {
     public List<S3Object> listObjectsInBucket(String bucketName) {
         List<S3Object> objects = newArrayList();
         ObjectListing objectListing = client.listObjects(bucketName);
-        List<S3ObjectSummary> summaries = objectListing.getObjectSummaries();
-        for (S3ObjectSummary summary : summaries) {
+        for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             DateTime lastModified = new DateTime(summary.getLastModified());
             lastModified = lastModified.toDateTime(DateTimeZone.getDefault());
             objects.add(new S3Object(summary.getKey(), summary.getSize(), lastModified.toLocalDateTime()));
@@ -86,7 +85,13 @@ public class WebClientService implements Service {
     }
 
     public boolean objectExists(String bucketName, String objectKey) {
-        return client.getObjectMetadata(bucketName, objectKey) != null;
+        ObjectListing objectListing = client.listObjects(bucketName, objectKey);
+        for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
+            if (summary.getKey().equals(objectKey)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getPublicUrl(String bucketName, String objectKey, DateTime expires) {

@@ -55,7 +55,7 @@ public class Configuration extends ClientConfiguration {
                          String useSecureProtocol) {
 
         super.setConnectionTimeout(10000);
-        super.setSocketTimeout(10000);
+        super.setSocketTimeout(50000);
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
@@ -75,13 +75,9 @@ public class Configuration extends ClientConfiguration {
         if (StringUtils.isNotEmpty(proxyPassword)) {
             super.setProxyPassword(proxyPassword);
         }
-        if (dontUse(useSecureProtocol)) {
+        if (StringUtils.isNotEmpty(useSecureProtocol) && !BooleanUtils.toBoolean(useSecureProtocol)) {
             super.setProtocol(Protocol.HTTP);
         }
-    }
-
-    private static boolean dontUse(String value) {
-        return StringUtils.isNotEmpty(value) && !BooleanUtils.toBoolean(value);
     }
 
     public String getAccessKeyId() {

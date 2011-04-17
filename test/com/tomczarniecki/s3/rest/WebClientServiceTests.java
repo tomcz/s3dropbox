@@ -107,7 +107,6 @@ public class WebClientServiceTests {
 
     @Test
     public void shouldCreateDownloadAndDeleteObject() throws Exception {
-
         String bucketName = "test-" + UUID.randomUUID();
 
         Service service = new WebClientService(credentials);
@@ -115,6 +114,8 @@ public class WebClientServiceTests {
 
         File file = folder.newFile("foo.txt");
         FileUtils.writeStringToFile(file, UUID.randomUUID().toString());
+
+        assertFalse("Object should not exist", service.objectExists(bucketName, file.getName()));
         service.createObject(bucketName, file.getName(), file, new NullProgressListener());
 
         assertTrue("Object should exist", service.objectExists(bucketName, file.getName()));
@@ -142,7 +143,6 @@ public class WebClientServiceTests {
 
     @Test
     public void shouldDownloadFileUsingPublicLink() throws Exception {
-
         String bucketName = "test-" + UUID.randomUUID();
 
         Service service = new WebClientService(credentials);
@@ -153,7 +153,6 @@ public class WebClientServiceTests {
         service.createObject(bucketName, file.getName(), file, new NullProgressListener());
 
         String publicUrl = service.getPublicUrl(bucketName, file.getName(), new DateTime().plusDays(5));
-        System.out.println("publicUrl = " + publicUrl);
 
         File saved = folder.newFile("saved.txt");
 
