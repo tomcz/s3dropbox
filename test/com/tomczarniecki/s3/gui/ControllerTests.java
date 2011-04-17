@@ -53,7 +53,7 @@ public class ControllerTests {
     public void shouldNotifyListenersWhenBucketsAreUpdated() {
         ControllerListener listener = mock(ControllerListener.class);
 
-        List<S3Bucket> buckets = Lists.create();
+        List<S3Bucket> buckets = Lists.newArrayList();
         given(service.listAllMyBuckets()).willReturn(buckets);
 
         Controller controller = new Controller(service);
@@ -67,7 +67,7 @@ public class ControllerTests {
     public void shouldNotifyListenersWhenObjectsAreLoaded() {
         ControllerListener listener = mock(ControllerListener.class);
 
-        List<S3Object> objects = Lists.create();
+        List<S3Object> objects = Lists.newArrayList();
         given(service.listObjectsInBucket("bucket")).willReturn(objects);
 
         Controller controller = new Controller(service);

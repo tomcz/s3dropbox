@@ -27,41 +27,40 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import org.apache.commons.lang.math.IntRange;
+import com.amazonaws.services.s3.internal.BucketNameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.regex.Pattern;
 
 class BucketNameValidator {
 
     private final Controller controller;
-    private final IntRange validLengthRange;
     private final Pattern validNamePattern;
     private final Pattern ipAddressPattern;
+    private final BucketNameUtils names;
 
     public BucketNameValidator(Controller controller) {
         this.validNamePattern = Pattern.compile("^[a-z0-9][a-z0-9\\.\\-]+$");
         this.ipAddressPattern = Pattern.compile("^\\d+\\.\\d+\\.\\d+.\\d+$");
-        this.validLengthRange = new IntRange(3, 63);
+        this.names = new BucketNameUtils();
         this.controller = controller;
     }
 
     public String validate(String bucketName) {
-        if (!validLengthRange.containsInteger(bucketName.length())) {
-            return String.format("Folder names must be between %d and %d characters in length.",
-                    validLengthRange.getMinimumInteger(), validLengthRange.getMaximumInteger());
-        }
         if (!validNamePattern.matcher(bucketName).matches()) {
-            return "Folder names can only contain lowercase alphanumeric characters, periods and dashes,\n" +
-                    "and must start with a letter or a digit.";
+            return "Folder names can only contain lowercase alphanumeric characters,\n" +
+                    "periods and dashes, and must start with a letter or a digit.";
         }
         if (ipAddressPattern.matcher(bucketName).matches()) {
             return "Folder names cannot be in an IP address format.";
         }
-        if (bucketName.endsWith("-")) {
-            return "Folder names cannot end with a dash.";
+        if (bucketName.endsWith("-") || bucketName.endsWith(".")) {
+            return "Folder names cannot end with a dash or a period.";
         }
-        if (bucketName.contains("-.") || bucketName.contains(".-")) {
-            return "Dashes cannot appear next to periods.";
+        try {
+            names.validateBucketName(bucketName);
+        } catch (IllegalArgumentException e) {
+            return StringUtils.replace(e.getMessage(), "Bucket", "Folder");
         }
         if (controller.bucketExists(bucketName)) {
             return "You cannot use this folder name since someone else is already using it.";

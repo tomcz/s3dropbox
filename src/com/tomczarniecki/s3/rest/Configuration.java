@@ -28,53 +28,60 @@
  */
 package com.tomczarniecki.s3.rest;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 
-public class Configuration {
+public class Configuration extends ClientConfiguration {
 
     private final String accessKeyId;
     private final String secretAccessKey;
-    private final Signature signature;
-
-    private final String proxyHost;
-    private final String proxyPort;
-
-    private final String proxyUserName;
-    private final String proxyPassword;
 
     private final String ntlmHost;
     private final String ntlmDomain;
 
-    private final String useSecureProtocol;
-    private final String useHostedBucketStyle;
-
     public Configuration(String accessKeyId, String secretAccessKey) {
-        this(accessKeyId, secretAccessKey, "", "", "", "", "", "", "true", "true");
+        this(accessKeyId, secretAccessKey, "", "", "", "", "", "", "");
     }
 
     public Configuration(String accessKeyId, String secretAccessKey,
                          String proxyHost, String proxyPort,
                          String proxyUserName, String proxyPassword,
                          String ntlmHost, String ntlmDomain,
-                         String useSecureProtocol,
-                         String useHostedBucketStyle) {
+                         String useSecureProtocol) {
+
+        super.setConnectionTimeout(10000);
+        super.setSocketTimeout(10000);
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
-        this.signature = new Signature();
-
-        this.useHostedBucketStyle = useHostedBucketStyle;
-        this.useSecureProtocol = useSecureProtocol;
-
-        this.proxyHost = proxyHost;
-        this.proxyPort = proxyPort;
-
-        this.proxyUserName = proxyUserName;
-        this.proxyPassword = proxyPassword;
 
         this.ntlmHost = ntlmHost;
         this.ntlmDomain = ntlmDomain;
+
+        if (StringUtils.isNotEmpty(proxyHost)) {
+            super.setProxyHost(proxyHost);
+        }
+        if (NumberUtils.isDigits(proxyPort)) {
+            super.setProxyPort(Integer.parseInt(proxyPort));
+        }
+        if (StringUtils.isNotEmpty(proxyUserName)) {
+            super.setProxyUsername(proxyUserName);
+        }
+        if (StringUtils.isNotEmpty(proxyPassword)) {
+            super.setProxyPassword(proxyPassword);
+        }
+        if (dontUse(useSecureProtocol)) {
+            super.setProtocol(Protocol.HTTP);
+        }
+    }
+
+    private static boolean dontUse(String value) {
+        return StringUtils.isNotEmpty(value) && !BooleanUtils.toBoolean(value);
     }
 
     public String getAccessKeyId() {
@@ -85,34 +92,6 @@ public class Configuration {
         return secretAccessKey;
     }
 
-    public String sign(Parameters parameters) {
-        return signature.sign(secretAccessKey, parameters.toSign());
-    }
-
-    public boolean shouldUseProxy() {
-        return StringUtils.isNotEmpty(proxyHost);
-    }
-
-    public String getProxyHost() {
-        return proxyHost;
-    }
-
-    public String getProxyPort() {
-        return proxyPort;
-    }
-
-    public boolean shouldUserProxyAuth() {
-        return StringUtils.isNotEmpty(proxyUserName);
-    }
-
-    public String getProxyUserName() {
-        return proxyUserName;
-    }
-
-    public String getProxyPassword() {
-        return proxyPassword;
-    }
-
     public String getNtlmHost() {
         return ntlmHost;
     }
@@ -121,19 +100,11 @@ public class Configuration {
         return ntlmDomain;
     }
 
-    public String getUseSecureProtocol() {
-        return useSecureProtocol;
+    public boolean isUseSecureProtocol() {
+        return Protocol.HTTPS.equals(getProtocol());
     }
 
-    public boolean shouldUseSecureProtocol() {
-        return BooleanUtils.toBoolean(useSecureProtocol);
-    }
-
-    public String getUseHostedBucketStyle() {
-        return useHostedBucketStyle;
-    }
-
-    public boolean shouldUseHostedBucketStyle() {
-        return BooleanUtils.toBoolean(useHostedBucketStyle);
+    public AWSCredentials getAWSCredentials() {
+        return new BasicAWSCredentials(accessKeyId, secretAccessKey);
     }
 }

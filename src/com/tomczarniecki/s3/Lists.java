@@ -32,7 +32,7 @@ import java.util.List;
 
 public class Lists {
 
-    public static <T> List<T> create() {
+    public static <T> List<T> newArrayList() {
         return new ArrayList<T>();
     }
 

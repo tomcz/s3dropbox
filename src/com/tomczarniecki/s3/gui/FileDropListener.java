@@ -132,7 +132,7 @@ class FileDropListener implements FileDrop.Listener {
     }
 
     private List<Pair<String, File>> resolveKeys(File[] files) {
-        List<Pair<String, File>> list = Lists.create();
+        List<Pair<String, File>> list = Lists.newArrayList();
         resolveFolders(list, files, "");
         return list;
     }

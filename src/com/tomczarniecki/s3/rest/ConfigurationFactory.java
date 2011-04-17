@@ -41,7 +41,7 @@ public class ConfigurationFactory {
         PROXY_HOST, PROXY_PORT,
         PROXY_USERNAME, PROXY_PASSWORD,
         NTLM_HOST, NTLM_DOMAIN,
-        USE_SSL, HOSTED_STYLE
+        USE_SSL
     }
 
     private final File source;
@@ -61,8 +61,8 @@ public class ConfigurationFactory {
                 getOptional(props, Keys.PROXY_PASSWORD),
                 getOptional(props, Keys.NTLM_HOST),
                 getOptional(props, Keys.NTLM_DOMAIN),
-                props.getProperty(Keys.USE_SSL.name(), "true"),
-                props.getProperty(Keys.HOSTED_STYLE.name(), "true"));
+                getOptional(props, Keys.USE_SSL)
+        );
     }
 
     public void save(Configuration credentials) {
@@ -70,13 +70,10 @@ public class ConfigurationFactory {
         props.setProperty(Keys.AMAZON_ACCESS_KEY_ID.name(), credentials.getAccessKeyId());
         props.setProperty(Keys.AMAZON_SECRET_ACCESS_KEY.name(), credentials.getSecretAccessKey());
         props.setProperty(Keys.PROXY_HOST.name(), credentials.getProxyHost());
-        props.setProperty(Keys.PROXY_PORT.name(), credentials.getProxyPort());
-        props.setProperty(Keys.PROXY_USERNAME.name(), credentials.getProxyUserName());
+        props.setProperty(Keys.PROXY_PORT.name(), Integer.toString(credentials.getProxyPort()));
+        props.setProperty(Keys.PROXY_USERNAME.name(), credentials.getProxyUsername());
         props.setProperty(Keys.PROXY_PASSWORD.name(), credentials.getProxyPassword());
-        props.setProperty(Keys.NTLM_HOST.name(), credentials.getNtlmHost());
-        props.setProperty(Keys.NTLM_DOMAIN.name(), credentials.getNtlmDomain());
-        props.setProperty(Keys.USE_SSL.name(), credentials.getUseSecureProtocol());
-        props.setProperty(Keys.HOSTED_STYLE.name(), credentials.getUseHostedBucketStyle());
+        props.setProperty(Keys.USE_SSL.name(), Boolean.toString(credentials.isUseSecureProtocol()));
         Files.saveProperties(source, props);
     }
 

@@ -40,7 +40,7 @@ class FileSize {
     private final DecimalFormat format;
 
     public FileSize() {
-        sizes = Lists.create();
+        sizes = Lists.newArrayList();
         sizes.add(Pair.create("GB", FileUtils.ONE_GB));
         sizes.add(Pair.create("MB", FileUtils.ONE_MB));
         sizes.add(Pair.create("KB", FileUtils.ONE_KB));

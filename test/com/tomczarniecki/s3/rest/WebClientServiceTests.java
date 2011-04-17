@@ -28,6 +28,7 @@
  */
 package com.tomczarniecki.s3.rest;
 
+import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.Service;
@@ -152,6 +153,7 @@ public class WebClientServiceTests {
         service.createObject(bucketName, file.getName(), file, new NullProgressListener());
 
         String publicUrl = service.getPublicUrl(bucketName, file.getName(), new DateTime().plusDays(5));
+        System.out.println("publicUrl = " + publicUrl);
 
         File saved = folder.newFile("saved.txt");
 
@@ -173,5 +175,10 @@ public class WebClientServiceTests {
 
     private Matcher<S3Object> object(String key) {
         return hasProperty("key", equalTo(key));
+    }
+
+    private static class NullProgressListener implements ProgressListener {
+        public void processed(long count, long length) {
+        }
     }
 }

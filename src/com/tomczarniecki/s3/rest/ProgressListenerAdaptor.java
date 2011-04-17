@@ -27,17 +27,22 @@
  */
 package com.tomczarniecki.s3.rest;
 
-import org.junit.Test;
+import com.amazonaws.services.s3.model.ProgressEvent;
+import com.tomczarniecki.s3.ProgressListener;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+public class ProgressListenerAdaptor implements com.amazonaws.services.s3.model.ProgressListener {
 
-public class InitiateUploadParserTest {
+    private final ProgressListener delegate;
+    private final long totalBytesToTransfer;
+    private long bytesTransferred = 0;
 
-    @Test
-    public void shouldParseUploadIdFromResult() {
-        InitiateUploadParser parser = new InitiateUploadParser();
-        String uploadId = parser.parse(getClass().getResourceAsStream("initiate-upload-result.xml"));
-        assertThat(uploadId, equalTo("VXBsb2FkIElEIGZvciA2aWWpbmcncyBteS1tb3ZpZS5tMnRzIHVwbG9hZA"));
+    public ProgressListenerAdaptor(ProgressListener delegate, long totalBytesToTransfer) {
+        this.totalBytesToTransfer = totalBytesToTransfer;
+        this.delegate = delegate;
+    }
+
+    public void progressChanged(ProgressEvent progressEvent) {
+        bytesTransferred += progressEvent.getBytesTransfered();
+        delegate.processed(bytesTransferred, totalBytesToTransfer);
     }
 }

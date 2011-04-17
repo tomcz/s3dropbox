@@ -5,7 +5,7 @@ Amazon S3 account. You can create public links to these files, and paste these l
 the files can be downloaded later (using any web browser) by clicking on the link, or you can download the
 files yourself at a later stage using the application.
 
-Run using: java -jar S3DropBox-<version>.jar <credentials file>
+Run using: java -jar S3DropBox-<version>.jar [credentials file]
 
 The credentials file is optional. If not present, the application will look for a file called .s3dropbox
 in your home directory. If that is not present you will be asked for some AWS credentials when the
@@ -29,15 +29,6 @@ USE_SSL
     * Versions 1.6+ of the S3DropBox use HTTPS by default. Older versions used HTTP.
     * If you want to use HTTPS then simply set this option to either 'true' or 'yes'.
     * If you want to use HTTP then simply set this option to either 'false' or 'no'.
-
-HOSTED_STYLE
-
-    * NEW in version 1.6
-    * Optional entry, 'true' by default.
-    * When 'true' the S3DropBox creates virtual hosted-style request URLs.
-      For example: http://yourbucket.s3.amazonaws.com/yourobject
-    * When 'false' the S3DropBox creates path-style request URLs.
-      http://s3.amazonaws.com/yourbucket/yourobject
 
 PROXY_HOST and PROXY_PORT
 
