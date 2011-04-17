@@ -124,7 +124,7 @@
             <jarfileset refid="runtime-jars" />
         </jarbundler>
         <copy file="${basedir}/LICENSE.txt" todir="${app.dir}" />
-        <copy file="${basedir}/README.txt" todir="${app.dir}" />
+        <copy file="${basedir}/README" todir="${app.dir}" />
         <mkdir dir="${dmg.dir}" />
         <exec executable="hdiutil" failonerror="yes">
             <arg value="create" />
