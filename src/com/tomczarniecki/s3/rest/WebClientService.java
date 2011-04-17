@@ -32,9 +32,11 @@ import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.Service;
+import com.tomczarniecki.s3.rest.WebClient.Callback;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 
 import java.io.File;
@@ -45,10 +47,14 @@ import java.util.List;
 
 public class WebClientService implements Service {
 
+    private static final long MAX_SINGLE_REQUEST_FILE_SIZE = 100 * FileUtils.ONE_MB;
+    private static final long MULTIPART_CHUNK_SIZE = 10 * FileUtils.ONE_MB;
+
     private final MimeTypes mimeTypes = new MimeTypes();
 
     private final S3ObjectParser objectParser = new S3ObjectParser();
     private final S3BucketParser bucketParser = new S3BucketParser();
+    private final InitiateUploadParser uploadParser = new InitiateUploadParser();
 
     private final Configuration credentials;
     private final WebRequestBuilder builder;
@@ -115,6 +121,59 @@ public class WebClientService implements Service {
     }
 
     public void createObject(String bucketName, String objectKey, File source, ProgressListener listener) {
+        long fileLength = source.length();
+        if (fileLength > MAX_SINGLE_REQUEST_FILE_SIZE) {
+            multipartFileUpload(bucketName, objectKey, source, listener);
+        } else {
+            singleRequestFileUpload(bucketName, objectKey, source, listener);
+        }
+    }
+
+    private void multipartFileUpload(String bucketName, String objectKey, File source, ProgressListener listener) {
+        String uploadId = initiateMultipartUpload(bucketName, objectKey, source);
+        RuntimeException error = null;
+        try {
+            uploadParts(uploadId, bucketName, objectKey, source, listener);
+        } catch (RuntimeException e) {
+            error = e;
+        }
+        if (error == null) {
+            completeMultipartUpload(uploadId);
+        } else {
+            abortMultipartUpload(uploadId);
+        }
+    }
+
+    private String initiateMultipartUpload(String bucketName, String objectKey, File source) {
+        String contentType = mimeTypes.get(source.getName());
+
+        Headers headers = new Headers();
+        headers.add("Content-Type", contentType);
+        Parameters parameters = new Parameters(Method.POST, bucketName, objectKey, headers, SubResource.uploads, null);
+
+        WebRequest request = builder.build(parameters);
+        return client.process(request, new Callback<String>() {
+            public String process(int status, HttpMethod method) throws IOException {
+                expect(HttpStatus.SC_OK, status);
+                InputStream body = method.getResponseBodyAsStream();
+                return uploadParser.parse(body);
+            }
+        });
+    }
+
+    private void uploadParts(String uploadId, String bucketName, String objectKey, File source, ProgressListener listener) {
+        throw new UnsupportedOperationException();
+    }
+
+    private void completeMultipartUpload(String uploadId) {
+        throw new UnsupportedOperationException();
+    }
+
+    private void abortMultipartUpload(String uploadId) {
+        throw new UnsupportedOperationException();
+    }
+
+    private void singleRequestFileUpload(String bucketName, String objectKey, File source, ProgressListener listener) {
         String contentType = mimeTypes.get(source.getName());
 
         Headers headers = new Headers();

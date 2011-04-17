@@ -72,6 +72,7 @@ public class WebClient {
 
     private HttpMethod newMethod(WebRequest request) {
         String url = request.getUrl();
+        System.out.println("url = " + url);
         switch (request.getMethod()) {
             case HEAD:
                 return new HeadMethod(url);

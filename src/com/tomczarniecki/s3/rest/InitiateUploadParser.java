@@ -1,5 +1,5 @@
-/* ===================================================================================
- * Copyright (c) 2008, Thomas Czarniecki
+/*
+ * Copyright (c) 2011, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,10 +24,15 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * ===================================================================================
  */
 package com.tomczarniecki.s3.rest;
 
-public enum SubResource {
-    acl, torrent, logging, location, uploads
+import java.io.InputStream;
+
+public class InitiateUploadParser {
+
+    public String parse(InputStream input) {
+        XPathNode doc = new XPathNode(input);
+        return doc.queryForText("//aws:UploadId");
+    }
 }

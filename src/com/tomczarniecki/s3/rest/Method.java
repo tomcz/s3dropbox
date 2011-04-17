@@ -29,5 +29,5 @@
 package com.tomczarniecki.s3.rest;
 
 public enum Method {
-    HEAD, GET, PUT, DELETE
+    HEAD, GET, PUT, POST, DELETE
 }
