@@ -100,6 +100,8 @@
         <jar destfile="${jar.dir}/main.jar" basedir="${classes.dir}">
             <manifest>
                 <attribute name="Main-Class" value="${main.class}" />
+                <attribute name="Implementation-Title" value="S3DropBox" />
+                <attribute name="Implementation-Version" value="${release.version}" />
             </manifest>
         </jar>
     </target>
