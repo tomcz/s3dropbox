@@ -29,8 +29,8 @@ package com.tomczarniecki.s3;
 
 import com.tomczarniecki.s3.gui.CredentialsDialog;
 import com.tomczarniecki.s3.gui.DropBox;
-import com.tomczarniecki.s3.rest.Credentials;
-import com.tomczarniecki.s3.rest.CredentialsFactory;
+import com.tomczarniecki.s3.rest.Configuration;
+import com.tomczarniecki.s3.rest.ConfigurationFactory;
 import com.tomczarniecki.s3.rest.WebClientService;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 File file = (args.length > 0) ? new File(args[0]) : null;
-                Credentials credentials = getCredentials(file);
+                Configuration credentials = getCredentials(file);
                 DropBox box = new DropBox(new WebClientService(credentials));
                 box.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 box.addWindowListener(new WindowCloseListener());
@@ -71,8 +71,8 @@ public class Main {
         }
     }
 
-    private static Credentials getCredentials(File file) {
-        CredentialsFactory factory = new CredentialsFactory(file);
+    private static Configuration getCredentials(File file) {
+        ConfigurationFactory factory = new ConfigurationFactory(file);
         try {
             return factory.load();
         } catch (Exception e) {
@@ -81,9 +81,9 @@ public class Main {
         }
     }
 
-    private static Credentials createCredentials(CredentialsFactory factory) {
+    private static Configuration createCredentials(ConfigurationFactory factory) {
         CredentialsDialog dialog = new CredentialsDialog();
-        Credentials credentials = dialog.getCredentials();
+        Configuration credentials = dialog.getCredentials();
         if (credentials == null) {
             System.exit(1);
         }

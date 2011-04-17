@@ -10,7 +10,7 @@ public class WebRequestBuilderTests {
 
     @Test
     public void shouldCreateCorrectInsecureUrlToObject() throws Exception {
-        Credentials credentials = new Credentials("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
+        Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
                 "", "", "", "", "", "", "false");
 
         WebRequestBuilder builder = new WebRequestBuilder(credentials);
@@ -21,7 +21,7 @@ public class WebRequestBuilderTests {
 
     @Test
     public void shouldCreateCorrectSecureUrlToObject() throws Exception {
-        Credentials credentials = new Credentials("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
+        Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
                 "", "", "", "", "", "", "true");
 
         WebRequestBuilder builder = new WebRequestBuilder(credentials);
@@ -32,7 +32,7 @@ public class WebRequestBuilderTests {
 
     @Test
     public void shouldCreateExpectedPublicUrlToObject() throws Exception {
-        Credentials credentials = new Credentials("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
+        Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o",
                 "", "", "", "", "", "", "false");
 
         Parameters parameters = Parameters.forObject(Method.GET, "johnsmith", "/cute/puppy.jpg", 1234L);
@@ -55,7 +55,7 @@ public class WebRequestBuilderTests {
 
     @Test
     public void shouldSetMethodHeadersCorrectly() throws Exception {
-        Credentials credentials = new Credentials("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
+        Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
 
         Headers headers = new Headers();
         headers.add("Content-Length", "1234");

@@ -50,11 +50,11 @@ public class WebClientService implements Service {
     private final S3ObjectParser objectParser = new S3ObjectParser();
     private final S3BucketParser bucketParser = new S3BucketParser();
 
-    private final Credentials credentials;
+    private final Configuration credentials;
     private final WebRequestBuilder builder;
     private final WebClient client;
 
-    public WebClientService(Credentials credentials) {
+    public WebClientService(Configuration credentials) {
         this.builder = new WebRequestBuilder(credentials);
         this.client = new WebClient(credentials);
         this.credentials = credentials;

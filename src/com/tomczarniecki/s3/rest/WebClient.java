@@ -45,7 +45,7 @@ public class WebClient {
 
     private final HttpClient client;
 
-    public WebClient(Credentials credentials) {
+    public WebClient(Configuration credentials) {
         client = createClient(credentials);
     }
 
@@ -107,7 +107,7 @@ public class WebClient {
         }
     }
 
-    private static HttpClient createClient(Credentials credentials) {
+    private static HttpClient createClient(Configuration credentials) {
         HttpClient client = new HttpClient();
         if (credentials.shouldUseProxy()) {
             String proxyHost = credentials.getProxyHost();

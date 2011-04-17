@@ -61,12 +61,12 @@ public class WebClientServiceTests {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    private static Credentials credentials;
+    private static Configuration credentials;
 
     @BeforeClass
     public static void setUp() throws Exception {
         assumeThat(Boolean.getBoolean("ignore.integration.tests"), equalTo(false));
-        credentials = new CredentialsFactory(null).load();
+        credentials = new ConfigurationFactory(null).load();
     }
 
     @Test

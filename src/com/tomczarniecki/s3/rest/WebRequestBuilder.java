@@ -36,10 +36,10 @@ public class WebRequestBuilder {
 
     private final S3Dates dates = new S3Dates();
 
-    private final Credentials credentials;
+    private final Configuration credentials;
     private final String protocol;
 
-    public WebRequestBuilder(Credentials credentials) {
+    public WebRequestBuilder(Configuration credentials) {
         this.protocol = credentials.shouldUseSecureProtocol() ? SECURE_PROTOCOL : INSECURE_PROTOCOL;
         this.credentials = credentials;
     }

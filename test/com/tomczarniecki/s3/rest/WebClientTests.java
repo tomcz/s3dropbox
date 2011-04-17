@@ -58,7 +58,7 @@ public class WebClientTests {
 
     @Before
     public void setup() throws Exception {
-        client = new WebClient(new Credentials("accessKey", "secretAccessKey"));
+        client = new WebClient(new Configuration("accessKey", "secretAccessKey"));
 
         freePort = findFreePort();
 

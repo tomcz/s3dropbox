@@ -34,7 +34,7 @@ import org.apache.commons.lang.SystemUtils;
 import java.io.File;
 import java.util.Properties;
 
-public class CredentialsFactory {
+public class ConfigurationFactory {
 
     private enum Keys {
         AMAZON_ACCESS_KEY_ID, AMAZON_SECRET_ACCESS_KEY,
@@ -46,13 +46,13 @@ public class CredentialsFactory {
 
     private final File source;
 
-    public CredentialsFactory(File source) {
+    public ConfigurationFactory(File source) {
         this.source = (source != null) ? source : new File(SystemUtils.USER_HOME, ".s3dropbox");
     }
 
-    public Credentials load() {
+    public Configuration load() {
         Properties props = Files.loadProperties(source);
-        return new Credentials(
+        return new Configuration(
                 getRequired(props, Keys.AMAZON_ACCESS_KEY_ID),
                 getRequired(props, Keys.AMAZON_SECRET_ACCESS_KEY),
                 getOptional(props, Keys.PROXY_HOST),
@@ -61,10 +61,10 @@ public class CredentialsFactory {
                 getOptional(props, Keys.PROXY_PASSWORD),
                 getOptional(props, Keys.NTLM_HOST),
                 getOptional(props, Keys.NTLM_DOMAIN),
-                getOptional(props, Keys.USE_SSL));
+                props.getProperty(Keys.USE_SSL.name(), "true"));
     }
 
-    public void save(Credentials credentials) {
+    public void save(Configuration credentials) {
         Properties props = new Properties();
         props.setProperty(Keys.AMAZON_ACCESS_KEY_ID.name(), credentials.getAccessKeyId());
         props.setProperty(Keys.AMAZON_SECRET_ACCESS_KEY.name(), credentials.getSecretAccessKey());

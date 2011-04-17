@@ -32,7 +32,7 @@ import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import com.tomczarniecki.s3.rest.Credentials;
+import com.tomczarniecki.s3.rest.Configuration;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -49,7 +49,7 @@ public class CredentialsDialog extends JDialog {
     private final JTextField accessKeyId;
     private final JTextField secretAccessKey;
 
-    private Credentials credentials;
+    private Configuration credentials;
 
     public CredentialsDialog() {
         setTitle("Amazon S3 Credentials");
@@ -63,7 +63,7 @@ public class CredentialsDialog extends JDialog {
         pack();
     }
 
-    public Credentials getCredentials() {
+    public Configuration getCredentials() {
         setLocationRelativeTo(null);
         secretAccessKey.setText("");
         accessKeyId.setText("");
@@ -107,7 +107,7 @@ public class CredentialsDialog extends JDialog {
         String key = trimToEmpty(accessKeyId.getText());
         String secret = trimToEmpty(secretAccessKey.getText());
         if (isNotEmpty(key) && isNotEmpty(secret)) {
-            credentials = new Credentials(key, secret);
+            credentials = new Configuration(key, secret);
         }
     }
 

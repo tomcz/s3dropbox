@@ -31,7 +31,7 @@ package com.tomczarniecki.s3.rest;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 
-public class Credentials {
+public class Configuration {
 
     private final String accessKeyId;
     private final String secretAccessKey;
@@ -48,15 +48,15 @@ public class Credentials {
 
     private final String useSecureProtocol;
 
-    public Credentials(String accessKeyId, String secretAccessKey) {
+    public Configuration(String accessKeyId, String secretAccessKey) {
         this(accessKeyId, secretAccessKey, "", "", "", "", "", "", "true");
     }
 
-    public Credentials(String accessKeyId, String secretAccessKey,
-                       String proxyHost, String proxyPort,
-                       String proxyUserName, String proxyPassword,
-                       String ntlmHost, String ntlmDomain,
-                       String useSecureProtocol) {
+    public Configuration(String accessKeyId, String secretAccessKey,
+                         String proxyHost, String proxyPort,
+                         String proxyUserName, String proxyPassword,
+                         String ntlmHost, String ntlmDomain,
+                         String useSecureProtocol) {
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;

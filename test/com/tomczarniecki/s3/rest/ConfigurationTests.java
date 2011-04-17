@@ -32,11 +32,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class CredentialsTests {
+public class ConfigurationTests {
 
     @Test
     public void createsExpectedSignatureForSimpleGet() throws Exception {
-        Credentials credentials = new Credentials("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
+        Configuration credentials = new Configuration("0PN5J17HBGZHT7JJ3X82", "uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o");
 
         Headers headers = new Headers();
         headers.add("Date", "Tue, 27 Mar 2007 19:36:42 +0000");
