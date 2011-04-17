@@ -36,6 +36,7 @@ public class ProgressListenerAdaptor implements com.amazonaws.services.s3.model.
 
     private final ProgressListener delegate;
     private final long totalBytesToTransfer;
+
     private AtomicLong bytesTransferred = new AtomicLong(0);
 
     public ProgressListenerAdaptor(ProgressListener delegate, long totalBytesToTransfer) {
