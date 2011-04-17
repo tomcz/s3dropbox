@@ -28,6 +28,7 @@
  */
 package com.tomczarniecki.s3.rest;
 
+import com.amazonaws.services.s3.model.S3Object;
 import com.tomczarniecki.s3.ProgressListener;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -103,6 +104,11 @@ public class Files {
         } finally {
             IOUtils.closeQuietly(digestStream);
         }
+    }
+
+    public static void writeToFile(S3Object object, File target, ProgressListener listener) {
+        long fileLength = object.getObjectMetadata().getContentLength();
+        writeToFile(object.getObjectContent(), target, listener, fileLength);
     }
 
     public static void writeToFile(InputStream input, File file, ProgressListener listener, long length) {

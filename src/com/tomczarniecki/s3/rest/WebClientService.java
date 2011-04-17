@@ -113,8 +113,7 @@ public class WebClientService implements Service {
     }
 
     public void downloadObject(String bucketName, String objectKey, File target, ProgressListener listener) {
-        com.amazonaws.services.s3.model.S3Object object = client.getObject(bucketName, objectKey);
-        Files.writeToFile(object.getObjectContent(), target, listener, object.getObjectMetadata().getContentLength());
+        Files.writeToFile(client.getObject(bucketName, objectKey), target, listener);
     }
 
     public String getPublicUrl(String bucketName, String objectKey, DateTime expires) {
