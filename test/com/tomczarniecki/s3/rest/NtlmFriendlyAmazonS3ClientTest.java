@@ -27,7 +27,6 @@
  */
 package com.tomczarniecki.s3.rest;
 
-import com.amazonaws.auth.AWSCredentials;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NTCredentials;
@@ -45,8 +44,7 @@ public class NtlmFriendlyAmazonS3ClientTest {
         Configuration configuration = new Configuration("publicKey", "provateKey",
                 "proxyHost", "81", "proxyUser", "proxyPass", "ntHost", "ntDomain", "");
 
-        AWSCredentials credentials = configuration.getAWSCredentials();
-        NtlmFriendlyAmazonS3Client client = new NtlmFriendlyAmazonS3Client(credentials, configuration);
+        NtlmFriendlyAmazonS3Client client = new NtlmFriendlyAmazonS3Client(configuration);
         HttpClient internalClient = client.getInternalClient();
 
         AuthScope authScope = new AuthScope("proxyHost", 81);

@@ -50,7 +50,7 @@ public class WebClientService implements Service {
     private final AmazonS3 client;
 
     public WebClientService(Configuration configuration) {
-        this.client = new NtlmFriendlyAmazonS3Client(configuration.getAWSCredentials(), configuration);
+        this.client = new NtlmFriendlyAmazonS3Client(configuration);
     }
 
     public List<S3Bucket> listAllMyBuckets() {

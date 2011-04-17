@@ -27,7 +27,6 @@
  */
 package com.tomczarniecki.s3.rest;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NTCredentials;
@@ -37,8 +36,8 @@ import java.lang.reflect.Field;
 
 public class NtlmFriendlyAmazonS3Client extends AmazonS3Client {
 
-    public NtlmFriendlyAmazonS3Client(AWSCredentials credentials, Configuration configuration) {
-        super(credentials, configuration);
+    public NtlmFriendlyAmazonS3Client(Configuration configuration) {
+        super(configuration.getAWSCredentials(), configuration);
         updateProxyAuth(configuration);
     }
 
@@ -59,6 +58,7 @@ public class NtlmFriendlyAmazonS3Client extends AmazonS3Client {
     }
 
     protected HttpClient getInternalClient() {
+        // YUCK - need to raise issue with AWS library maintainers
         try {
             Field field = client.getClass().getDeclaredField("httpClient");
             field.setAccessible(true);
