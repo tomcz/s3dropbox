@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<project name="S3DropBox" default="build" basedir=".">
+
+    <tstamp>
+        <format property="release.version" pattern="yyyyMMdd" />
+    </tstamp>
+
+    <property name="application.name" value="${ant.project.name}-${release.version}" />
+    <property name="main.class" value="com.tomczarniecki.s3.Main" />
+
+    <property name="src.dir" location="src" />
+    <property name="test.dir" location="test" />
+    <property name="lib.dir" location="lib" />
+
+    <property name="output.dir" location="build" />
+
+    <property name="classes.dir" location="${output.dir}/classes" />
+    <property name="test.classes.dir" location="${output.dir}/tests" />
+
+    <property name="cobertura.dir" location="${output.dir}/cobertura" />
+    <property name="cobertura.data.file" location="${cobertura.dir}/cobertura.ser" />
+    <property name="cobertura.classes.dir" location="${cobertura.dir}/classes" />
+    <property name="cobertura.report.dir" location="${cobertura.dir}/report" />
+
+    <property name="jar.dir" location="${output.dir}/jar" />
+    <property name="zip.dir" location="${output.dir}/zip" />
+
+    <property name="app.dir" location="${output.dir}/${ant.project.name}" />
+    <property name="dmg.dir" location="${output.dir}/dmg" />
+
+    <fileset id="runtime-jars" dir="${lib.dir}/jars">
+        <include name="*.jar" />
+    </fileset>
+
+    <path id="compile-classpath">
+        <fileset refid="runtime-jars" />
+    </path>
+
+    <path id="test-classpath">
+        <pathelement location="${test.classes.dir}" />
+        <pathelement location="${classes.dir}" />
+        <path refid="compile-classpath" />
+        <fileset dir="${lib.dir}/test" />
+    </path>
+
+    <path id="cobertura-classpath">
+        <fileset dir="lib/ant/cobertura" />
+    </path>
+
+    <macrodef name="compile">
+        <attribute name="srcdir" />
+        <attribute name="destdir" />
+        <attribute name="classpath" />
+        <sequential>
+            <mkdir dir="@{destdir}" />
+            <javac srcdir="@{srcdir}" destdir="@{destdir}" classpathref="@{classpath}" includeantruntime="no" debug="yes" />
+            <copy todir="@{destdir}" overwrite="yes" includeemptydirs="no">
+                <fileset dir="@{srcdir}">
+                    <exclude name="**/*.java" />
+                </fileset>
+            </copy>
+        </sequential>
+    </macrodef>
+
+    <target name="build" depends="clean,run-tests,create-dmg,create-zip"
+            description="Create distributable bundles." />
+
+    <target name="clean" description="Delete output directory.">
+        <delete dir="${output.dir}" />
+    </target>
+
+    <target name="compile">
+        <compile srcdir="${src.dir}" destdir="${classes.dir}" classpath="compile-classpath" />
+        <compile srcdir="${test.dir}" destdir="${test.classes.dir}" classpath="test-classpath" />
+    </target>
+
+    <target name="run-tests" depends="compile"
+            description="Run all tests. Use -Dtestcase=SomeTestClassName to specify a single test.">
+
+        <junit fork="yes" forkmode="once" printsummary="yes" haltonfailure="no" failureproperty="unit.tests.failed">
+            <classpath refid="test-classpath" />
+            <batchtest if="testcase">
+                <fileset dir="${test.classes.dir}">
+                    <include name="**/${testcase}.class" />
+                </fileset>
+            </batchtest>
+            <batchtest unless="testcase">
+                <fileset dir="${test.classes.dir}">
+                    <include name="**/*Tests.class" />
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <fail if="unit.tests.failed"
+              message="One or more tests failed. Please check the logs for more details." />
+    </target>
+
+    <target name="create-jar" depends="compile">
+        <mkdir dir="${jar.dir}" />
+        <jar destfile="${jar.dir}/main.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="check-for-mac">
+        <condition property="mac.os.available">
+            <os family="mac" />
+        </condition>
+    </target>
+
+    <target name="create-dmg" depends="create-jar,check-for-mac" if="mac.os.available">
+        <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler">
+            <classpath location="lib/ant/jarbundler-2.1.0.jar" />
+        </taskdef>
+        <mkdir dir="${app.dir}" />
+        <jarbundler dir="${app.dir}"
+                    name="${ant.project.name}"
+                    mainclass="${main.class}"
+                    icon="${basedir}/etc/zim.icns"
+                    jvmversion="1.4+">
+            <jarfileset dir="${jar.dir}" includes="main.jar" />
+            <jarfileset refid="runtime-jars" />
+        </jarbundler>
+        <copy file="${basedir}/LICENSE.txt" todir="${app.dir}" />
+        <copy file="${basedir}/README.txt" todir="${app.dir}" />
+        <mkdir dir="${dmg.dir}" />
+        <exec executable="hdiutil" failonerror="yes">
+            <arg value="create" />
+            <arg value="-srcfolder" />
+            <arg value="${app.dir}" />
+            <arg value="${dmg.dir}/${application.name}.dmg" />
+        </exec>
+    </target>
+
+    <target name="create-zip" depends="create-jar">
+        <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask">
+            <classpath location="lib/ant/one-jar-ant-task-0.96.jar" />
+        </taskdef>
+        <one-jar destfile="${jar.dir}/${ant.project.name}.jar">
+            <main jar="${jar.dir}/main.jar" />
+            <lib>
+                <fileset refid="runtime-jars" />
+            </lib>
+            <fileset dir="${lib.dir}/ant" includes="*.txt" />
+            <fileset dir="${basedir}" includes="LICENSE.txt" />
+        </one-jar>
+        <mkdir dir="${zip.dir}" />
+        <zip destfile="${zip.dir}/${application.name}.zip">
+            <zipfileset prefix="${application.name}" dir="${jar.dir}">
+                <include name="${ant.project.name}.jar" />
+            </zipfileset>
+            <zipfileset prefix="${application.name}" dir="${basedir}">
+                <include name="*.txt" />
+            </zipfileset>
+        </zip>
+    </target>
+
+    <target name="code-coverage" depends="clean,compile" description="Create code coverage report">
+        <taskdef resource="tasks.properties" classpathref="cobertura-classpath" />
+        <mkdir dir="${cobertura.classes.dir}" />
+        <cobertura-instrument todir="${cobertura.classes.dir}" datafile="${cobertura.data.file}">
+            <fileset dir="${classes.dir}" />
+        </cobertura-instrument>
+        <junit fork="yes" printsummary="yes" forkmode="once" haltonfailure="no">
+            <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.file}" />
+            <classpath location="${cobertura.classes.dir}" />
+            <classpath refid="test-classpath" />
+            <classpath refid="cobertura-classpath" />
+            <batchtest>
+                <fileset dir="${test.classes.dir}">
+                    <include name="**/*Tests.class" />
+                </fileset>
+            </batchtest>
+        </junit>
+        <cobertura-report format="html"
+                          datafile="${cobertura.data.file}"
+                          destdir="${cobertura.report.dir}"
+                          srcdir="${src.dir}" />
+    </target>
+
+</project>
