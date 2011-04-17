@@ -29,7 +29,6 @@
 package com.tomczarniecki.s3.rest;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -51,7 +50,7 @@ public class WebClientService implements Service {
     private final AmazonS3 client;
 
     public WebClientService(Configuration configuration) {
-        this.client = new AmazonS3Client(configuration.getAWSCredentials(), configuration);
+        this.client = new NtlmFriendlyAmazonS3Client(configuration.getAWSCredentials(), configuration);
     }
 
     public List<S3Bucket> listAllMyBuckets() {
