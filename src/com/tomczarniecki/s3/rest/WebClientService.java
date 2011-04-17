@@ -44,6 +44,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 public class WebClientService implements Service {
@@ -84,6 +85,7 @@ public class WebClientService implements Service {
             lastModified = lastModified.toDateTime(DateTimeZone.getDefault());
             objects.add(new S3Object(summary.getKey(), summary.getSize(), lastModified.toLocalDateTime()));
         }
+        Collections.sort(objects);
         return objects;
     }
 
