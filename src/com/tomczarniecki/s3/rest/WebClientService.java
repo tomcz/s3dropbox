@@ -31,7 +31,6 @@ package com.tomczarniecki.s3.rest;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
@@ -50,13 +49,11 @@ import java.util.List;
 public class WebClientService implements Service {
 
     private final AmazonS3 client;
-    private final MimeTypes mimeTypes;
     private final TransferManager transferManager;
 
     public WebClientService(Configuration configuration) {
         client = new NtlmFriendlyAmazonS3Client(configuration);
         transferManager = new TransferManager(client);
-        mimeTypes = new MimeTypes();
     }
 
     public List<S3Bucket> listAllMyBuckets() {
@@ -101,12 +98,8 @@ public class WebClientService implements Service {
     }
 
     public void createObject(String bucketName, String objectKey, File source, ProgressListener listener) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(mimeTypes.get(source.getName()));
-
         PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, source);
         request.setProgressListener(new ProgressListenerAdaptor(listener, source.length()));
-        request.setMetadata(metadata);
 
         try {
             Upload upload = transferManager.upload(request);
