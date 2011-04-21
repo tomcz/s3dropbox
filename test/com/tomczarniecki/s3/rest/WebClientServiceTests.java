@@ -56,6 +56,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
+import static org.mockito.Mockito.mock;
 
 public class WebClientServiceTests {
 
@@ -107,16 +108,19 @@ public class WebClientServiceTests {
 
     @Test
     public void shouldCreateDownloadAndDeleteObject() throws Exception {
+        ProgressListener listener = mock(ProgressListener.class);
+        String fileContents = UUID.randomUUID().toString();
+
         String bucketName = "test-" + UUID.randomUUID();
 
         Service service = new WebClientService(credentials);
         service.createBucket(bucketName);
 
         File file = folder.newFile("foo.txt");
-        FileUtils.writeStringToFile(file, UUID.randomUUID().toString());
+        FileUtils.writeStringToFile(file, fileContents);
 
         assertFalse("Object should not exist", service.objectExists(bucketName, file.getName()));
-        service.createObject(bucketName, file.getName(), file, new NullProgressListener());
+        service.createObject(bucketName, file.getName(), file, listener);
 
         assertTrue("Object should exist", service.objectExists(bucketName, file.getName()));
         assertThat(service.listObjectsInBucket(bucketName), hasItem(object(file.getName())));
@@ -129,8 +133,8 @@ public class WebClientServiceTests {
         assertThat("Bad object size", object.getSize(), equalTo(file.length()));
 
         File saved = folder.newFile("saved.txt");
-        service.downloadObject(bucketName, file.getName(), saved, new NullProgressListener());
-        assertThat("Corrupted download", Files.computeMD5(saved), equalTo(Files.computeMD5(file)));
+        service.downloadObject(bucketName, file.getName(), saved, listener);
+        assertThat("Corrupted download", FileUtils.readFileToString(saved), equalTo(fileContents));
 
         service.deleteObject(bucketName, file.getName());
 
@@ -143,25 +147,26 @@ public class WebClientServiceTests {
 
     @Test
     public void shouldDownloadFileUsingPublicLink() throws Exception {
+        ProgressListener listener = mock(ProgressListener.class);
+        String fileContents = UUID.randomUUID().toString();
+
         String bucketName = "test-" + UUID.randomUUID();
 
         Service service = new WebClientService(credentials);
         service.createBucket(bucketName);
 
         File file = folder.newFile("foo.txt");
-        FileUtils.writeStringToFile(file, UUID.randomUUID().toString());
-        service.createObject(bucketName, file.getName(), file, new NullProgressListener());
+        FileUtils.writeStringToFile(file, fileContents);
+
+        service.createObject(bucketName, file.getName(), file, listener);
 
         String publicUrl = service.getPublicUrl(bucketName, file.getName(), new DateTime().plusDays(5));
 
         File saved = folder.newFile("saved.txt");
 
-        InputStream input = new URL(publicUrl).openConnection().getInputStream();
-        FileOutputStream output = new FileOutputStream(saved);
-        IOUtils.copy(input, output);
-        output.close();
+        downloadToFile(publicUrl, saved);
 
-        assertThat("Corrupted download", Files.computeMD5(saved), equalTo(Files.computeMD5(file)));
+        assertThat("Corrupted download", FileUtils.readFileToString(saved), equalTo(fileContents));
 
         service.deleteObject(bucketName, file.getName());
 
@@ -176,8 +181,17 @@ public class WebClientServiceTests {
         return hasProperty("key", equalTo(key));
     }
 
-    private static class NullProgressListener implements ProgressListener {
-        public void processed(long count, long length) {
+    private void downloadToFile(String publicUrl, File saved) throws Exception {
+        InputStream input = null;
+        FileOutputStream output = null;
+        try {
+            input = new URL(publicUrl).openStream();
+            output = new FileOutputStream(saved);
+            IOUtils.copy(input, output);
+
+        } finally {
+            IOUtils.closeQuietly(output);
+            IOUtils.closeQuietly(input);
         }
     }
 }

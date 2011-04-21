@@ -30,20 +30,14 @@ package com.tomczarniecki.s3.rest;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.tomczarniecki.s3.ProgressListener;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 
 public class Files {
@@ -75,34 +69,6 @@ public class Files {
 
         } finally {
             IOUtils.closeQuietly(out);
-        }
-    }
-
-    public static String computeMD5(File file) {
-        try {
-            return computeMD5(new FileInputStream(file));
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static String computeMD5(InputStream input) {
-        InputStream digestStream = null;
-        try {
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
-            digestStream = new DigestInputStream(input, md5);
-            IOUtils.copy(digestStream, new NullOutputStream());
-            return new String(Base64.encodeBase64(md5.digest()), "UTF-8");
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-
-        } finally {
-            IOUtils.closeQuietly(digestStream);
         }
     }
 
