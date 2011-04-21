@@ -37,7 +37,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public class NtlmFriendlyAmazonS3ClientTest {
+public class NtlmFriendlyAmazonS3ClientTests {
 
     @Test
     public void shouldSetupNTCredentialsWhenConfiguredForAuthenticatedProxyAccess() {
