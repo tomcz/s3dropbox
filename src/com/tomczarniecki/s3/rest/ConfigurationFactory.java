@@ -28,10 +28,14 @@
  */
 package com.tomczarniecki.s3.rest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigurationFactory {
@@ -51,7 +55,7 @@ public class ConfigurationFactory {
     }
 
     public Configuration load() {
-        Properties props = Files.loadProperties(source);
+        Properties props = loadProperties();
         return new Configuration(
                 getRequired(props, Keys.AMAZON_ACCESS_KEY_ID),
                 getRequired(props, Keys.AMAZON_SECRET_ACCESS_KEY),
@@ -74,7 +78,7 @@ public class ConfigurationFactory {
         props.setProperty(Keys.PROXY_USERNAME.name(), credentials.getProxyUsername());
         props.setProperty(Keys.PROXY_PASSWORD.name(), credentials.getProxyPassword());
         props.setProperty(Keys.USE_SSL.name(), Boolean.toString(credentials.isUseSecureProtocol()));
-        Files.saveProperties(source, props);
+        saveProperties(props);
     }
 
     private String getRequired(Properties props, Keys key) {
@@ -87,5 +91,35 @@ public class ConfigurationFactory {
 
     private String getOptional(Properties props, Keys key) {
         return props.getProperty(key.name(), "");
+    }
+
+    private Properties loadProperties() {
+        FileInputStream input = null;
+        try {
+            Properties props = new Properties();
+            input = new FileInputStream(source);
+            props.load(input);
+            return props;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+
+        } finally {
+            IOUtils.closeQuietly(input);
+        }
+    }
+
+    private void saveProperties(Properties props) {
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(source);
+            props.store(out, null);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+
+        } finally {
+            IOUtils.closeQuietly(out);
+        }
     }
 }

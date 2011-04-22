@@ -40,10 +40,15 @@ import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.Service;
+import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -102,7 +107,6 @@ public class WebClientService implements Service {
     public void createObject(String bucketName, String objectKey, File source, ProgressListener listener) {
         PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, source);
         request.setProgressListener(new ProgressListenerAdaptor(listener, source.length()));
-
         try {
             Upload upload = transferManager.upload(request);
             upload.waitForCompletion();
@@ -113,7 +117,7 @@ public class WebClientService implements Service {
     }
 
     public void downloadObject(String bucketName, String objectKey, File target, ProgressListener listener) {
-        Files.writeToFile(client.getObject(bucketName, objectKey), target, listener);
+        writeToFile(client.getObject(bucketName, objectKey), target, listener);
     }
 
     public String getPublicUrl(String bucketName, String objectKey, DateTime expires) {
@@ -122,5 +126,23 @@ public class WebClientService implements Service {
 
     public void deleteObject(String bucketName, String objectKey) {
         client.deleteObject(bucketName, objectKey);
+    }
+
+    private void writeToFile(com.amazonaws.services.s3.model.S3Object object, File target, ProgressListener listener) {
+        long fileLength = object.getObjectMetadata().getContentLength();
+        OutputStream output = null;
+        InputStream input = null;
+        try {
+            input = object.getObjectContent();
+            output = new CountingOutputStream(new FileOutputStream(target), listener, fileLength);
+            IOUtils.copy(input, output);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+
+        } finally {
+            IOUtils.closeQuietly(input);
+            IOUtils.closeQuietly(output);
+        }
     }
 }
