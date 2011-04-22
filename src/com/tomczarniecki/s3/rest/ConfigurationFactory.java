@@ -29,6 +29,7 @@
 package com.tomczarniecki.s3.rest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 
@@ -71,13 +72,13 @@ public class ConfigurationFactory {
 
     public void save(Configuration credentials) {
         Properties props = new Properties();
-        props.setProperty(Keys.AMAZON_ACCESS_KEY_ID.name(), credentials.getAccessKeyId());
-        props.setProperty(Keys.AMAZON_SECRET_ACCESS_KEY.name(), credentials.getSecretAccessKey());
-        props.setProperty(Keys.PROXY_HOST.name(), credentials.getProxyHost());
-        props.setProperty(Keys.PROXY_PORT.name(), Integer.toString(credentials.getProxyPort()));
-        props.setProperty(Keys.PROXY_USERNAME.name(), credentials.getProxyUsername());
-        props.setProperty(Keys.PROXY_PASSWORD.name(), credentials.getProxyPassword());
-        props.setProperty(Keys.USE_SSL.name(), Boolean.toString(credentials.isUseSecureProtocol()));
+        setProperty(props, Keys.AMAZON_ACCESS_KEY_ID, credentials.getAccessKeyId());
+        setProperty(props, Keys.AMAZON_SECRET_ACCESS_KEY, credentials.getSecretAccessKey());
+        setProperty(props, Keys.PROXY_HOST, credentials.getProxyHost());
+        setProperty(props, Keys.PROXY_PORT, credentials.getProxyPort());
+        setProperty(props, Keys.PROXY_USERNAME, credentials.getProxyUsername());
+        setProperty(props, Keys.PROXY_PASSWORD, credentials.getProxyPassword());
+        setProperty(props, Keys.USE_SSL, credentials.isUseSecureProtocol());
         saveProperties(props);
     }
 
@@ -91,6 +92,10 @@ public class ConfigurationFactory {
 
     private String getOptional(Properties props, Keys key) {
         return props.getProperty(key.name(), "");
+    }
+
+    private void setProperty(Properties props, Keys key, Object value) {
+        props.setProperty(key.name(), ObjectUtils.toString(value));
     }
 
     private Properties loadProperties() {
