@@ -125,8 +125,8 @@
             <jarfileset dir="${jar.dir}" includes="main.jar" />
             <jarfileset refid="runtime-jars" />
         </jarbundler>
-        <copy file="${basedir}/LICENSE.txt" todir="${app.dir}" />
-        <copy file="${basedir}/README" todir="${app.dir}" />
+        <copy file="${basedir}/LICENSE*" todir="${app.dir}" />
+        <copy file="${basedir}/README*" todir="${app.dir}" />
         <mkdir dir="${dmg.dir}" />
         <exec executable="hdiutil" failonerror="yes">
             <arg value="create" />
@@ -154,7 +154,8 @@
                 <include name="${ant.project.name}.jar" />
             </zipfileset>
             <zipfileset prefix="${application.name}" dir="${basedir}">
-                <include name="*.txt" />
+                <include name="LICENSE*" />
+                <include name="README*" />
             </zipfileset>
         </zip>
     </target>
