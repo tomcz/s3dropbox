@@ -27,7 +27,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import com.tomczarniecki.s3.Generics;
+import com.tomczarniecki.s3.Lists;
 import com.tomczarniecki.s3.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,7 +141,7 @@ class FileDropListener implements FileDrop.Listener {
     }
 
     private List<Pair<String, File>> resolveKeys(File[] files) {
-        List<Pair<String, File>> list = Generics.newArrayList();
+        List<Pair<String, File>> list = Lists.newArrayList();
         resolveFolders(list, files, "");
         return list;
     }

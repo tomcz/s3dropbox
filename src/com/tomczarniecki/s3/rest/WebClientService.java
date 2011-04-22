@@ -35,7 +35,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
-import com.tomczarniecki.s3.Generics;
+import com.tomczarniecki.s3.Lists;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
@@ -63,7 +63,7 @@ public class WebClientService implements Service {
     }
 
     public List<S3Bucket> listAllMyBuckets() {
-        List<S3Bucket> buckets = Generics.newArrayList();
+        List<S3Bucket> buckets = Lists.newArrayList();
         for (Bucket bucket : client.listBuckets()) {
             buckets.add(new S3Bucket(bucket.getName()));
         }
@@ -83,7 +83,7 @@ public class WebClientService implements Service {
     }
 
     public List<S3Object> listObjectsInBucket(String bucketName) {
-        List<S3Object> objects = Generics.newArrayList();
+        List<S3Object> objects = Lists.newArrayList();
         ObjectListing objectListing = client.listObjects(bucketName);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             DateTime lastModified = new DateTime(summary.getLastModified());

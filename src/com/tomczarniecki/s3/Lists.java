@@ -28,17 +28,11 @@
 package com.tomczarniecki.s3;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class Generics {
+public class Lists {
 
     public static <T> List<T> newArrayList() {
         return new ArrayList<T>();
-    }
-
-    public static <K, V> Map<K, V> newHashMap() {
-        return new HashMap<K, V>();
     }
 }
