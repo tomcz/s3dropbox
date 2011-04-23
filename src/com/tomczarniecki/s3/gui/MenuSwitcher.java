@@ -42,22 +42,32 @@ class MenuSwitcher implements ControllerListener {
     private final Display display;
     private final JMenu bucketMenu;
     private final JMenu objectMenu;
+    private final Worker worker;
 
-    public MenuSwitcher(Display display, JMenu bucketMenu, JMenu objectMenu) {
-        this.display = display;
+    public MenuSwitcher(Display display, JMenu bucketMenu, JMenu objectMenu, Worker worker) {
         this.bucketMenu = bucketMenu;
         this.objectMenu = objectMenu;
+        this.display = display;
+        this.worker = worker;
     }
 
     public void updatedBuckets(List<S3Bucket> buckets) {
-        display.setTitle(String.format(FOLDER_NAME, ALL_FOLDERS));
-        bucketMenu.setVisible(true);
-        objectMenu.setVisible(false);
+        worker.executeOnEventLoop(new Runnable() {
+            public void run() {
+                display.setTitle(String.format(FOLDER_NAME, ALL_FOLDERS));
+                bucketMenu.setVisible(true);
+                objectMenu.setVisible(false);
+            }
+        });
     }
 
-    public void updatedObjects(String bucketName, List<S3Object> objects) {
-        display.setTitle(String.format(FOLDER_NAME, bucketName));
-        bucketMenu.setVisible(false);
-        objectMenu.setVisible(true);
+    public void updatedObjects(final String bucketName, List<S3Object> objects) {
+        worker.executeOnEventLoop(new Runnable() {
+            public void run() {
+                display.setTitle(String.format(FOLDER_NAME, bucketName));
+                bucketMenu.setVisible(false);
+                objectMenu.setVisible(true);
+            }
+        });
     }
 }

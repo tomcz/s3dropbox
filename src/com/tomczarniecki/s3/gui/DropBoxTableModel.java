@@ -45,10 +45,12 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
 
     private final ImageIcon bucketIcon;
     private final ImageIcon objectIcon;
+    private final Worker worker;
 
-    public DropBoxTableModel() {
+    public DropBoxTableModel(Worker worker) {
         this.bucketIcon = new ImageIcon(getClass().getResource(BUCKET_ICON));
         this.objectIcon = new ImageIcon(getClass().getResource(OBJECT_ICON));
+        this.worker = worker;
     }
 
     public int getRowCount() {
@@ -108,7 +110,7 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
             item.icon = bucketIcon;
             items.add(item);
         }
-        fireTableDataChanged();
+        updateView();
     }
 
     public void updatedObjects(String bucketName, List<S3Object> objects) {
@@ -128,7 +130,15 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
             item.icon = objectIcon;
             items.add(item);
         }
-        fireTableDataChanged();
+        updateView();
+    }
+
+    private void updateView() {
+        worker.executeOnEventLoop(new Runnable() {
+            public void run() {
+                fireTableDataChanged();
+            }
+        });
     }
 
     static enum Column {

@@ -45,7 +45,6 @@ import static com.tomczarniecki.s3.gui.Constants.ALL_FOLDERS;
 import static com.tomczarniecki.s3.gui.Constants.FOLDER_NAME;
 import static com.tomczarniecki.s3.gui.Constants.MAIN_TABLE_NAME;
 import static com.tomczarniecki.s3.gui.Constants.MAIN_WINDOW_NAME;
-import static com.tomczarniecki.s3.gui.Proxies.onEventLoop;
 
 public class DropBox extends JFrame {
 
@@ -63,17 +62,17 @@ public class DropBox extends JFrame {
         controller = new Controller(service);
         executor = new BusyCursorExecutor(display, worker);
 
-        DropBoxTableModel model = new DropBoxTableModel();
-        JScrollPane pane = new JScrollPane(createTable(model));
-        FileDrop.add(pane, new FileDropListener(controller, model, display, worker));
-
         JMenu bucketMenu = createBucketMenu();
         JMenu objectMenu = createObjectMenu();
 
-        MenuSwitcher switcher = new MenuSwitcher(display, bucketMenu, objectMenu);
+        DropBoxTableModel model = new DropBoxTableModel(worker);
+        MenuSwitcher switcher = new MenuSwitcher(display, bucketMenu, objectMenu, worker);
 
-        controller.addListener(onEventLoop(ControllerListener.class, model, worker));
-        controller.addListener(onEventLoop(ControllerListener.class, switcher, worker));
+        controller.addListener(model);
+        controller.addListener(switcher);
+
+        JScrollPane pane = new JScrollPane(createTable(model));
+        FileDrop.add(pane, new FileDropListener(controller, model, display, worker));
 
         setJMenuBar(createMenuBar(bucketMenu, objectMenu));
         getContentPane().add(pane);

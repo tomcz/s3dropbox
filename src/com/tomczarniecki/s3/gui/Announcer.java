@@ -29,6 +29,7 @@ package com.tomczarniecki.s3.gui;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,7 +39,7 @@ class Announcer<T> {
     private final List<T> targets;
 
     private Announcer(Class<T> type) {
-        this.proxy = Proxies.proxyFor(type, new Notifier());
+        this.proxy = proxyFor(type, new Notifier());
         this.targets = new LinkedList<T>();
     }
 
@@ -52,6 +53,10 @@ class Announcer<T> {
 
     public T announce() {
         return proxy;
+    }
+
+    private T proxyFor(Class<T> type, Notifier notifier) {
+        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, notifier));
     }
 
     private class Notifier implements InvocationHandler {
