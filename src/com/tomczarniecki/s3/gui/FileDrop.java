@@ -50,9 +50,10 @@ import java.io.File;
 import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
+
+import static com.tomczarniecki.s3.Lists.newArrayList;
 
 public class FileDrop {
 
@@ -220,7 +221,7 @@ public class FileDrop {
         }
 
         private File[] createFileArray(Reader reader) throws Exception {
-            List<File> files = new ArrayList<File>();
+            List<File> files = newArrayList();
             for (String line : readLines(reader)) {
                 // kde seems to append a 0 char to the end of the reader
                 if (!ZERO_CHAR_STRING.equals(line)) {

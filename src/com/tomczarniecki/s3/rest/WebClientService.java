@@ -134,7 +134,7 @@ public class WebClientService implements Service {
         InputStream input = null;
         try {
             input = object.getObjectContent();
-            output = new CountingOutputStream(new FileOutputStream(target), listener, fileLength);
+            output = new ProgressOutputStream(new FileOutputStream(target), listener, fileLength);
             IOUtils.copy(input, output);
 
         } catch (IOException e) {

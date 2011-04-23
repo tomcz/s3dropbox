@@ -33,14 +33,14 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class CountingOutputStream extends FilterOutputStream {
+public class ProgressOutputStream extends FilterOutputStream {
 
     private final ProgressListener listener;
     private final long contentLength;
 
     private long count = 0;
 
-    public CountingOutputStream(OutputStream outputStream, ProgressListener listener, long contentLength) {
+    public ProgressOutputStream(OutputStream outputStream, ProgressListener listener, long contentLength) {
         super(outputStream);
         this.listener = listener;
         this.contentLength = contentLength;

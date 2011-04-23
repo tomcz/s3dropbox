@@ -43,8 +43,9 @@ import org.joda.time.LocalDateTime;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.tomczarniecki.s3.Lists.newArrayList;
 
 public class LocalService implements Service {
 
@@ -56,7 +57,7 @@ public class LocalService implements Service {
     }
 
     public List<S3Bucket> listAllMyBuckets() {
-        List<S3Bucket> buckets = new ArrayList<S3Bucket>();
+        List<S3Bucket> buckets = newArrayList();
         FileFilter filter = DirectoryFileFilter.INSTANCE;
         for (File dir : root.listFiles(filter)) {
             buckets.add(new S3Bucket(dir.getName()));
@@ -78,7 +79,7 @@ public class LocalService implements Service {
     }
 
     public List<S3Object> listObjectsInBucket(String bucketName) {
-        List<S3Object> objects = new ArrayList<S3Object>();
+        List<S3Object> objects = newArrayList();
         FileFilter filter = FileFileFilter.FILE;
         for (File file : bucketFile(bucketName).listFiles(filter)) {
             objects.add(new S3Object(file.getName(), file.length(), new LocalDateTime(file.lastModified())));

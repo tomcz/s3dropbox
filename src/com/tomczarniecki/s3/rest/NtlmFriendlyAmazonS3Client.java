@@ -44,7 +44,7 @@ public class NtlmFriendlyAmazonS3Client extends AmazonS3Client {
     protected void updateProxyAuth(Configuration configuration) {
         if (usingProxyAuth(configuration)) {
             AuthScope authScope = new AuthScope(configuration.getProxyHost(), configuration.getProxyPort());
-            getInternalClient().getState().setProxyCredentials(authScope, new NTCredentials(
+            httpClient().getState().setProxyCredentials(authScope, new NTCredentials(
                     configuration.getProxyUsername(), configuration.getProxyPassword(),
                     configuration.getNtlmHost(), configuration.getNtlmDomain()));
         }
@@ -57,7 +57,7 @@ public class NtlmFriendlyAmazonS3Client extends AmazonS3Client {
                 && configuration.getProxyPassword() != null;
     }
 
-    protected HttpClient getInternalClient() {
+    protected HttpClient httpClient() {
         // YUCK - need to raise issue with AWS library maintainers
         try {
             Field field = client.getClass().getDeclaredField("httpClient");

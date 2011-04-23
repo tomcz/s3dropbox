@@ -45,7 +45,7 @@ public class NtlmFriendlyAmazonS3ClientTests {
                 "proxyHost", "81", "proxyUser", "proxyPass", "ntHost", "ntDomain", "");
 
         NtlmFriendlyAmazonS3Client client = new NtlmFriendlyAmazonS3Client(configuration);
-        HttpClient internalClient = client.getInternalClient();
+        HttpClient internalClient = client.httpClient();
 
         AuthScope authScope = new AuthScope("proxyHost", 81);
         Credentials proxyCredentials = internalClient.getState().getProxyCredentials(authScope);
