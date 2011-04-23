@@ -131,31 +131,9 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
         fireTableDataChanged();
     }
 
-    enum Column {
+    static enum Column {
 
-        ICON("") {
-            @Override
-            Object valueAt(DropBoxTableItem item) {
-                return item.icon;
-            }},
-
-        FILE_NAME("File Name") {
-            @Override
-            Object valueAt(DropBoxTableItem item) {
-                return item.name;
-            }},
-
-        SIZE("Size") {
-            @Override
-            Object valueAt(DropBoxTableItem item) {
-                return item.size;
-            }},
-
-        LAST_MODIFIED("Last Modified") {
-            @Override
-            Object valueAt(DropBoxTableItem item) {
-                return item.lastModified;
-            }};
+        ICON(""), FILE_NAME("File Name"), SIZE("Size"), LAST_MODIFIED("Last Modified");
 
         final String title;
 
@@ -163,6 +141,17 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
             this.title = title;
         }
 
-        abstract Object valueAt(DropBoxTableItem item);
+        public Object valueAt(DropBoxTableItem item) {
+            switch (this) {
+                case ICON:
+                    return item.icon;
+                case FILE_NAME:
+                    return item.name;
+                case SIZE:
+                    return item.size;
+                default:
+                    return item.lastModified;
+            }
+        }
     }
 }
