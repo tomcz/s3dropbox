@@ -30,17 +30,17 @@ package com.tomczarniecki.s3.gui;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.LinkedList;
 import java.util.List;
+
+import static com.tomczarniecki.s3.Lists.newArrayList;
 
 class Announcer<T> {
 
+    private final List<T> targets = newArrayList();
     private final T proxy;
-    private final List<T> targets;
 
     private Announcer(Class<T> type) {
-        this.proxy = proxyFor(type, new Notifier());
-        this.targets = new LinkedList<T>();
+        this.proxy = proxyFor(type);
     }
 
     public static <T> Announcer<T> createFor(Class<T> type) {
@@ -55,16 +55,16 @@ class Announcer<T> {
         return proxy;
     }
 
-    private T proxyFor(Class<T> type, Notifier notifier) {
-        return type.cast(Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, notifier));
-    }
-
-    private class Notifier implements InvocationHandler {
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            for (T target : targets) {
-                method.invoke(target, args);
+    private T proxyFor(Class<T> type) {
+        Class[] proxyInterfaces = {type};
+        ClassLoader classLoader = type.getClassLoader();
+        return type.cast(Proxy.newProxyInstance(classLoader, proxyInterfaces, new InvocationHandler() {
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                for (T target : targets) {
+                    method.invoke(target, args);
+                }
+                return null;
             }
-            return null;
-        }
+        }));
     }
 }
