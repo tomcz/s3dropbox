@@ -58,7 +58,7 @@
         </sequential>
     </macrodef>
 
-    <target name="build" depends="clean,run-tests,check-tests,create-dmg,create-zip" description="Create distributable bundles." />
+    <target name="build" depends="clean,check-tests,create-dmg,create-zip" description="Create distributable bundles." />
 
     <target name="ci-build" depends="git-revision,build" description="Target for CI build server." />
 
@@ -105,7 +105,7 @@
         </junit>
     </target>
 
-    <target name="check-tests" if="tests.failed">
+    <target name="check-tests" depends="run-tests" if="tests.failed">
         <junitreport todir="${report.dir}">
             <fileset dir="${report.dir}" includes="TEST-*.xml" />
             <report todir="${report.dir}/html" />
