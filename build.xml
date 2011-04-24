@@ -1,19 +1,15 @@
 <?xml version="1.0"?>
 <project name="S3DropBox" default="build" basedir=".">
 
-    <tstamp>
-        <format property="release.version" pattern="yyyyMMdd" />
-    </tstamp>
-
-    <property name="application.name" value="${ant.project.name}-${release.version}" />
     <property name="main.class" value="com.tomczarniecki.s3.Main" />
+    <property name="ignore.integration.tests" value="false" />
 
     <property name="src.dir" location="src" />
     <property name="test.dir" location="test" />
     <property name="lib.dir" location="lib" />
 
     <property name="output.dir" location="build" />
-
+    <property name="report.dir" location="${output.dir}/report" />
     <property name="classes.dir" location="${output.dir}/classes" />
     <property name="test.classes.dir" location="${output.dir}/tests" />
 
@@ -62,37 +58,59 @@
         </sequential>
     </macrodef>
 
-    <target name="build" depends="clean,run-tests,create-dmg,create-zip"
-            description="Create distributable bundles." />
+    <target name="build" depends="clean,run-tests,check-tests,create-dmg,create-zip" description="Create distributable bundles." />
+
+    <target name="ci-build" depends="git-revision,build" description="Target for CI build server." />
 
     <target name="clean" description="Delete output directory.">
         <delete dir="${output.dir}" />
     </target>
 
-    <target name="compile">
+    <target name="git-revision">
+        <exec executable="git" dir="${basedir}" failonerror="yes" outputproperty="release.version">
+            <arg value="rev-parse" />
+            <arg value="HEAD" />
+        </exec>
+    </target>
+
+    <target name="release-version" unless="release.version">
+        <tstamp>
+            <format property="release.version" pattern="yyyyMMdd" />
+        </tstamp>
+    </target>
+
+    <target name="compile" depends="release-version">
+        <property name="application.name" value="${ant.project.name}-${release.version}" />
         <compile srcdir="${src.dir}" destdir="${classes.dir}" classpath="compile-classpath" />
         <compile srcdir="${test.dir}" destdir="${test.classes.dir}" classpath="test-classpath" />
     </target>
 
-    <target name="run-tests" depends="compile"
+    <target name="run-tests" depends="compile" unless="skip.tests"
             description="Run all tests. Use -Dtestcase=SomeTestClassName to specify a single test.">
-
-        <junit fork="yes" forkmode="once" printsummary="yes" haltonfailure="no" failureproperty="unit.tests.failed">
+        <mkdir dir="${report.dir}" />
+        <junit fork="yes" forkmode="once" printsummary="yes" haltonfailure="no" failureproperty="tests.failed">
+            <sysproperty key="ignore.integration.tests" value="${ignore.integration.tests}" />
             <classpath refid="test-classpath" />
-            <batchtest if="testcase">
-                <fileset dir="${test.classes.dir}">
-                    <include name="**/${testcase}.class" />
+            <formatter type="xml" />
+            <batchtest if="testcase" todir="${report.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/${testcase}.java" />
                 </fileset>
             </batchtest>
-            <batchtest unless="testcase">
-                <fileset dir="${test.classes.dir}">
-                    <include name="**/*Tests.class" />
+            <batchtest unless="testcase" todir="${report.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/*Tests.java" />
                 </fileset>
             </batchtest>
         </junit>
+    </target>
 
-        <fail if="unit.tests.failed"
-              message="One or more tests failed. Please check the logs for more details." />
+    <target name="check-tests" if="tests.failed">
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}" includes="TEST-*.xml" />
+            <report todir="${report.dir}/html" />
+        </junitreport>
+        <fail message="One or more tests failed. Please check the test report for more info." />
     </target>
 
     <target name="create-jar" depends="compile">
@@ -125,8 +143,12 @@
             <jarfileset dir="${jar.dir}" includes="main.jar" />
             <jarfileset refid="runtime-jars" />
         </jarbundler>
-        <copy file="${basedir}/LICENSE*" todir="${app.dir}" />
-        <copy file="${basedir}/README*" todir="${app.dir}" />
+        <copy todir="${app.dir}">
+            <fileset dir="${basedir}">
+                <include name="LICENSE*" />
+                <include name="README*" />
+            </fileset>
+        </copy>
         <mkdir dir="${dmg.dir}" />
         <exec executable="hdiutil" failonerror="yes">
             <arg value="create" />
