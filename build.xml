@@ -69,6 +69,7 @@
     <target name="git-revision">
         <exec executable="git" dir="${basedir}" failonerror="yes" outputproperty="release.version">
             <arg value="rev-parse" />
+            <arg value="--short" />
             <arg value="HEAD" />
         </exec>
     </target>
