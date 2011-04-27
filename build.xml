@@ -60,18 +60,8 @@
 
     <target name="build" depends="clean,check-tests,create-dmg,create-zip" description="Create distributable bundles." />
 
-    <target name="ci-build" depends="git-revision,build" description="Target for CI build server." />
-
     <target name="clean" description="Delete output directory.">
         <delete dir="${output.dir}" />
-    </target>
-
-    <target name="git-revision">
-        <exec executable="git" dir="${basedir}" failonerror="yes" outputproperty="release.version">
-            <arg value="rev-parse" />
-            <arg value="--short" />
-            <arg value="HEAD" />
-        </exec>
     </target>
 
     <target name="release-version" unless="release.version">
