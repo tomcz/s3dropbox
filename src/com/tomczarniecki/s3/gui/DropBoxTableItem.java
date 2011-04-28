@@ -27,10 +27,10 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 
 class DropBoxTableItem {
-    ImageIcon icon;
+    Icon icon;
     String name = "";
     String size = "";
     String lastModified = "";

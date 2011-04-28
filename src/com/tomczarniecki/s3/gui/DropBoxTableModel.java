@@ -31,26 +31,37 @@ package com.tomczarniecki.s3.gui;
 import com.tomczarniecki.s3.Lists;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
+import org.apache.commons.lang.SystemUtils;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.AbstractTableModel;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, ControllerListener {
 
-    public static final String BUCKET_ICON = "folder.gif";
-    public static final String OBJECT_ICON = "floppy.gif";
-
     private final List<DropBoxTableItem> items = Lists.newArrayList();
 
-    private final ImageIcon bucketIcon;
-    private final ImageIcon objectIcon;
+    private final Icon bucketIcon;
+    private final Icon objectIcon;
     private final Worker worker;
 
     public DropBoxTableModel(Worker worker) {
-        this.bucketIcon = new ImageIcon(getClass().getResource(BUCKET_ICON));
-        this.objectIcon = new ImageIcon(getClass().getResource(OBJECT_ICON));
-        this.worker = worker;
+        try {
+            this.worker = worker;
+
+            FileSystemView fsv = FileSystemView.getFileSystemView();
+            File file = File.createTempFile(getClass().getSimpleName(), ".txt");
+            this.bucketIcon = fsv.getSystemIcon(SystemUtils.getUserHome());
+            this.objectIcon = fsv.getSystemIcon(file);
+            file.delete();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public int getRowCount() {
