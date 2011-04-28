@@ -39,8 +39,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragSource;
 import java.util.concurrent.Executor;
 
 import static com.tomczarniecki.s3.gui.Constants.ALL_FOLDERS;
@@ -75,15 +73,11 @@ public class DropBox extends JFrame {
         controller.addListener(model);
         controller.addListener(switcher);
 
-        JTable table = createTable(model);
-
-        FileDrop.add(table, new FileDropListener(controller, model, display, worker));
-
-        DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
-                table, DnDConstants.ACTION_COPY_OR_MOVE, new FileDragListener(controller, table, downloader));
+        JScrollPane pane = new JScrollPane(createTable(model));
+        FileDrop.add(pane, new FileDropListener(controller, model, display, worker));
 
         setJMenuBar(createMenuBar(bucketMenu, objectMenu));
-        getContentPane().add(new JScrollPane(table));
+        getContentPane().add(pane);
 
         setSize(600, 300);
         setLocationRelativeTo(null);
