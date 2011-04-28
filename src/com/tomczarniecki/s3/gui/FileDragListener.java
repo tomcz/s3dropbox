@@ -7,7 +7,6 @@ import org.apache.commons.lang.SystemUtils;
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -15,55 +14,49 @@ import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceAdapter;
-import java.awt.dnd.DragSourceContext;
-import java.awt.dnd.DragSourceDragEvent;
-import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceDropEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 public class FileDragListener extends DragSourceAdapter implements DragGestureListener {
 
-    private final Controller controller;
     private final Component source;
+    private final Controller controller;
+    private final DownloadWorker worker;
 
-    private Cursor cursor;
-
-    public FileDragListener(Controller controller, Component source) {
+    public FileDragListener(Controller controller, Component source, DownloadWorker worker) {
         this.controller = controller;
         this.source = source;
+        this.worker = worker;
     }
 
     public void dragGestureRecognized(DragGestureEvent evt) {
         if (controller.isObjectSelected()) {
-            File target = createFile();
 
-            Toolkit tk = Toolkit.getDefaultToolkit();
-            BufferedImage icon = createIconForFile(target, tk);
+            File target = createFile(controller.getSelectedObjectKey());
             RemoteFileTransferable transferable = new RemoteFileTransferable(target);
 
             if (DragSource.isDragImageSupported()) {
+                Toolkit tk = Toolkit.getDefaultToolkit();
+                BufferedImage icon = createIconForFile(target, tk);
                 evt.startDrag(DragSource.DefaultMoveDrop, icon, new Point(0, 0), transferable, this);
             } else {
-                cursor = tk.createCustomCursor(icon, new Point(0, 0), target.getName());
-                evt.startDrag(cursor, null, new Point(0, 0), transferable, this);
+                evt.startDrag(DragSource.DefaultMoveDrop, null, new Point(0, 0), transferable, this);
             }
         }
     }
 
-    public void dragEnter(DragSourceDragEvent evt) {
-        DragSourceContext ctx = evt.getDragSourceContext();
-        ctx.setCursor(cursor);
+    @Override
+    public void dragDropEnd(DragSourceDropEvent evt) {
+        if (evt.getDropSuccess()) {
+            System.out.println("Drop was successful");
+        }
     }
 
-    public void dragExit(DragSourceEvent evt) {
-        DragSourceContext ctx = evt.getDragSourceContext();
-        ctx.setCursor(DragSource.DefaultMoveDrop);
-    }
-
-    private File createFile() {
+    private File createFile(String selectedObjectKey) {
         try {
-            String name = FilenameUtils.getName(controller.getSelectedObjectKey());
+            String name = FilenameUtils.getName(selectedObjectKey);
             File target = new File(SystemUtils.getJavaIoTmpDir(), name);
             FileUtils.touch(target);
             return target;

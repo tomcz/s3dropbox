@@ -50,19 +50,21 @@ import static com.tomczarniecki.s3.gui.Constants.MAIN_WINDOW_NAME;
 
 public class DropBox extends JFrame {
 
+    private final DownloadWorker downloader;
     private final Controller controller;
     private final Executor executor;
     private final Display display;
-    private final Worker worker;
 
     public DropBox(Service service) {
         super(String.format(FOLDER_NAME, ALL_FOLDERS));
         setName(MAIN_WINDOW_NAME);
 
+        Worker worker = new DropBoxWorker();
+
         display = new Display(this);
-        worker = new DropBoxWorker();
         controller = new Controller(service);
         executor = new BusyCursorExecutor(display, worker);
+        downloader = new DownloadWorker(controller, display, worker);
 
         JMenu bucketMenu = createBucketMenu();
         JMenu objectMenu = createObjectMenu();
@@ -78,7 +80,7 @@ public class DropBox extends JFrame {
         FileDrop.add(table, new FileDropListener(controller, model, display, worker));
 
         DragSource.getDefaultDragSource().createDefaultDragGestureRecognizer(
-                table, DnDConstants.ACTION_COPY_OR_MOVE, new FileDragListener(controller, table));
+                table, DnDConstants.ACTION_COPY_OR_MOVE, new FileDragListener(controller, table, downloader));
 
         setJMenuBar(createMenuBar(bucketMenu, objectMenu));
         getContentPane().add(new JScrollPane(table));
@@ -136,7 +138,7 @@ public class DropBox extends JFrame {
     private JMenu createObjectMenu() {
         JMenu menu = new JMenu("Files");
         menu.add(new JMenuItem(new CreatePublicLinkAction(controller, display)));
-        menu.add(new JMenuItem(new DownloadObjectAction(controller, display, worker)));
+        menu.add(new JMenuItem(new DownloadObjectAction(controller, display, downloader)));
         menu.add(new JMenuItem(new DeleteObjectAction(controller, display, executor)));
         menu.add(new JMenuItem(new RefreshObjectsAction(controller, executor)));
         menu.setVisible(false);
@@ -146,7 +148,7 @@ public class DropBox extends JFrame {
     private RightClickListener createRightClickListener() {
         RightClickListener listener = new RightClickListener(controller, display);
         listener.addAction(new CreatePublicLinkAction(controller, display));
-        listener.addAction(new DownloadObjectAction(controller, display, worker));
+        listener.addAction(new DownloadObjectAction(controller, display, downloader));
         listener.addAction(new DeleteObjectAction(controller, display, executor));
         return listener;
     }

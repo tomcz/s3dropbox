@@ -28,8 +28,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
@@ -37,16 +36,12 @@ import java.io.File;
 
 class DownloadObjectAction extends AbstractAction {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final ProgressDialog dialog;
     private final Controller controller;
+    private final DownloadWorker worker;
     private final Display display;
-    private final Worker worker;
 
-    public DownloadObjectAction(Controller controller, Display display, Worker worker) {
+    public DownloadObjectAction(Controller controller, Display display, DownloadWorker worker) {
         super("Download File");
-        this.dialog = display.createProgressDialog("Download Progress", worker);
         this.controller = controller;
         this.display = display;
         this.worker = worker;
@@ -56,34 +51,9 @@ class DownloadObjectAction extends AbstractAction {
         if (controller.isObjectSelected()) {
             String fileName = controller.getSelectedObjectKey();
             File fileDir = display.selectDirectory("Select directory for " + fileName, "Select");
-            if (fileDir != null) {
-                download(new File(fileDir, fileName));
+            if (fileDir != null && fileDir.isDirectory()) {
+                worker.download(new File(fileDir, FilenameUtils.getName(fileName)));
             }
         }
-    }
-
-    private void download(final File targetFile) {
-        worker.executeInBackground(new Runnable() {
-            public void run() {
-                dialog.begin();
-                try {
-                    dialog.append("Attempting download\n\nFrom: %s/%s\n\nTo: %s",
-                            controller.getSelectedBucketName(),
-                            controller.getSelectedObjectKey(),
-                            targetFile.getAbsolutePath());
-
-                    controller.downloadCurrentObject(targetFile, dialog);
-
-                    dialog.append("\n\nDone");
-
-                } catch (Exception e) {
-                    logger.info("Download failed for " + targetFile, e);
-                    dialog.append("\n\nERROR - %s", e.toString());
-
-                } finally {
-                    dialog.finish();
-                }
-            }
-        });
     }
 }

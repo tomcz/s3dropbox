@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Thomas Czarniecki
+ * Copyright (c) 2011, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,38 +27,47 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 
-import static org.mockito.BDDMockito.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.verify;
+public class DownloadWorker {
 
-public class DownloadObjectActionTests {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    private final ProgressDialog dialog;
+    private final Controller controller;
+    private final Worker worker;
 
-    @Test
-    public void shouldDownloadObjectToSelectedFile() throws IOException {
-        File directory = folder.newFolder("folder");
+    public DownloadWorker(Controller controller, Display display, Worker worker) {
+        this.dialog = display.createProgressDialog("Download Progress", worker);
+        this.controller = controller;
+        this.worker = worker;
+    }
 
-        Display display = mock(Display.class);
-        Controller controller = mock(Controller.class);
-        DownloadWorker worker = mock(DownloadWorker.class);
+    public void download(final File targetFile) {
+        worker.executeInBackground(new Runnable() {
+            public void run() {
+                dialog.begin();
+                try {
+                    dialog.append("Attempting download\n\nFrom: %s/%s\n\nTo: %s",
+                            controller.getSelectedBucketName(),
+                            controller.getSelectedObjectKey(),
+                            targetFile.getAbsolutePath());
 
-        given(controller.isObjectSelected()).willReturn(true);
-        given(display.selectDirectory(anyString(), anyString())).willReturn(directory);
-        given(controller.getSelectedObjectKey()).willReturn("file.txt");
+                    controller.downloadCurrentObject(targetFile, dialog);
 
-        DownloadObjectAction action = new DownloadObjectAction(controller, display, worker);
-        action.actionPerformed(null);
+                    dialog.append("\n\nDone");
 
-        verify(worker).download(new File(directory, "file.txt"));
+                } catch (Exception e) {
+                    logger.info("Download failed for " + targetFile, e);
+                    dialog.append("\n\nERROR - %s", e.toString());
+
+                } finally {
+                    dialog.finish();
+                }
+            }
+        });
     }
 }

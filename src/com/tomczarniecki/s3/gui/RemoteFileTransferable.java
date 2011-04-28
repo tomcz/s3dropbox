@@ -49,7 +49,7 @@ public class RemoteFileTransferable implements Transferable {
     }
 
     public boolean isDataFlavorSupported(DataFlavor dataFlavor) {
-        return DataFlavor.javaFileListFlavor == dataFlavor;
+        return DataFlavor.javaFileListFlavor.equals(dataFlavor);
     }
 
     public Object getTransferData(DataFlavor dataFlavor) throws UnsupportedFlavorException, IOException {
