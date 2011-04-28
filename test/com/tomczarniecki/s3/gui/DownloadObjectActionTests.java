@@ -30,6 +30,9 @@ package com.tomczarniecki.s3.gui;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,26 +42,30 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DownloadObjectActionTests {
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
+    @Mock Display display;
+    @Mock Controller controller;
+
     @Test
     public void shouldDownloadObjectToSelectedFile() throws IOException {
+        DirectWorker worker = new DirectWorker();
         File directory = folder.newFolder("folder");
+        ProgressDialog dialog = mock(ProgressDialog.class);
 
-        Display display = mock(Display.class);
-        Controller controller = mock(Controller.class);
-        DownloadWorker worker = mock(DownloadWorker.class);
-
+        given(display.createProgressDialog("Download Progress", worker)).willReturn(dialog);
         given(controller.isObjectSelected()).willReturn(true);
         given(display.selectDirectory(anyString(), anyString())).willReturn(directory);
         given(controller.getSelectedObjectKey()).willReturn("file.txt");
 
-        DownloadObjectAction action = new DownloadObjectAction(controller, display, worker);
+        DownloadWorker downloader = new DownloadWorker(controller, display, worker);
+        DownloadObjectAction action = new DownloadObjectAction(controller, display, downloader);
         action.actionPerformed(null);
 
-        verify(worker).download(new File(directory, "file.txt"));
+        verify(controller).downloadCurrentObject(new File(directory, "file.txt"), dialog);
     }
 }

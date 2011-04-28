@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, Thomas Czarniecki
+ * Copyright (c) 2011, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,51 +27,30 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import org.apache.commons.lang.ArrayUtils;
+
+import javax.swing.AbstractAction;
+import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.List;
 
-class FileDropListener implements FileDrop.Listener {
+public class UploadFileAction extends AbstractAction {
 
-    private final Controller controller;
     private final UploadWorker uploader;
-    private final DropBoxModel model;
     private final Display display;
     private final Worker worker;
 
-    public FileDropListener(Controller controller, DropBoxModel model, Display display,
-                            Worker worker, UploadWorker uploader) {
-
-        this.controller = controller;
-        this.uploader = uploader;
-        this.display = display;
+    public UploadFileAction(Display display, Worker worker, UploadWorker uploader) {
+        super("Upload File");
         this.worker = worker;
-        this.model = model;
+        this.display = display;
+        this.uploader = uploader;
     }
 
-    public void filesDropped(final File[] files) {
-        if (controller.isShowingObjects()) {
+    public void actionPerformed(ActionEvent evt) {
+        final File[] files = display.selectFiles("Select files or folders", "Upload");
+        if (!ArrayUtils.isEmpty(files)) {
             worker.executeInBackground(new Runnable() {
                 public void run() {
-                    uploader.uploadFiles(files);
-                }
-            });
-        } else {
-            worker.executeOnEventLoop(new Runnable() {
-                public void run() {
-                    selectBucketAndUploadFiles(files);
-                }
-            });
-        }
-    }
-
-    private void selectBucketAndUploadFiles(final File[] files) {
-        List<String> names = model.getCurrentNames();
-        final String bucketName = display.selectOption("Select Folder", "Please choose a folder for your files.", names);
-        if (bucketName != null) {
-            worker.executeInBackground(new Runnable() {
-                public void run() {
-                    controller.selectBucket(bucketName);
-                    controller.showObjects();
                     uploader.uploadFiles(files);
                 }
             });

@@ -49,19 +49,21 @@ import static com.tomczarniecki.s3.gui.Constants.MAIN_WINDOW_NAME;
 public class DropBox extends JFrame {
 
     private final DownloadWorker downloader;
+    private final UploadWorker uploader;
     private final Controller controller;
     private final Executor executor;
     private final Display display;
+    private final Worker worker;
 
     public DropBox(Service service) {
         super(String.format(FOLDER_NAME, ALL_FOLDERS));
         setName(MAIN_WINDOW_NAME);
 
-        Worker worker = new DropBoxWorker();
-
         display = new Display(this);
+        worker = new DropBoxWorker();
         controller = new Controller(service);
         executor = new BusyCursorExecutor(display, worker);
+        uploader = new UploadWorker(controller, display, worker);
         downloader = new DownloadWorker(controller, display, worker);
 
         JMenu bucketMenu = createBucketMenu();
@@ -74,7 +76,7 @@ public class DropBox extends JFrame {
         controller.addListener(switcher);
 
         JScrollPane pane = new JScrollPane(createTable(model));
-        FileDrop.add(pane, new FileDropListener(controller, model, display, worker));
+        FileDrop.add(pane, new FileDropListener(controller, model, display, worker, uploader));
 
         setJMenuBar(createMenuBar(bucketMenu, objectMenu));
         getContentPane().add(pane);
@@ -131,6 +133,7 @@ public class DropBox extends JFrame {
 
     private JMenu createObjectMenu() {
         JMenu menu = new JMenu("Files");
+        menu.add(new JMenuItem(new UploadFileAction(display, worker, uploader)));
         menu.add(new JMenuItem(new CreatePublicLinkAction(controller, display)));
         menu.add(new JMenuItem(new DownloadObjectAction(controller, display, downloader)));
         menu.add(new JMenuItem(new DeleteObjectAction(controller, display, executor)));

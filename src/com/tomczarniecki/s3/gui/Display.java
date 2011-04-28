@@ -111,4 +111,19 @@ class Display {
         }
         return null;
     }
+
+    public File[] selectFiles(String title, String buttonText) {
+        JFileChooser chooser = new JFileChooser();
+
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        chooser.setSelectedFile(new File(SystemUtils.USER_HOME, "Desktop"));
+        chooser.setMultiSelectionEnabled(true);
+        chooser.setDialogTitle(title);
+
+        int result = chooser.showDialog(frame, buttonText);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            return chooser.getSelectedFiles();
+        }
+        return null;
+    }
 }

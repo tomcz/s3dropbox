@@ -52,8 +52,8 @@ public class FileDropListenerTests {
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Mock Display display;
-    @Mock Controller controller;
     @Mock DropBoxModel model;
+    @Mock Controller controller;
 
     @Test
     public void shouldPassDroppedFilesToService() throws IOException {
@@ -67,7 +67,8 @@ public class FileDropListenerTests {
         File file1 = folder.newFile("file1.jpg");
         File file2 = folder.newFile("file2.doc");
 
-        FileDropListener listener = new FileDropListener(controller, model, display, worker);
+        UploadWorker uploader = new UploadWorker(controller, display, worker);
+        FileDropListener listener = new FileDropListener(controller, model, display, worker, uploader);
         listener.filesDropped(new File[]{file1, file2});
 
         verify(controller).createObject("bucket", "file1.jpg", file1, dialog);
@@ -87,7 +88,8 @@ public class FileDropListenerTests {
         File file1 = folder.newFile("file1.jpg");
         File file2 = folder.newFile("file2.doc");
 
-        FileDropListener listener = new FileDropListener(controller, model, display, worker);
+        UploadWorker uploader = new UploadWorker(controller, display, worker);
+        FileDropListener listener = new FileDropListener(controller, model, display, worker, uploader);
         listener.filesDropped(new File[]{file1, file2});
 
         verify(controller).selectBucket("bucket");
@@ -111,7 +113,8 @@ public class FileDropListenerTests {
         FileUtils.touch(file1);
         FileUtils.touch(file2);
 
-        FileDropListener listener = new FileDropListener(controller, model, display, worker);
+        UploadWorker uploader = new UploadWorker(controller, display, worker);
+        FileDropListener listener = new FileDropListener(controller, model, display, worker, uploader);
         listener.filesDropped(new File[]{directory});
 
         verify(controller).createObject("bucket", "folder/file1.jpg", file1, dialog);
