@@ -34,7 +34,6 @@ import com.tomczarniecki.s3.S3Object;
 import org.apache.commons.lang.SystemUtils;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.AbstractTableModel;
 import java.io.File;
@@ -91,7 +90,7 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
     }
 
     public Class<?> getColumnClass(int columnIndex) {
-        return (column(columnIndex) == Column.ICON) ? ImageIcon.class : String.class;
+        return (column(columnIndex) == Column.ICON) ? Icon.class : String.class;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
