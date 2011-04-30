@@ -94,10 +94,6 @@ class Display {
         return result == YES_OPTION;
     }
 
-    public String getInput(String title, String message) {
-        return showInputDialog(frame, message, title, QUESTION_MESSAGE);
-    }
-
     public String selectOption(String title, String message, List<String> options) {
         return (String) showInputDialog(frame, message, title, QUESTION_MESSAGE, null, options.toArray(), null);
     }
