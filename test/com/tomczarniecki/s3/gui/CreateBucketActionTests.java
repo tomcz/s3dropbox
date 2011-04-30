@@ -27,6 +27,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import com.tomczarniecki.s3.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,34 +38,42 @@ import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.never;
 import static org.mockito.BDDMockito.verify;
-import static org.mockito.BDDMockito.verifyZeroInteractions;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
 
+@SuppressWarnings({"unchecked"})
 @RunWith(MockitoJUnitRunner.class)
 public class CreateBucketActionTests {
 
     @Mock Display display;
     @Mock Controller controller;
+    @Mock CreateBucketDialog dialog;
 
     @Test
     public void shouldCreateBucketWhenValidNameIsProvided() {
-        given(display.getInput(eq("Create Folder"), anyString())).willReturn("bucket");
+        given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
+        given(dialog.get(any(Pair.class))).willReturn(Pair.create("bucket", ""));
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
 
-        verify(controller).createBucket("bucket", null);
+        verify(controller).createBucket("bucket", "");
     }
 
     @Test
     public void shouldNotAttemptToCreateBucketWhenUserDoesNotProvideBucketName() {
+        given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
+
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
-        verifyZeroInteractions(controller);
+
+        verify(controller, never()).createBucket(anyString(), anyString());
     }
 
     @Test
     public void shouldNotAttemptToCreateBucketWhenInvalidBucketNameIsProvided() {
-        given(display.getInput(eq("Create Folder"), anyString())).willReturn("bucket");
+        given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
+        given(dialog.get(any(Pair.class))).willReturn(Pair.create("bucket", ""));
         given(controller.bucketExists("bucket")).willReturn(true);
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
@@ -75,14 +84,18 @@ public class CreateBucketActionTests {
 
     @Test
     public void shouldCreateBucketFollowingRetryOnBucketName() {
-        given(display.getInput(eq("Create Folder"), anyString())).willReturn("bucket");
+        given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
+
         given(controller.bucketExists("bucket")).willReturn(true);
         given(display.confirmMessage(eq("Oops"), anyString())).willReturn(true);
-        given(display.getInput(eq("Create Folder"), anyString())).willReturn("foo");
+
+        given(dialog.get(any(Pair.class)))
+                .willReturn(Pair.create("bucket", ""))
+                .willReturn(Pair.create("foo", ""));
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
 
-        verify(controller).createBucket("foo", null);
+        verify(controller).createBucket("foo", "");
     }
 }

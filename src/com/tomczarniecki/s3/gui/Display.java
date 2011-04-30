@@ -81,6 +81,10 @@ class Display {
         return new ProgressDialog(frame, title, worker);
     }
 
+    public CreateBucketDialog createBucketDialog(List<String> regions) {
+        return new CreateBucketDialog(regions);
+    }
+
     public void showErrorMessage(String title, String message) {
         showMessageDialog(frame, message, title, ERROR_MESSAGE);
     }

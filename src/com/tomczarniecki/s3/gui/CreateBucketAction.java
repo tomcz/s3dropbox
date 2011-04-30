@@ -1,5 +1,5 @@
-/* ===================================================================================
- * Copyright (c) 2008, Thomas Czarniecki
+/*
+ * Copyright (c) 2011, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,26 +24,26 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * ===================================================================================
  */
 package com.tomczarniecki.s3.gui;
 
-import org.apache.commons.lang.StringUtils;
+import com.tomczarniecki.s3.Pair;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.util.List;
 import java.util.concurrent.Executor;
 
 class CreateBucketAction extends AbstractAction {
 
     private final BucketNameValidator validator;
+    private final CreateBucketDialog dialog;
     private final Controller controller;
     private final Executor executor;
     private final Display display;
 
     public CreateBucketAction(Controller controller, Display display, Executor executor) {
         super("Create Folder");
+        this.dialog = display.createBucketDialog(controller.bucketRegions());
         this.validator = new BucketNameValidator(controller);
         this.controller = controller;
         this.executor = executor;
@@ -51,37 +51,27 @@ class CreateBucketAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        String bucketName = getBucketName();
-        if (bucketName != null) {
-            String region = getRegion();
-            createBucket(bucketName, region);
+        Pair<String, String> bucketNameAndRegion = getBucketNameAndRegion();
+        if (bucketNameAndRegion != null) {
+            createBucket(bucketNameAndRegion.getKey(), bucketNameAndRegion.getValue());
         }
     }
 
-    private String getBucketName() {
+    private Pair<String, String> getBucketNameAndRegion() {
+        Pair<String, String> bucketNameAndRegion = null;
         while (true) {
-            String bucketName = display.getInput((String) getValue(NAME), "Please enter a name for the new folder");
-
-            if (bucketName == null) {
+            bucketNameAndRegion = dialog.get(bucketNameAndRegion);
+            if (bucketNameAndRegion == null) {
                 return null;
             }
-
-            bucketName = StringUtils.trimToEmpty(bucketName);
-            String errorMessage = validator.validate(bucketName);
-
+            String errorMessage = validator.validate(bucketNameAndRegion.getKey());
             if (errorMessage == null) {
-                return bucketName;
+                return bucketNameAndRegion;
             }
-
             if (!display.confirmMessage("Oops", errorMessage + "\nDo you want to try again?")) {
                 return null;
             }
         }
-    }
-
-    private String getRegion() {
-        List<String> regions = controller.bucketRegions();
-        return display.selectOption("Bucket Region", "Please select an S3 region for your folder", regions);
     }
 
     private void createBucket(final String bucketName, final String region) {
