@@ -52,7 +52,7 @@ public class CreateBucketActionTests {
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
 
-        verify(controller).createBucket("bucket");
+        verify(controller).createBucket("bucket", null);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class CreateBucketActionTests {
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
 
-        verify(controller, never()).createBucket("bucket");
+        verify(controller, never()).createBucket("bucket", null);
     }
 
     @Test
@@ -83,6 +83,6 @@ public class CreateBucketActionTests {
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
 
-        verify(controller).createBucket("foo");
+        verify(controller).createBucket("foo", null);
     }
 }

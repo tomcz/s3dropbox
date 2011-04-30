@@ -28,6 +28,7 @@
  */
 package com.tomczarniecki.s3.rest;
 
+import com.amazonaws.services.s3.model.Region;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
@@ -97,7 +98,7 @@ public class WebClientServiceTests {
         Service service = new WebClientService(credentials);
         String bucketName = "test-" + UUID.randomUUID();
 
-        service.createBucket(bucketName);
+        service.createBucket(bucketName, Region.AP_Singapore.name());
         assertTrue("Bucket should exist", service.bucketExists(bucketName));
         assertThat(service.listAllMyBuckets(), hasItem(bucket(bucketName)));
 
@@ -114,7 +115,7 @@ public class WebClientServiceTests {
         String bucketName = "test-" + UUID.randomUUID();
 
         Service service = new WebClientService(credentials);
-        service.createBucket(bucketName);
+        service.createBucket(bucketName, null);
 
         File file = folder.newFile("foo.txt");
         FileUtils.writeStringToFile(file, fileContents);
@@ -153,7 +154,7 @@ public class WebClientServiceTests {
         String bucketName = "test-" + UUID.randomUUID();
 
         Service service = new WebClientService(credentials);
-        service.createBucket(bucketName);
+        service.createBucket(bucketName, null);
 
         File file = folder.newFile("foo.txt");
         FileUtils.writeStringToFile(file, fileContents);

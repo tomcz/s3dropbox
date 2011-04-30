@@ -43,6 +43,7 @@ import org.joda.time.LocalDateTime;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static com.tomczarniecki.s3.Lists.newArrayList;
@@ -69,7 +70,11 @@ public class LocalService implements Service {
         return bucketFile(bucketName).isDirectory();
     }
 
-    public void createBucket(String bucketName) {
+    public List<String> bucketRegions() {
+        return Collections.singletonList("Local");
+    }
+
+    public void createBucket(String bucketName, String region) {
         bucketFile(bucketName).mkdirs();
     }
 

@@ -89,12 +89,16 @@ class Controller {
         return selectedObjectKey;
     }
 
+    public List<String> bucketRegions() {
+        return service.bucketRegions();
+    }
+
     public boolean bucketExists(String bucketName) {
         return service.bucketExists(bucketName);
     }
 
-    public void createBucket(String bucketName) {
-        service.createBucket(bucketName);
+    public void createBucket(String bucketName, String region) {
+        service.createBucket(bucketName, region);
         showBuckets();
     }
 

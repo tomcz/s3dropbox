@@ -35,11 +35,13 @@ import java.util.List;
 
 public interface Service {
 
+    List<String> bucketRegions();
+
     List<S3Bucket> listAllMyBuckets();
 
     boolean bucketExists(String bucketName);
 
-    void createBucket(String bucketName);
+    void createBucket(String bucketName, String region);
 
     void deleteBucket(String bucketName);
 

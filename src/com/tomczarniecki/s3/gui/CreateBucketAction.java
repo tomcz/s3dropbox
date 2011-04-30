@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 class CreateBucketAction extends AbstractAction {
@@ -50,13 +51,10 @@ class CreateBucketAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        final String bucketName = getBucketName();
+        String bucketName = getBucketName();
         if (bucketName != null) {
-            executor.execute(new Runnable() {
-                public void run() {
-                    controller.createBucket(bucketName);
-                }
-            });
+            String region = getRegion();
+            createBucket(bucketName, region);
         }
     }
 
@@ -79,5 +77,18 @@ class CreateBucketAction extends AbstractAction {
                 return null;
             }
         }
+    }
+
+    private String getRegion() {
+        List<String> regions = controller.bucketRegions();
+        return display.selectOption("Bucket Region", "Please select an S3 region for your folder", regions);
+    }
+
+    private void createBucket(final String bucketName, final String region) {
+        executor.execute(new Runnable() {
+            public void run() {
+                controller.createBucket(bucketName, region);
+            }
+        });
     }
 }

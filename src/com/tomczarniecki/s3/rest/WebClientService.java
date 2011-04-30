@@ -32,10 +32,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.Region;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
-import com.tomczarniecki.s3.Lists;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
@@ -52,6 +52,8 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 
+import static com.tomczarniecki.s3.Lists.newArrayList;
+
 public class WebClientService implements Service {
 
     private final AmazonS3 client;
@@ -62,8 +64,16 @@ public class WebClientService implements Service {
         transferManager = new TransferManager(client);
     }
 
+    public List<String> bucketRegions() {
+        List<String> regions = newArrayList();
+        for (Region region : Region.values()) {
+            regions.add(region.name());
+        }
+        return regions;
+    }
+
     public List<S3Bucket> listAllMyBuckets() {
-        List<S3Bucket> buckets = Lists.newArrayList();
+        List<S3Bucket> buckets = newArrayList();
         for (Bucket bucket : client.listBuckets()) {
             buckets.add(new S3Bucket(bucket.getName()));
         }
@@ -74,8 +84,12 @@ public class WebClientService implements Service {
         return client.doesBucketExist(bucketName);
     }
 
-    public void createBucket(String bucketName) {
-        client.createBucket(bucketName);
+    public void createBucket(String bucketName, String region) {
+        if (region != null) {
+            client.createBucket(bucketName, Region.valueOf(region));
+        } else {
+            client.createBucket(bucketName);
+        }
     }
 
     public void deleteBucket(String bucketName) {
@@ -83,7 +97,7 @@ public class WebClientService implements Service {
     }
 
     public List<S3Object> listObjectsInBucket(String bucketName) {
-        List<S3Object> objects = Lists.newArrayList();
+        List<S3Object> objects = newArrayList();
         ObjectListing objectListing = client.listObjects(bucketName);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             DateTime lastModified = new DateTime(summary.getLastModified());
