@@ -54,6 +54,8 @@ public class CliMain {
 
     public void main() {
         Options options = createOptions();
+        boolean success = false;
+        Service service = null;
         try {
             CommandLineParser parser = new BasicParser();
             CommandLine cmd = parser.parse(options, args);
@@ -63,8 +65,7 @@ public class CliMain {
                 System.exit(0);
             }
 
-            Configuration credentials = loadConfiguration(cmd);
-            Service service = new WebClientService(credentials);
+            service = new WebClientService(loadConfiguration(cmd));
 
             if (cmd.hasOption("get")) {
                 String bucket = cmd.getOptionValue("bucket");
@@ -73,22 +74,27 @@ public class CliMain {
                 File target = new File(dest, FilenameUtils.getName(filename));
                 System.out.printf("Downloading %s from bucket %s to %s ...\n", filename, bucket, target);
                 service.downloadObject(bucket, filename, target, new NullProgressListener());
-            }
-            if (cmd.hasOption("put")) {
+
+            } else if (cmd.hasOption("put")) {
                 String bucket = cmd.getOptionValue("bucket");
                 File source = new File(cmd.getOptionValue("file"));
                 System.out.printf("Uploading %s to bucket %s ...\n", source, bucket);
                 service.createObject(bucket, source.getName(), source, new NullProgressListener());
             }
+
             System.out.println("... Done");
-            service.close();
-            System.exit(0);
+            success = true;
 
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             showHelp(options);
-            System.exit(1);
+
+        } finally {
+            if (service != null) {
+                service.close();
+            }
         }
+        System.exit(success ? 0 : 1);
     }
 
     private Configuration loadConfiguration(CommandLine cmd) {
