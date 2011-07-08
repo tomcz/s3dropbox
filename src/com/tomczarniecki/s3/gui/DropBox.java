@@ -120,6 +120,7 @@ public class DropBox extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(bucketMenu);
         menuBar.add(objectMenu);
+        menuBar.add(toolsMenu());
         return menuBar;
     }
 
@@ -128,7 +129,6 @@ public class DropBox extends JFrame {
         menu.add(new JMenuItem(new CreateBucketAction(controller, display, executor)));
         menu.add(new JMenuItem(new DeleteBucketAction(controller, display, executor)));
         menu.add(new JMenuItem(new RefreshBucketsAction(controller, executor)));
-        menu.add(new JMenuItem(new RemoveFailedUploadsAction(controller, executor)));
         return menu;
     }
 
@@ -140,6 +140,12 @@ public class DropBox extends JFrame {
         menu.add(new JMenuItem(new DeleteObjectAction(controller, display, executor)));
         menu.add(new JMenuItem(new RefreshObjectsAction(controller, executor)));
         menu.setVisible(false);
+        return menu;
+    }
+
+    private JMenu toolsMenu() {
+        JMenu menu = new JMenu("Tools");
+        menu.add(new JMenuItem(new RemoveFailedUploadsAction(controller, executor)));
         return menu;
     }
 
