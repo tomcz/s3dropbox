@@ -1,5 +1,5 @@
-/* ===================================================================================
- * Copyright (c) 2008, Thomas Czarniecki
+/*
+ * Copyright (c) 2011, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,40 +24,29 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * ===================================================================================
  */
-package com.tomczarniecki.s3;
+package com.tomczarniecki.s3.gui;
 
-import org.joda.time.DateTime;
+import javax.swing.AbstractAction;
+import java.awt.event.ActionEvent;
+import java.util.concurrent.Executor;
 
-import java.io.File;
-import java.util.List;
+public class RemoveFailedUploadsAction extends AbstractAction {
 
-public interface Service {
+    private final Controller controller;
+    private final Executor executor;
 
-    List<String> bucketRegions();
+    public RemoveFailedUploadsAction(Controller controller, Executor executor) {
+        super("Remove Failed Uploads");
+        this.controller = controller;
+        this.executor = executor;
+    }
 
-    List<S3Bucket> listAllMyBuckets();
-
-    boolean bucketExists(String bucketName);
-
-    void createBucket(String bucketName, String region);
-
-    void deleteBucket(String bucketName);
-
-    List<S3Object> listObjectsInBucket(String bucketName);
-
-    boolean objectExists(String bucketName, String objectKey);
-
-    String getPublicUrl(String bucketName, String objectKey, DateTime expires);
-
-    void createObject(String bucketName, String objectKey, File source, ProgressListener listener);
-
-    void downloadObject(String bucketName, String objectKey, File target, ProgressListener listener);
-
-    void deleteObject(String bucketName, String objectKey);
-
-    void removeFailedUploads();
-
-    void close();
+    public void actionPerformed(ActionEvent e) {
+        executor.execute(new Runnable() {
+            public void run() {
+                controller.removeFailedUploads();
+            }
+        });
+    }
 }

@@ -128,6 +128,7 @@ public class DropBox extends JFrame {
         menu.add(new JMenuItem(new CreateBucketAction(controller, display, executor)));
         menu.add(new JMenuItem(new DeleteBucketAction(controller, display, executor)));
         menu.add(new JMenuItem(new RefreshBucketsAction(controller, executor)));
+        menu.add(new JMenuItem(new RemoveFailedUploadsAction(controller, executor)));
         return menu;
     }
 

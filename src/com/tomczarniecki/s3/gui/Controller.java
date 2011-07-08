@@ -152,4 +152,8 @@ class Controller {
     private boolean isBackLinkSelected() {
         return Constants.BACK_LINK.equals(selectedObjectKey);
     }
+
+    public void removeFailedUploads() {
+        service.removeFailedUploads();
+    }
 }
