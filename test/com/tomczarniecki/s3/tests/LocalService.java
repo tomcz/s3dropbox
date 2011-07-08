@@ -129,4 +129,7 @@ public class LocalService implements Service {
     private File objectFile(String bucketName, String objectKey) {
         return new File(bucketFile(bucketName), objectKey);
     }
+
+    public void close() {
+    }
 }

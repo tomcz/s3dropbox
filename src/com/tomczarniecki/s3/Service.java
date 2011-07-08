@@ -56,4 +56,6 @@ public interface Service {
     void downloadObject(String bucketName, String objectKey, File target, ProgressListener listener);
 
     void deleteObject(String bucketName, String objectKey);
+
+    void close();
 }

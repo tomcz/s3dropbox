@@ -142,6 +142,10 @@ public class WebClientService implements Service {
         client.deleteObject(bucketName, objectKey);
     }
 
+    public void close() {
+        transferManager.shutdownNow();
+    }
+
     private void writeToFile(com.amazonaws.services.s3.model.S3Object object, File target, ProgressListener listener) {
         long fileLength = object.getObjectMetadata().getContentLength();
         OutputStream output = null;

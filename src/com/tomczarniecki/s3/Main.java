@@ -27,75 +27,15 @@
  */
 package com.tomczarniecki.s3;
 
-import com.tomczarniecki.s3.gui.CredentialsDialog;
-import com.tomczarniecki.s3.gui.DropBox;
-import com.tomczarniecki.s3.rest.Configuration;
-import com.tomczarniecki.s3.rest.ConfigurationFactory;
-import com.tomczarniecki.s3.rest.WebClientService;
-import org.apache.commons.lang.SystemUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
+import org.apache.commons.lang.ArrayUtils;
 
 public class Main {
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
-
     public static void main(final String... args) {
-        setupLookAndFeel();
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                File file = (args.length > 0) ? new File(args[0]) : null;
-                Configuration credentials = getCredentials(file);
-                DropBox box = new DropBox(new WebClientService(credentials));
-                box.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-                box.addWindowListener(new WindowCloseListener());
-                box.showBuckets();
-            }
-        });
-    }
-
-    private static void setupLookAndFeel() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            try {
-                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-            } catch (Exception e) {
-                // not to worry, can still use platform default L&F
-            }
-        }
-    }
-
-    private static Configuration getCredentials(File file) {
-        ConfigurationFactory factory = new ConfigurationFactory(file);
-        try {
-            return factory.load();
-        } catch (Exception e) {
-            logger.warn("Cannot load credentials", e);
-            return createCredentials(factory);
-        }
-    }
-
-    private static Configuration createCredentials(ConfigurationFactory factory) {
-        CredentialsDialog dialog = new CredentialsDialog();
-        Configuration credentials = dialog.getCredentials();
-        if (credentials == null) {
-            System.exit(1);
-        }
-        factory.save(credentials);
-        return credentials;
-    }
-
-    private static class WindowCloseListener extends WindowAdapter {
-
-        @Override
-        public void windowClosing(WindowEvent windowEvent) {
-            System.exit(0);
+        if (ArrayUtils.contains(args, "-cli")) {
+            new CliMain(args).main();
+        } else {
+            new GuiMain(args).main();
         }
     }
 }
