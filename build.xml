@@ -58,7 +58,7 @@
         </sequential>
     </macrodef>
 
-    <target name="build" depends="clean,check-tests,create-dmg,create-zip" description="Create distributable bundles." />
+    <target name="build" depends="clean,run-tests,create-dmg,create-zip" description="Create distributable bundles." />
 
     <target name="clean" description="Delete output directory.">
         <delete dir="${output.dir}" />
@@ -76,8 +76,7 @@
         <compile srcdir="${test.dir}" destdir="${test.classes.dir}" classpath="test-classpath" />
     </target>
 
-    <target name="run-tests" depends="compile" unless="skip.tests"
-            description="Run all tests. Use -Dtestcase=SomeTestClassName to specify a single test.">
+    <target name="run-junit-tests" depends="compile" unless="skip.tests">
         <mkdir dir="${report.dir}" />
         <junit fork="yes" forkmode="once" printsummary="yes" haltonfailure="no" failureproperty="tests.failed">
             <sysproperty key="ignore.integration.tests" value="${ignore.integration.tests}" />
@@ -96,7 +95,8 @@
         </junit>
     </target>
 
-    <target name="check-tests" depends="run-tests" if="tests.failed">
+    <target name="run-tests" depends="run-junit-tests" if="tests.failed" 
+            description="Run all tests. Use -Dtestcase=SomeTestClassName to specify a single test.">
         <junitreport todir="${report.dir}">
             <fileset dir="${report.dir}" includes="TEST-*.xml" />
             <report todir="${report.dir}/html" />
@@ -181,6 +181,7 @@
         </cobertura-instrument>
         <junit fork="yes" printsummary="yes" forkmode="once" haltonfailure="no">
             <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.file}" />
+            <sysproperty key="ignore.integration.tests" value="${ignore.integration.tests}" />
             <classpath location="${cobertura.classes.dir}" />
             <classpath refid="test-classpath" />
             <classpath refid="cobertura-classpath" />
