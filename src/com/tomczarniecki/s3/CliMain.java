@@ -38,9 +38,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 
 import java.io.File;
 
@@ -65,21 +62,19 @@ public class CliMain {
                 System.exit(0);
             }
 
+            String bucket = cmd.getOptionValue("bucket");
+            String object = cmd.getOptionValue("object");
+            File file = new File(cmd.getOptionValue("file"));
+
             service = new WebClientService(loadConfiguration(cmd));
 
             if (cmd.hasOption("get")) {
-                String bucket = cmd.getOptionValue("bucket");
-                String filename = cmd.getOptionValue("file");
-                String dest = cmd.getOptionValue("dest", SystemUtils.USER_DIR);
-                File target = new File(dest, FilenameUtils.getName(filename));
-                System.out.printf("Downloading %s from bucket %s to %s ...\n", filename, bucket, target);
-                service.downloadObject(bucket, filename, target, new NullProgressListener());
+                System.out.printf("Downloading %s from bucket %s to %s ...\n", object, bucket, file);
+                service.downloadObject(bucket, object, file, new NullProgressListener());
 
             } else if (cmd.hasOption("put")) {
-                String bucket = cmd.getOptionValue("bucket");
-                File source = new File(cmd.getOptionValue("file"));
-                System.out.printf("Uploading %s to bucket %s ...\n", source, bucket);
-                service.createObject(bucket, source.getName(), source, new NullProgressListener());
+                System.out.printf("Uploading %s to bucket %s as %s ...\n", file, bucket, object);
+                service.createObject(bucket, object, file, new NullProgressListener());
             }
 
             System.out.println("... Done");
@@ -98,8 +93,7 @@ public class CliMain {
     }
 
     private Configuration loadConfiguration(CommandLine cmd) {
-        String conf = cmd.getOptionValue("conf", "");
-        File confFile = StringUtils.isNotEmpty(conf) ? new File(conf) : null;
+        File confFile = cmd.hasOption("conf") ? new File(cmd.getOptionValue("conf")) : null;
         ConfigurationFactory factory = new ConfigurationFactory(confFile);
         return factory.load();
     }
@@ -110,17 +104,17 @@ public class CliMain {
     }
 
     private Options createOptions() {
-        Option file = new Option("file", true, "File to upload or download");
-        file.setArgName("FILE");
-        file.setRequired(true);
-
         Option bucket = new Option("bucket", true, "Name of S3 bucket");
         bucket.setArgName("NAME");
         bucket.setRequired(true);
 
-        Option dest = new Option("dest", true, "Directory for downloaded file");
-        dest.setArgName("DIRNAME");
-        dest.setRequired(false);
+        Option file = new Option("object", true, "Name of S3 object");
+        file.setArgName("NAME");
+        file.setRequired(true);
+
+        Option dest = new Option("file", true, "File to upload or download");
+        dest.setArgName("FILE");
+        dest.setRequired(true);
 
         Option config = new Option("conf", true, "Configuration properties file");
         config.setArgName("FILE");
