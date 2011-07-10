@@ -112,13 +112,13 @@ public class CliMain {
         bucket.setArgName("NAME");
         bucket.setRequired(true);
 
-        Option file = new Option("object", true, "Name of S3 object");
-        file.setArgName("NAME");
-        file.setRequired(true);
+        Option object = new Option("object", true, "Name of S3 object");
+        object.setArgName("NAME");
+        object.setRequired(true);
 
-        Option dest = new Option("file", true, "File to upload or download");
-        dest.setArgName("FILE");
-        dest.setRequired(true);
+        Option file = new Option("file", true, "File to upload or download");
+        file.setArgName("FILE");
+        file.setRequired(true);
 
         Option config = new Option("conf", true, "Configuration properties file");
         config.setArgName("FILE");
@@ -135,8 +135,8 @@ public class CliMain {
         options.addOptionGroup(group);
         options.addOption(config);
         options.addOption(bucket);
+        options.addOption(object);
         options.addOption(file);
-        options.addOption(dest);
         return options;
     }
 
