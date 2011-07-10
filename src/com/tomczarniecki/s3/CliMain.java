@@ -50,8 +50,12 @@ public class CliMain {
     }
 
     public void main() {
+        boolean success = mainWithoutExit();
+        System.exit(success ? 0 : 1);
+    }
+
+    public boolean mainWithoutExit() {
         Options options = createOptions();
-        boolean success = false;
         Service service = null;
         try {
             CommandLineParser parser = new BasicParser();
@@ -59,7 +63,7 @@ public class CliMain {
 
             if (cmd.hasOption("help")) {
                 showHelp(options);
-                System.exit(0);
+                return false;
             }
 
             String bucket = cmd.getOptionValue("bucket");
@@ -78,18 +82,18 @@ public class CliMain {
             }
 
             System.out.println("... Done");
-            success = true;
+            return true;
 
         } catch (ParseException e) {
             System.out.println(e.getMessage());
             showHelp(options);
+            return false;
 
         } finally {
             if (service != null) {
                 service.close();
             }
         }
-        System.exit(success ? 0 : 1);
     }
 
     private Configuration loadConfiguration(CommandLine cmd) {
