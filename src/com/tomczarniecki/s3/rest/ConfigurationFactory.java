@@ -76,9 +76,9 @@ public class ConfigurationFactory {
         setProperty(props, Keys.AMAZON_SECRET_ACCESS_KEY, credentials.getSecretAccessKey());
         setProperty(props, Keys.PROXY_HOST, credentials.getProxyHost());
         setProperty(props, Keys.PROXY_PORT, credentials.getProxyPort());
-        setProperty(props, Keys.PROXY_USERNAME, credentials.getProxyUsername());
+        setProperty(props, Keys.PROXY_USERNAME, credentials.getProxyUserName());
         setProperty(props, Keys.PROXY_PASSWORD, credentials.getProxyPassword());
-        setProperty(props, Keys.USE_SSL, credentials.isUseSecureProtocol());
+        setProperty(props, Keys.USE_SSL, credentials.getUseSecureProtocol());
         saveProperties(props);
     }
 

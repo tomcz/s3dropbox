@@ -364,8 +364,8 @@
         <root url="jar://$PROJECT_DIR$/lib/src/commons-httpclient-3.1-src.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/src/joda-time-1.5.2-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/src/commons-io-1.4-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/lib/src/aws-java-sdk-1.1.9-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/src/commons-cli-1.2-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/src/aws-java-sdk-1.2.4-sources.jar!/" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/lib/jars" recursive="false" />
     </library>

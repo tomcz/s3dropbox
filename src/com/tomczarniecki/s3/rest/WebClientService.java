@@ -29,8 +29,10 @@
 package com.tomczarniecki.s3.rest;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.Region;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
@@ -40,6 +42,7 @@ import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.Service;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -50,7 +53,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.tomczarniecki.s3.Lists.newArrayList;
 
@@ -58,9 +63,17 @@ public class WebClientService implements Service {
 
     private final AmazonS3 client;
     private final TransferManager transferManager;
+    private final Map<String, String> videoContentTypes;
 
-    public WebClientService(Configuration configuration) {
-        client = new NtlmFriendlyAmazonS3Client(configuration);
+    public WebClientService(Configuration config) {
+        // proper HTML5 video content types so that browsers can play the videos
+        Map<String, String> contentTypes = new HashMap<String, String>();
+        contentTypes.put("ogv", "video/ogg");
+        contentTypes.put("mp4", "video/mp4");
+        contentTypes.put("webm", "video/webm");
+
+        videoContentTypes = Collections.unmodifiableMap(contentTypes);
+        client = new AmazonS3Client(config.getAWSCredentials(), config.getClientConfiguration());
         transferManager = new TransferManager(client);
     }
 
@@ -120,6 +133,12 @@ public class WebClientService implements Service {
 
     public void createObject(String bucketName, String objectKey, File source, ProgressListener listener) {
         PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, source);
+        String contentType = videoContentTypes.get(FilenameUtils.getExtension(source.getName()));
+        if (contentType != null) {
+            ObjectMetadata md = new ObjectMetadata();
+            md.setContentType(contentType);
+            request.setMetadata(md);
+        }
         request.setProgressListener(new ProgressListenerAdaptor(listener, source.length()));
         try {
             Upload upload = transferManager.upload(request);

@@ -36,10 +36,17 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
-public class Configuration extends ClientConfiguration {
+public class Configuration {
 
     private final String accessKeyId;
     private final String secretAccessKey;
+    private final String useSecureProtocol;
+
+    private final String proxyHost;
+    private final String proxyPort;
+
+    private final String proxyUserName;
+    private final String proxyPassword;
 
     private final String ntlmHost;
     private final String ntlmDomain;
@@ -54,30 +61,18 @@ public class Configuration extends ClientConfiguration {
                          String ntlmHost, String ntlmDomain,
                          String useSecureProtocol) {
 
-        super.setConnectionTimeout(10000);
-        super.setSocketTimeout(50000);
-
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
+        this.useSecureProtocol = useSecureProtocol;
+
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+
+        this.proxyUserName = proxyUserName;
+        this.proxyPassword = proxyPassword;
 
         this.ntlmHost = ntlmHost;
         this.ntlmDomain = ntlmDomain;
-
-        if (StringUtils.isNotEmpty(proxyHost)) {
-            super.setProxyHost(proxyHost);
-        }
-        if (NumberUtils.isDigits(proxyPort)) {
-            super.setProxyPort(Integer.parseInt(proxyPort));
-        }
-        if (StringUtils.isNotEmpty(proxyUserName)) {
-            super.setProxyUsername(proxyUserName);
-        }
-        if (StringUtils.isNotEmpty(proxyPassword)) {
-            super.setProxyPassword(proxyPassword);
-        }
-        if (StringUtils.isNotEmpty(useSecureProtocol) && !BooleanUtils.toBoolean(useSecureProtocol)) {
-            super.setProtocol(Protocol.HTTP);
-        }
     }
 
     public String getAccessKeyId() {
@@ -88,6 +83,26 @@ public class Configuration extends ClientConfiguration {
         return secretAccessKey;
     }
 
+    public String getUseSecureProtocol() {
+        return useSecureProtocol;
+    }
+
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public String getProxyPort() {
+        return proxyPort;
+    }
+
+    public String getProxyUserName() {
+        return proxyUserName;
+    }
+
+    public String getProxyPassword() {
+        return proxyPassword;
+    }
+
     public String getNtlmHost() {
         return ntlmHost;
     }
@@ -96,11 +111,26 @@ public class Configuration extends ClientConfiguration {
         return ntlmDomain;
     }
 
-    public boolean isUseSecureProtocol() {
-        return Protocol.HTTPS.equals(getProtocol());
-    }
-
     public AWSCredentials getAWSCredentials() {
         return new BasicAWSCredentials(accessKeyId, secretAccessKey);
+    }
+
+    public ClientConfiguration getClientConfiguration() {
+        ClientConfiguration config = new ClientConfiguration();
+
+        config.setProxyHost(StringUtils.defaultIfEmpty(proxyHost, config.getProxyHost()));
+        config.setProxyPort(NumberUtils.toInt(proxyPort, config.getProxyPort()));
+
+        config.setProxyUsername(StringUtils.defaultIfEmpty(proxyUserName, config.getProxyUsername()));
+        config.setProxyPassword(StringUtils.defaultIfEmpty(proxyPassword, config.getProxyPassword()));
+
+        config.setProxyDomain(StringUtils.defaultIfEmpty(ntlmDomain, config.getProxyDomain()));
+        config.setProxyWorkstation(StringUtils.defaultIfEmpty(ntlmHost, config.getProxyWorkstation()));
+
+        if (StringUtils.isNotEmpty(useSecureProtocol) && !BooleanUtils.toBoolean(useSecureProtocol)) {
+            config.setProtocol(Protocol.HTTP);
+        }
+
+        return config;
     }
 }
