@@ -27,6 +27,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import com.tomczarniecki.s3.FileSize;
 import com.tomczarniecki.s3.Lists;
 import com.tomczarniecki.s3.Pair;
 import org.slf4j.Logger;

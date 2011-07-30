@@ -38,8 +38,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.util.List;
 
 public class CliMain {
 
@@ -63,25 +65,10 @@ public class CliMain {
 
             if (cmd.hasOption("help")) {
                 showHelp(options);
-                return false;
+            } else {
+                service = new WebClientService(loadConfiguration(cmd));
+                invokeService(service, cmd);
             }
-
-            String bucket = cmd.getOptionValue("bucket");
-            String object = cmd.getOptionValue("object");
-            File file = new File(cmd.getOptionValue("file"));
-
-            service = new WebClientService(loadConfiguration(cmd));
-
-            if (cmd.hasOption("get")) {
-                System.out.printf("Downloading %s from bucket %s to %s ...\n", object, bucket, file);
-                service.downloadObject(bucket, object, file, new NullProgressListener());
-
-            } else if (cmd.hasOption("put")) {
-                System.out.printf("Uploading %s to bucket %s as %s ...\n", file, bucket, object);
-                service.createObject(bucket, object, file, new NullProgressListener());
-            }
-
-            System.out.println("... Done");
             return true;
 
         } catch (ParseException e) {
@@ -94,6 +81,57 @@ public class CliMain {
                 service.close();
             }
         }
+    }
+
+    private void invokeService(Service service, CommandLine cmd) throws ParseException {
+        if (cmd.hasOption("list")) {
+            listAction(service, cmd);
+        } else {
+            fileAction(service, cmd);
+        }
+    }
+
+    private void listAction(Service service, CommandLine cmd) {
+        String bucketName = cmd.getOptionValue("bucket", "*");
+        if (bucketName.equals("*")) {
+            List<S3Bucket> buckets = service.listAllMyBuckets();
+            System.out.println("\nListing " + buckets.size() + " buckets:");
+            for (S3Bucket bucket : buckets) {
+                System.out.println(bucket.getName());
+            }
+        } else {
+            FileSize size = new FileSize();
+            List<S3Object> objects = service.listObjectsInBucket(bucketName);
+            System.out.println("\nListing " + objects.size() + " objects in " + bucketName + ":");
+            for (S3Object object : objects) {
+                String objectSize = StringUtils.rightPad(size.format(object.getSize()), 10);
+                System.out.println(objectSize + " " + object.getKey());
+            }
+        }
+    }
+
+    private void fileAction(Service service, CommandLine cmd) throws ParseException {
+        String bucket = getRequiredOption(cmd, "bucket");
+        String object = getRequiredOption(cmd, "object");
+        File file = new File(getRequiredOption(cmd, "file"));
+
+        if (cmd.hasOption("get")) {
+            System.out.printf("Downloading %s from bucket %s to %s ...\n", object, bucket, file);
+            service.downloadObject(bucket, object, file, new NullProgressListener());
+
+        } else if (cmd.hasOption("put")) {
+            System.out.printf("Uploading %s to bucket %s as %s ...\n", file, bucket, object);
+            service.createObject(bucket, object, file, new NullProgressListener());
+        }
+        System.out.println("... Done");
+    }
+
+    private String getRequiredOption(CommandLine cmd, String key) throws ParseException {
+        String value = cmd.getOptionValue(key);
+        if (value == null) {
+            throw new ParseException(key + " is required!");
+        }
+        return value;
     }
 
     private Configuration loadConfiguration(CommandLine cmd) {
@@ -110,23 +148,20 @@ public class CliMain {
     private Options createOptions() {
         Option bucket = new Option("bucket", true, "Name of S3 bucket");
         bucket.setArgName("NAME");
-        bucket.setRequired(true);
 
         Option object = new Option("object", true, "Name of S3 object");
         object.setArgName("NAME");
-        object.setRequired(true);
 
         Option file = new Option("file", true, "File to upload or download");
         file.setArgName("FILE");
-        file.setRequired(true);
 
         Option config = new Option("conf", true, "Configuration properties file");
         config.setArgName("FILE");
-        config.setRequired(false);
 
         OptionGroup group = new OptionGroup();
         group.addOption(new Option("put", "Upload file to S3"));
         group.addOption(new Option("get", "Download file from S3"));
+        group.addOption(new Option("list", "List buckets or objects in a bucket"));
         group.setRequired(true);
 
         Options options = new Options();

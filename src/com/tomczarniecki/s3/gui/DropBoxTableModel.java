@@ -28,6 +28,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import com.tomczarniecki.s3.FileSize;
 import com.tomczarniecki.s3.Lists;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
