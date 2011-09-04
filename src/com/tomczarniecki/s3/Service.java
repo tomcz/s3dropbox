@@ -57,7 +57,7 @@ public interface Service {
 
     void deleteObject(String bucketName, String objectKey);
 
-    void removeFailedUploads();
+    void removeFailedUploads(String bucketName);
 
     void close();
 }

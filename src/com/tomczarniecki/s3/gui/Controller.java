@@ -153,7 +153,11 @@ class Controller {
         return Constants.BACK_LINK.equals(selectedObjectKey);
     }
 
-    public void removeFailedUploads() {
-        service.removeFailedUploads();
+    public List<S3Bucket> listAllMyBuckets() {
+        return service.listAllMyBuckets();
+    }
+
+    public void removeFailedUploads(String bucketName) {
+        service.removeFailedUploads(bucketName);
     }
 }

@@ -27,25 +27,50 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import com.tomczarniecki.s3.S3Bucket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.util.concurrent.Executor;
+import java.util.List;
 
 public class RemoveFailedUploadsAction extends AbstractAction {
 
-    private final Controller controller;
-    private final Executor executor;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public RemoveFailedUploadsAction(Controller controller, Executor executor) {
+    private final Controller controller;
+    private final ProgressDialog dialog;
+    private final Worker worker;
+
+    public RemoveFailedUploadsAction(Controller controller, Display display, Worker worker) {
         super("Remove Failed Uploads");
+        this.dialog = display.createProgressDialog("Progress", worker);
         this.controller = controller;
-        this.executor = executor;
+        this.worker = worker;
     }
 
     public void actionPerformed(ActionEvent e) {
-        executor.execute(new Runnable() {
+        worker.executeInBackground(new Runnable() {
             public void run() {
-                controller.removeFailedUploads();
+                dialog.begin();
+                try {
+                    dialog.append("Removing failed uploads from:\n");
+                    List<S3Bucket> buckets = controller.listAllMyBuckets();
+                    for (int i = 0; i < buckets.size(); i++) {
+                        S3Bucket bucket = buckets.get(i);
+                        dialog.append("%s ... ", bucket.getName());
+                        controller.removeFailedUploads(bucket.getName());
+                        dialog.processed(i + 1, buckets.size());
+                        dialog.append("Done\n");
+                    }
+                } catch (Exception e) {
+                    logger.info("Cleanup failed", e);
+                    dialog.append("\n\nERROR - %s", e.toString());
+
+                } finally {
+                    dialog.finish();
+                }
             }
         });
     }

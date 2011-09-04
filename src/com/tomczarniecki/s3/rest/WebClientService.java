@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,11 +162,8 @@ public class WebClientService implements Service {
         client.deleteObject(bucketName, objectKey);
     }
 
-    public void removeFailedUploads() {
-        DateTime now = new DateTime();
-        for (Bucket bucket : client.listBuckets()) {
-            transferManager.abortMultipartUploads(bucket.getName(), now.toDate());
-        }
+    public void removeFailedUploads(String bucketName) {
+        transferManager.abortMultipartUploads(bucketName, new Date());
     }
 
     public void close() {

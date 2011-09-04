@@ -145,7 +145,7 @@ public class DropBox extends JFrame {
 
     private JMenu toolsMenu() {
         JMenu menu = new JMenu("Tools");
-        menu.add(new JMenuItem(new RemoveFailedUploadsAction(controller, executor)));
+        menu.add(new JMenuItem(new RemoveFailedUploadsAction(controller, display, worker)));
         return menu;
     }
 

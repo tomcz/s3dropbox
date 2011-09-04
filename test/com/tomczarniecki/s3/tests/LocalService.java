@@ -130,7 +130,7 @@ public class LocalService implements Service {
         return new File(bucketFile(bucketName), objectKey);
     }
 
-    public void removeFailedUploads() {
+    public void removeFailedUploads(String bucketName) {
     }
 
     public void close() {
