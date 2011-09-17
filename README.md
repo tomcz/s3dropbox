@@ -1,5 +1,5 @@
 A Java-based GUI front-end to Amazon S3
----------------------------------------
+=======================================
 
 This is a Java Swing application into which you can drag and drop files, which are then uploaded to your
 Amazon S3 account. You can create public links to these files, and paste these links into emails, so that
@@ -8,11 +8,11 @@ files yourself at a later stage using the application.
 
 Run using: `java -jar S3DropBox-<version>.jar [credentials file]`
 
-The credentials file is optional. If not present, the application will look for a file called .s3dropbox
+The credentials file is optional. If not present, the application will look for a file called `.s3dropbox`
 in your home directory. If that is not present you will be asked for some AWS credentials when the
-application starts and then a .s3dropbox file will be created in your home directory.
+application starts and then a `.s3dropbox` file will be created for you in your home directory.
 
-Here are the values that the .s3dropbox file will contain:
+Here are the values that the `.s3dropbox` file will contain:
 
 AMAZON\_ACCESS\_KEY\_ID
 
