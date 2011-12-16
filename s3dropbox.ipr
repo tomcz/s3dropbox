@@ -142,6 +142,11 @@
           <option name="myAdditionalJavadocTags" value="" />
         </inspection_tool>
         <inspection_tool class="JavadocReference" enabled="false" level="ERROR" enabled_by_default="false" />
+        <inspection_tool class="SpellCheckingInspection" enabled="false" level="TYPO" enabled_by_default="false">
+          <option name="processCode" value="true" />
+          <option name="processLiterals" value="true" />
+          <option name="processComments" value="true" />
+        </inspection_tool>
       </profile>
     </profiles>
     <option name="PROJECT_PROFILE" value="Project Default" />
@@ -286,6 +291,16 @@
       </item>
     </group>
   </component>
+  <component name="ProjectCodeStyleSettingsManager">
+    <option name="PER_PROJECT_SETTINGS">
+      <value>
+        <XML>
+          <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
+        </XML>
+      </value>
+    </option>
+    <option name="USE_PER_PROJECT_SETTINGS" value="true" />
+  </component>
   <component name="ProjectDetails">
     <option name="projectName" value="s3dropbox" />
   </component>
@@ -364,7 +379,7 @@
         <root url="jar://$PROJECT_DIR$/lib/src/joda-time-1.5.2-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/src/commons-io-1.4-sources.jar!/" />
         <root url="jar://$PROJECT_DIR$/lib/src/commons-cli-1.2-sources.jar!/" />
-        <root url="jar://$PROJECT_DIR$/lib/src/aws-java-sdk-1.2.12-sources.jar!/" />
+        <root url="jar://$PROJECT_DIR$/lib/src/aws-java-sdk-1.2.15-sources.jar!/" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/lib/jars" recursive="false" />
     </library>
