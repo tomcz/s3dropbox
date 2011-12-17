@@ -95,7 +95,7 @@
         </junit>
     </target>
 
-    <target name="run-tests" depends="run-junit-tests" if="tests.failed" 
+    <target name="run-tests" depends="run-junit-tests" if="tests.failed"
             description="Run all tests. Use -Dtestcase=SomeTestClassName to specify a single test.">
         <junitreport todir="${report.dir}">
             <fileset dir="${report.dir}" includes="TEST-*.xml" />
@@ -130,7 +130,7 @@
                     name="${ant.project.name}"
                     mainclass="${main.class}"
                     icon="${basedir}/etc/zim.icns"
-                    jvmversion="1.4+">
+                    jvmversion="1.5+">
             <jarfileset dir="${jar.dir}" includes="main.jar" />
             <jarfileset refid="runtime-jars" />
         </jarbundler>
