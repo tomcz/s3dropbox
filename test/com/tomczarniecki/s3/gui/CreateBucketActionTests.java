@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static com.tomczarniecki.s3.Pair.pair;
 import static org.mockito.BDDMockito.anyString;
 import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
@@ -52,7 +53,7 @@ public class CreateBucketActionTests {
     @Test
     public void shouldCreateBucketWhenValidNameIsProvided() {
         given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
-        given(dialog.get(any(Pair.class))).willReturn(Pair.create("bucket", ""));
+        given(dialog.get(any(Pair.class))).willReturn(pair("bucket", ""));
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
@@ -73,7 +74,7 @@ public class CreateBucketActionTests {
     @Test
     public void shouldNotAttemptToCreateBucketWhenInvalidBucketNameIsProvided() {
         given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
-        given(dialog.get(any(Pair.class))).willReturn(Pair.create("bucket", ""));
+        given(dialog.get(any(Pair.class))).willReturn(pair("bucket", ""));
         given(controller.bucketExists("bucket")).willReturn(true);
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
@@ -90,8 +91,8 @@ public class CreateBucketActionTests {
         given(display.confirmMessage(eq("Oops"), anyString())).willReturn(true);
 
         given(dialog.get(any(Pair.class)))
-                .willReturn(Pair.create("bucket", ""))
-                .willReturn(Pair.create("foo", ""));
+                .willReturn(pair("bucket", ""))
+                .willReturn(pair("foo", ""));
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);

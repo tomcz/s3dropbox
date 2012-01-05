@@ -28,13 +28,15 @@
 package com.tomczarniecki.s3.gui;
 
 import com.tomczarniecki.s3.FileSize;
-import com.tomczarniecki.s3.Lists;
 import com.tomczarniecki.s3.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
+
+import static com.tomczarniecki.s3.Generics.newArrayList;
+import static com.tomczarniecki.s3.Pair.pair;
 
 public class UploadWorker {
 
@@ -108,7 +110,7 @@ public class UploadWorker {
     }
 
     private List<Pair<String, File>> resolveKeys(File[] files) {
-        List<Pair<String, File>> list = Lists.newArrayList();
+        List<Pair<String, File>> list = newArrayList();
         resolveFolders(list, files, "");
         return list;
     }
@@ -121,7 +123,7 @@ public class UploadWorker {
 
     private void resolveFile(List<Pair<String, File>> list, File file, String prefix) {
         if (file.isFile()) {
-            list.add(Pair.create(prefix + file.getName(), file));
+            list.add(pair(prefix + file.getName(), file));
         } else if (file.isDirectory()) {
             resolveFolders(list, file.listFiles(), prefix + file.getName() + "/");
         }

@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.List;
 
-import static com.tomczarniecki.s3.Lists.newArrayList;
+import static com.tomczarniecki.s3.Generics.newArrayList;
 
 class Announcer<T> {
 

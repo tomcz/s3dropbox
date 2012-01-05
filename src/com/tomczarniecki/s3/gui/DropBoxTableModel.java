@@ -29,7 +29,6 @@
 package com.tomczarniecki.s3.gui;
 
 import com.tomczarniecki.s3.FileSize;
-import com.tomczarniecki.s3.Lists;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 import org.apache.commons.lang.SystemUtils;
@@ -41,9 +40,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static com.tomczarniecki.s3.Generics.newArrayList;
+
 class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, ControllerListener {
 
-    private final List<DropBoxTableItem> items = Lists.newArrayList();
+    private final List<DropBoxTableItem> items = newArrayList();
 
     private final Icon bucketIcon;
     private final Icon objectIcon;
@@ -104,7 +105,7 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
     }
 
     public List<String> getCurrentNames() {
-        List<String> result = Lists.newArrayList();
+        List<String> result = newArrayList();
         for (DropBoxTableItem item : items) {
             if (!Constants.BACK_LINK.equals(item.name)) {
                 result.add(item.name);

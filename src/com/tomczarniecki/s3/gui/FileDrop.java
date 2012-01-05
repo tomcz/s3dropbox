@@ -53,7 +53,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.TooManyListenersException;
 
-import static com.tomczarniecki.s3.Lists.newArrayList;
+import static com.tomczarniecki.s3.Generics.newArrayList;
 
 public class FileDrop {
 

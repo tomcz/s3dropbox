@@ -54,11 +54,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.tomczarniecki.s3.Lists.newArrayList;
+import static com.tomczarniecki.s3.Generics.newArrayList;
+import static com.tomczarniecki.s3.Generics.newHashMap;
 
 public class WebClientService implements Service {
 
@@ -68,7 +68,7 @@ public class WebClientService implements Service {
 
     public WebClientService(Configuration config) {
         // proper HTML5 video content types so that browsers can play the videos
-        Map<String, String> contentTypes = new HashMap<String, String>();
+        Map<String, String> contentTypes = newHashMap();
         contentTypes.put("ogv", "video/ogg");
         contentTypes.put("mp4", "video/mp4");
         contentTypes.put("webm", "video/webm");

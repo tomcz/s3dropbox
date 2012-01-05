@@ -46,7 +46,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import static com.tomczarniecki.s3.Lists.newArrayList;
+import static com.tomczarniecki.s3.Generics.newArrayList;
 
 public class LocalService implements Service {
 

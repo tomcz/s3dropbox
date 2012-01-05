@@ -32,16 +32,19 @@ import org.apache.commons.io.FileUtils;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import static com.tomczarniecki.s3.Generics.newArrayList;
+import static com.tomczarniecki.s3.Pair.pair;
+
 public class FileSize {
 
     private final List<Pair<String, Long>> sizes;
     private final DecimalFormat format;
 
     public FileSize() {
-        sizes = Lists.newArrayList();
-        sizes.add(Pair.create("GB", FileUtils.ONE_GB));
-        sizes.add(Pair.create("MB", FileUtils.ONE_MB));
-        sizes.add(Pair.create("KB", FileUtils.ONE_KB));
+        sizes = newArrayList();
+        sizes.add(pair("GB", FileUtils.ONE_GB));
+        sizes.add(pair("MB", FileUtils.ONE_MB));
+        sizes.add(pair("KB", FileUtils.ONE_KB));
         format = new DecimalFormat(",##0.0");
     }
 

@@ -43,6 +43,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import static com.tomczarniecki.s3.Pair.pair;
+
 public class CreateBucketDialog extends JDialog {
 
     private final JTextField bucketName;
@@ -112,7 +114,7 @@ public class CreateBucketDialog extends JDialog {
         if (createBucket) {
             String name = StringUtils.trimToEmpty(bucketName.getText());
             String region = (String) bucketRegion.getSelectedItem();
-            return Pair.create(name, region);
+            return pair(name, region);
         }
         return null;
     }
