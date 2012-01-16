@@ -29,10 +29,14 @@ package com.tomczarniecki.s3.gui;
 
 import com.amazonaws.services.s3.internal.BucketNameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 
 class BucketNameValidator {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Controller controller;
     private final Pattern validNamePattern;
@@ -59,8 +63,12 @@ class BucketNameValidator {
         } catch (IllegalArgumentException e) {
             return StringUtils.replace(e.getMessage(), "Bucket", "Folder");
         }
-        if (controller.bucketExists(bucketName)) {
-            return "You cannot use this folder name since someone else is already using it.";
+        try {
+            if (controller.bucketExists(bucketName)) {
+                return "You cannot use this folder name since someone else is already using it.";
+            }
+        } catch (Exception e) {
+            logger.warn("Cannot check if bucket exists: " + e);
         }
         return null;
     }
