@@ -68,7 +68,7 @@ class BucketNameValidator {
                 return "You cannot use this folder name since someone else is already using it.";
             }
         } catch (Exception e) {
-            logger.warn("Cannot check if bucket exists: " + e);
+            logger.warn("Cannot check if bucket '" + bucketName + "' exists: " + e);
         }
         return null;
     }
