@@ -42,12 +42,14 @@ class DeleteBucketAction extends AbstractAction {
     private final Controller controller;
     private final Executor executor;
     private final Display display;
+    private final Worker worker;
 
-    public DeleteBucketAction(Controller controller, Display display, Executor executor) {
+    public DeleteBucketAction(Controller controller, Display display, Executor executor, Worker worker) {
         super("Delete Folder");
         this.controller = controller;
         this.executor = executor;
         this.display = display;
+        this.worker = worker;
     }
 
     public void actionPerformed(ActionEvent evt) {
@@ -75,7 +77,11 @@ class DeleteBucketAction extends AbstractAction {
     }
 
     private void deleteError() {
-        String text = "Cannot delete folder %s.\nPlease make sure that it is empty and try again.";
-        display.showErrorMessage("Delete failed", String.format(text, controller.getSelectedBucketName()));
+        worker.executeOnEventLoop(new Runnable() {
+            public void run() {
+                String text = "Cannot delete folder %s.\nPlease make sure that it is empty and try again.";
+                display.showErrorMessage("Delete failed", String.format(text, controller.getSelectedBucketName()));
+            }
+        });
     }
 }

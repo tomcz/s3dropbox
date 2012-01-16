@@ -127,7 +127,7 @@ public class DropBox extends JFrame {
     private JMenu createBucketMenu() {
         JMenu menu = new JMenu("Folders");
         menu.add(new JMenuItem(new CreateBucketAction(controller, display, executor)));
-        menu.add(new JMenuItem(new DeleteBucketAction(controller, display, executor)));
+        menu.add(new JMenuItem(new DeleteBucketAction(controller, display, executor, worker)));
         menu.add(new JMenuItem(new RefreshBucketsAction(controller, executor)));
         return menu;
     }
