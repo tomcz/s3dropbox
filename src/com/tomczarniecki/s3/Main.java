@@ -32,7 +32,7 @@ import org.apache.commons.lang.ArrayUtils;
 public class Main {
 
     public static void main(final String... args) {
-        if (ArrayUtils.contains(args, "-cli")) {
+        if (ArrayUtils.contains(args, "-cli") || ArrayUtils.contains(args, "-help")) {
             new CliMain(args).main();
         } else {
             new GuiMain(args).main();
