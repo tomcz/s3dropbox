@@ -142,7 +142,7 @@ public class CliMain {
 
     private void showHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("s3dropbox", options);
+        formatter.printHelp("java -jar S3DropBox.jar [options]", options);
     }
 
     private Options createOptions() {
@@ -162,10 +162,10 @@ public class CliMain {
         group.addOption(new Option("put", "Upload file to S3"));
         group.addOption(new Option("get", "Download file from S3"));
         group.addOption(new Option("list", "List buckets or objects in a bucket"));
+        group.addOption(new Option("help", "Print this message"));
         group.setRequired(true);
 
         Options options = new Options();
-        options.addOption("help", false, "Print this message");
         options.addOption("cli", false, "Run in command line mode");
         options.addOptionGroup(group);
         options.addOption(config);
