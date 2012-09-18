@@ -6,7 +6,7 @@ Amazon S3 account. You can create public links to these files, and paste these l
 the files can be downloaded later (using any web browser) by clicking on the link, or you can download the
 files yourself at a later stage using the application.
 
-Run using: `java -jar S3DropBox-<version>.jar [credentials file]`
+Run using: `java -jar S3DropBox.jar [credentials file]`
 
 The credentials file is optional. If not present, the application will look for a file called `.s3dropbox`
 in your home directory. If that is not present you will be asked for some AWS credentials when the
@@ -50,3 +50,5 @@ NTLM\_HOST and NTLM\_DOMAIN
 * These are not usually required even if you need to use NTLM authentication with
   a HTTP proxy. If you are unable to authenticate with an NTLM proxy using just the
   username and password options then you may need to provide the HOST and DOMAIN options.
+
+NOTE: You can also run the S3DropBox without a GUI via `java -jar S3DropBox.jar -cli`
