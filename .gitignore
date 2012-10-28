@@ -1,4 +1,5 @@
 .DS_Store
+.gradle
 test.txt
 *.iws
 *.swp
