@@ -1,11 +1,14 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 apply plugin: 'java'
 apply plugin: 'idea'
 
-defaultTasks 'clean', 'build'
+defaultTasks 'clean', 'build', 'makezip', 'makeapp'
 
 version = '1.8.1'
 
 project.ext.mainClassName = 'com.tomczarniecki.s3.Main'
+project.ext.applicationName = "${project.name}-${version}"
 
 repositories {
   mavenCentral()
@@ -14,6 +17,9 @@ repositories {
 
 configurations.all {
   exclude(group: 'commons-logging')
+}
+
+configurations.testCompile {
   exclude(module: 'hamcrest-core')
 }
 
@@ -53,29 +59,68 @@ jar {
   }
 }
 
-task(onejar, dependsOn: 'jar') << {
-  def projectName = project.name
-  def archivePath = jar.archivePath
-  def archiveVersion = version
-  def basedir = projectDir
+task(makezip, dependsOn: 'jar') << {
+  def self = project
   ant {
     taskdef(name: 'onejar', classname: 'com.simontuffs.onejar.ant.OneJarTask') {
       classpath { fileset(dir: 'etc/one-jar') }
     }
-    onejar(destfile: "${libsDir}/${rootProject.name}-${version}.jar") {
+    onejar(destfile: "${jar.destinationDir}/${self.name}.jar") {
       manifest {
-        attribute(name: 'Implementation-Title', value: projectName)
-        attribute(name: 'Implementation-Version', value: archiveVersion)
+        attribute(name: 'Implementation-Title', value: self.name)
+        attribute(name: 'Implementation-Version', value: self.version)
       }
-      main(jar: archivePath)
+      main(jar: jar.archivePath)
       lib {
         configurations.compile.addToAntBuilder(ant, 'fileset', FileCollection.AntType.FileSet)
       }
-      fileset(dir: basedir) {
-        include(name: 'LICENSE.txt')
+      fileset(dir: self.projectDir) {
+        include(name: 'LICENSE*')
+      }
+    }
+    mkdir(dir: self.distsDir)
+    zip(destfile: "${self.distsDir}/${self.ext.applicationName}.zip") {
+      zipfileset(prefix: self.ext.applicationName, dir: jar.destinationDir) {
+        include(name: "${self.name}.jar")
+      }
+      zipfileset(prefix: self.ext.applicationName, dir: self.projectDir) {
+        include(name: 'LICENSE*')
+        include(name: 'README*')
       }
     }
   }
+}
+
+task(makeapp, dependsOn: 'jar') << {
+  def appDir = "${buildDir}/${project.name}"
+  def self = project
+  ant {
+    taskdef(name: 'jarbundler', classname: 'net.sourceforge.jarbundler.JarBundler') {
+      classpath { fileset(dir: 'etc/jarbundler') }
+    }
+    mkdir(dir: appDir)
+    jarbundler(dir: appDir, name: self.name, mainclass: self.ext.mainClassName, icon: 'etc/zim.icns', jvmversion: '1.5+', version: self.version) {
+      configurations.compile.addToAntBuilder(ant, 'jarfileset', FileCollection.AntType.FileSet)
+      jarfileset(dir: jar.destinationDir, includes: jar.archiveName)
+    }
+    copy(todir: appDir) {
+      fileset(dir: self.projectDir) {
+        include(name: 'LICENSE*')
+        include(name: 'README*')
+      }
+    }
+    mkdir(dir: self.distsDir)
+    exec(executable: 'hdiutil', failonerror: 'yes') {
+      arg(value: 'create')
+      arg(value: '-srcfolder')
+      arg(value: appDir)
+      arg(value: "${self.distsDir}/${self.ext.applicationName}.dmg")
+    }
+  }
+}
+
+makeapp.onlyIf {
+  Os.isFamily(Os.FAMILY_MAC)
 }
 
 /*

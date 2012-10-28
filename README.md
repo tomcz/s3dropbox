@@ -12,6 +12,8 @@ The credentials file is optional. If not present, the application will look for 
 in your home directory. If that is not present you will be asked for some AWS credentials when the
 application starts and then a `.s3dropbox` file will be created for you in your home directory.
 
+NOTE: You can also run the S3DropBox without a GUI via `java -jar S3DropBox.jar -cli`
+
 Here are the values that the `.s3dropbox` file will contain:
 
 AMAZON\_ACCESS\_KEY\_ID
@@ -50,5 +52,3 @@ NTLM\_HOST and NTLM\_DOMAIN
 * These are not usually required even if you need to use NTLM authentication with
   a HTTP proxy. If you are unable to authenticate with an NTLM proxy using just the
   username and password options then you may need to provide the HOST and DOMAIN options.
-
-NOTE: You can also run the S3DropBox without a GUI via `java -jar S3DropBox.jar -cli`
