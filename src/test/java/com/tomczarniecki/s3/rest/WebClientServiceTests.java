@@ -98,7 +98,7 @@ public class WebClientServiceTests {
         Service service = new WebClientService(credentials);
         String bucketName = "test-" + UUID.randomUUID();
 
-        service.createBucket(bucketName, Region.AP_Singapore.name());
+        service.createBucket(bucketName, Region.US_West.name());
         assertTrue("Bucket should exist", service.bucketExists(bucketName));
         assertThat(service.listAllMyBuckets(), hasItem(bucket(bucketName)));
 

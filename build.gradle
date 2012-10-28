@@ -20,6 +20,7 @@ configurations.all {
 dependencies {
   compile 'joda-time:joda-time:2.1'
   compile 'org.slf4j:slf4j-simple:1.6.6'
+  compile 'org.slf4j:jcl-over-slf4j:1.6.6'
 
   compile 'commons-io:commons-io:2.4'
   compile 'commons-cli:commons-cli:1.2'
@@ -37,66 +38,7 @@ dependencies {
 }
 
 /*
-task jetty(type: JavaExec, dependsOn: testClasses) {
-  main = 'com.sun.jersey.spi.pico.container.servlet.WebServer'
-  classpath = sourceSets.test.runtimeClasspath
-}
-
-ext.sharedManifest = manifest {
-  attributes("Implementation-Title": project.name, "Implementation-Version": version)
-}
-
-jar {
-  manifest = project.manifest {
-    from sharedManifest
-  }
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-  classifier = 'sources'
-  from sourceSets.main.allSource
-  manifest = project.manifest {
-    from sharedManifest
-  }
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier = 'javadoc'
-  from javadoc.destinationDir
-  manifest = project.manifest {
-    from sharedManifest
-  }
-}
-
-task mavenPom(dependsOn: classes) {
-  ext.pomPath = "$libsDir/pom.xml"
-  ext.pomFile = file(pomPath)
-  doLast {
-    def pomDef = pom {
-      groupId = 'com.watchitlater'
-      artifactId = project.name
-      version = project.version
-    }
-    pomDef.whenConfigured { pom ->
-      pom.dependencies.find {dep -> dep.artifactId == 'servlet-api' }.optional = true
-    }
-    pomDef.writeTo(pomPath)
-  }
-}
-
-task bundleZip(type: Zip, dependsOn: [jar, sourcesJar, javadocJar, mavenPom]) {
-  includes = ['*.jar', '*.xml']
-  from libsDir
-}
-
-artifacts {
-  archives file: mavenPom.pomFile, builtBy: mavenPom
-  archives sourcesJar
-  archives javadocJar
-  archives bundleZip
-}
-*/
-
 task wrapper(type: Wrapper) {
   gradleVersion = '1.2'
 }
+*/
