@@ -3,5 +3,7 @@
 test.txt
 *.iws
 *.swp
+*.ipr
+*.iml
 build
 out
