@@ -5,5 +5,6 @@ test.txt
 *.swp
 *.ipr
 *.iml
+*.swp
 build
 out

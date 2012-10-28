@@ -1,15 +1,15 @@
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'application'
 
 defaultTasks 'clean', 'build'
 
 version = '1.8.1'
 
-mainClassName = 'com.tomczarniecki.s3.Main'
+project.ext.mainClassName = 'com.tomczarniecki.s3.Main'
 
 repositories {
   mavenCentral()
+  flatDir { dirs 'repo' }
 }
 
 configurations.all {
@@ -37,8 +37,49 @@ dependencies {
   testCompile 'com.googlecode.windowlicker:windowlicker-swing:r268'
 }
 
+task(run, type: JavaExec, dependsOn: 'classes') {
+  classpath = sourceSets.main.runtimeClasspath
+  main = project.ext.mainClassName
+}
+
+jar {
+  archiveName = 'main.jar'
+  manifest {
+    attributes(
+        'Main-Class': project.ext.mainClassName,
+        'Implementation-Title': project.name,
+        'Implementation-Version': version
+    )
+  }
+}
+
+task(onejar, dependsOn: 'jar') << {
+  def projectName = project.name
+  def archivePath = jar.archivePath
+  def archiveVersion = version
+  def basedir = projectDir
+  ant {
+    taskdef(name: 'onejar', classname: 'com.simontuffs.onejar.ant.OneJarTask') {
+      classpath { fileset(dir: 'etc/one-jar') }
+    }
+    onejar(destfile: "${libsDir}/${rootProject.name}-${version}.jar") {
+      manifest {
+        attribute(name: 'Implementation-Title', value: projectName)
+        attribute(name: 'Implementation-Version', value: archiveVersion)
+      }
+      main(jar: archivePath)
+      lib {
+        configurations.compile.addToAntBuilder(ant, 'fileset', FileCollection.AntType.FileSet)
+      }
+      fileset(dir: basedir) {
+        include(name: 'LICENSE.txt')
+      }
+    }
+  }
+}
+
 /*
-task wrapper(type: Wrapper) {
+task(wrapper, type: Wrapper) {
   gradleVersion = '1.2'
 }
 */
