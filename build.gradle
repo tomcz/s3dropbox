@@ -12,7 +12,6 @@ project.ext.applicationName = "${project.name}-${version}"
 
 repositories {
   mavenCentral()
-  flatDir { dirs 'repo' }
 }
 
 configurations.all {
