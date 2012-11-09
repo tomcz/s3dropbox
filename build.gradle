@@ -5,7 +5,7 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build', 'makezip', 'makeapp'
 
-version = '1.8.1'
+version = new Date().format('yyyyMMdd')
 
 project.ext.mainClassName = 'com.tomczarniecki.s3.Main'
 project.ext.applicationName = "${project.name}-${version}"
