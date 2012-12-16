@@ -82,6 +82,9 @@ task(makezip, dependsOn: 'jar') << {
       zipfileset(prefix: self.ext.applicationName, dir: jar.destinationDir) {
         include(name: "${self.name}.jar")
       }
+      zipfileset(prefix: self.ext.applicationName, dir: "${self.projectDir}/etc") {
+        include(name: '*.sh')
+      }
       zipfileset(prefix: self.ext.applicationName, dir: self.projectDir) {
         include(name: 'LICENSE*')
         include(name: 'README*')
