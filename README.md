@@ -6,6 +6,15 @@ Amazon S3 account. You can create public links to these files, and paste these l
 the files can be downloaded later (using any web browser) by clicking on the link, or you can download the
 files yourself at a later stage using the application.
 
+Download
+--------
+
+* Latest [Mac DMG](http://archives.watchitlater.com/projects/S3DropBox-latest.dmg)
+* Latest [Zip bundle](http://archives.watchitlater.com/projects/S3DropBox-latest.tar.gz)
+
+Usage
+-----
+
 Run using: `java -jar S3DropBox.jar [credentials file]`
 
 The credentials file is optional. If not present, the application will look for a file called `.s3dropbox`
