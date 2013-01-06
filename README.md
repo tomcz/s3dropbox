@@ -10,7 +10,7 @@ Download
 --------
 
 * Latest [Mac DMG](http://archives.watchitlater.com/projects/S3DropBox-latest.dmg)
-* Latest [Zip bundle](http://archives.watchitlater.com/projects/S3DropBox-latest.tar.gz)
+* Latest [Tarball](http://archives.watchitlater.com/projects/S3DropBox-latest.tar.gz)
 
 Usage
 -----
