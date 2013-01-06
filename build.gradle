@@ -3,7 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 apply plugin: 'java'
 apply plugin: 'idea'
 
-defaultTasks 'clean', 'build', 'makezip', 'makeapp'
+defaultTasks 'clean', 'build', 'maketar', 'makeapp'
 
 version = new Date().format('yyyyMMdd')
 
@@ -58,7 +58,7 @@ jar {
   }
 }
 
-task(makezip, dependsOn: 'jar') << {
+task(maketar, dependsOn: 'jar') << {
   def self = project
   ant {
     taskdef(name: 'onejar', classname: 'com.simontuffs.onejar.ant.OneJarTask') {
@@ -78,14 +78,14 @@ task(makezip, dependsOn: 'jar') << {
       }
     }
     mkdir(dir: self.distsDir)
-    zip(destfile: "${self.distsDir}/${self.ext.applicationName}.zip") {
-      zipfileset(prefix: self.ext.applicationName, dir: jar.destinationDir) {
+    tar(destfile: "${self.distsDir}/${self.ext.applicationName}.tar.gz", compression: 'gzip') {
+      tarfileset(prefix: self.ext.applicationName, dir: jar.destinationDir) {
         include(name: "${self.name}.jar")
       }
-      zipfileset(prefix: self.ext.applicationName, dir: "${self.projectDir}/etc") {
+      tarfileset(prefix: self.ext.applicationName, dir: "${self.projectDir}/etc", filemode: '755') {
         include(name: '*.sh')
       }
-      zipfileset(prefix: self.ext.applicationName, dir: self.projectDir) {
+      tarfileset(prefix: self.ext.applicationName, dir: self.projectDir) {
         include(name: 'LICENSE*')
         include(name: 'README*')
       }
