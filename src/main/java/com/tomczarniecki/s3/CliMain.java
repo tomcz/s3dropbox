@@ -76,6 +76,11 @@ public class CliMain {
             showHelp(options);
             return false;
 
+        } catch (Exception e) {
+            System.out.println();
+            e.printStackTrace();
+            return false;
+
         } finally {
             if (service != null) {
                 service.close();
@@ -117,11 +122,11 @@ public class CliMain {
 
         if (cmd.hasOption("get")) {
             System.out.printf("Downloading %s from bucket %s to %s ...\n", object, bucket, file);
-            service.downloadObject(bucket, object, file, new NullProgressListener());
+            service.downloadObject(bucket, object, file, new CliProgressListener());
 
         } else if (cmd.hasOption("put")) {
             System.out.printf("Uploading %s to bucket %s as %s ...\n", file, bucket, object);
-            service.createObject(bucket, object, file, new NullProgressListener());
+            service.createObject(bucket, object, file, new CliProgressListener());
         }
         System.out.println("... Done");
     }
@@ -175,8 +180,13 @@ public class CliMain {
         return options;
     }
 
-    private static class NullProgressListener implements ProgressListener {
+    private static class CliProgressListener implements ProgressListener {
+
+        private final FileSize size = new FileSize();
+
         public void processed(long count, long length) {
+            System.out.printf("Processed: %s of %s                        \r",
+                    size.format(count), size.format(length));
         }
     }
 }
