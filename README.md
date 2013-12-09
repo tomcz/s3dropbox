@@ -9,8 +9,8 @@ files yourself at a later stage using the application.
 Download
 --------
 
-* Latest [Mac DMG](http://archives.watchitlater.com/projects/S3DropBox-latest.dmg)
-* Latest [Tarball](http://archives.watchitlater.com/projects/S3DropBox-latest.tar.gz)
+* Latest [Mac DMG](https://dl.dropboxusercontent.com/u/51552990/S3DropBox-20131209.dmg)
+* Latest [Tarball](https://dl.dropboxusercontent.com/u/51552990/S3DropBox-20131209.tar.gz)
 
 Usage
 -----
