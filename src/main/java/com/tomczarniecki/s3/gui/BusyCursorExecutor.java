@@ -28,6 +28,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,7 @@ class BusyCursorExecutor implements Executor {
             public void run() {
                 display.showErrorMessage("Oops", "Something bad has happended.\n" +
                         "Any saves, updates or deletes may be incomplete.\n" +
-                        "Error is: " + error + "\n" +
+                        "Error is: " + WordUtils.wrap(error, 80) + "\n" +
                         "Please wait a bit and try again.\n");
             }
         });
