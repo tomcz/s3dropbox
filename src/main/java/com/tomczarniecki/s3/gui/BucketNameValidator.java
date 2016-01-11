@@ -41,12 +41,10 @@ class BucketNameValidator {
     private final Controller controller;
     private final Pattern validNamePattern;
     private final Pattern ipAddressPattern;
-    private final BucketNameUtils names;
 
     public BucketNameValidator(Controller controller) {
         this.validNamePattern = Pattern.compile("^[a-z0-9][a-z0-9\\.\\-]+?[a-z0-9]$");
         this.ipAddressPattern = Pattern.compile("^\\d+\\.\\d+\\.\\d+.\\d+$");
-        this.names = new BucketNameUtils();
         this.controller = controller;
     }
 
@@ -59,7 +57,7 @@ class BucketNameValidator {
             return "Folder name cannot be in an IP address format.";
         }
         try {
-            names.validateBucketName(bucketName);
+            BucketNameUtils.validateBucketName(bucketName);
         } catch (IllegalArgumentException e) {
             return StringUtils.replace(e.getMessage(), "Bucket", "Folder");
         }

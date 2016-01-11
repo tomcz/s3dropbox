@@ -3,10 +3,10 @@
 GIT_SHA ?= $(shell git rev-parse --short HEAD)
 
 build-jar:
-	./gradlew --console plain -Pversion=${GIT_SHA} clean test fatJar
+	./gradlew --console plain -Pversion=${GIT_SHA} clean fatJar
 
 build-dmg:
-	./gradlew --console plain -Pversion=${GIT_SHA} clean test createDmg
+	./gradlew --console plain -Pversion=${GIT_SHA} clean createDmg
 
 clean:
 	./gradlew clean
