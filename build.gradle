@@ -34,7 +34,7 @@ dependencies {
   compile 'com.jgoodies:forms:1.2.1'
   compile 'com.jgoodies:looks:2.2.2'
 
-  compile 'com.amazonaws:aws-java-sdk-s3:1.10.45'
+  compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.663'
 
   testCompile 'junit:junit:4.10'
   testCompile 'org.mockito:mockito-core:1.9.0'
@@ -63,5 +63,5 @@ macAppBundle {
 }
 
 task(wrapper, type: Wrapper) {
-  gradleVersion = '2.3'
+  gradleVersion = '4.3.1'
 }
