@@ -30,13 +30,12 @@ package com.tomczarniecki.s3.gui;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.tomczarniecki.s3.Generics.newArrayList;
 
 class Announcer<T> {
 
-    private final List<T> targets = newArrayList();
+    private final List<T> targets = new ArrayList<>();
     private final T proxy;
 
     private Announcer(Class<T> type) {

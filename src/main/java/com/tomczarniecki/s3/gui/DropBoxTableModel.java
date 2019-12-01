@@ -38,13 +38,12 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.AbstractTableModel;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.tomczarniecki.s3.Generics.newArrayList;
 
 class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, ControllerListener {
 
-    private final List<DropBoxTableItem> items = newArrayList();
+    private final List<DropBoxTableItem> items = new ArrayList<>();
 
     private final Icon bucketIcon;
     private final Icon objectIcon;
@@ -105,7 +104,7 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
     }
 
     public List<String> getCurrentNames() {
-        List<String> result = newArrayList();
+        List<String> result = new ArrayList<>();
         for (DropBoxTableItem item : items) {
             if (!Constants.BACK_LINK.equals(item.name)) {
                 result.add(item.name);

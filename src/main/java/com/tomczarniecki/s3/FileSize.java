@@ -30,9 +30,9 @@ package com.tomczarniecki.s3;
 import org.apache.commons.io.FileUtils;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.tomczarniecki.s3.Generics.newArrayList;
 import static com.tomczarniecki.s3.Pair.pair;
 
 public class FileSize {
@@ -41,7 +41,7 @@ public class FileSize {
     private final DecimalFormat format;
 
     public FileSize() {
-        sizes = newArrayList();
+        sizes = new ArrayList<>();
         sizes.add(pair("GB", FileUtils.ONE_GB));
         sizes.add(pair("MB", FileUtils.ONE_MB));
         sizes.add(pair("KB", FileUtils.ONE_KB));

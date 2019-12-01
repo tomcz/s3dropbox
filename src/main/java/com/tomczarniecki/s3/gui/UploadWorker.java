@@ -33,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.tomczarniecki.s3.Generics.newArrayList;
 import static com.tomczarniecki.s3.Pair.pair;
 
 public class UploadWorker {
@@ -110,7 +110,7 @@ public class UploadWorker {
     }
 
     private List<Pair<String, File>> resolveKeys(File[] files) {
-        List<Pair<String, File>> list = newArrayList();
+        List<Pair<String, File>> list = new ArrayList<>();
         resolveFolders(list, files, "");
         return list;
     }
