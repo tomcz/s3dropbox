@@ -28,6 +28,8 @@
  */
 package com.tomczarniecki.s3.rest;
 
+import com.amazonaws.HttpMethod;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
@@ -37,6 +39,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.Region;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
@@ -52,13 +55,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.tomczarniecki.s3.Generics.newArrayList;
-import static com.tomczarniecki.s3.Generics.newHashMap;
 
 public class WebClientService implements Service {
 
@@ -68,18 +70,23 @@ public class WebClientService implements Service {
 
     public WebClientService(Configuration config) {
         // proper HTML5 video content types so that browsers can play the videos
-        Map<String, String> contentTypes = newHashMap();
+        Map<String, String> contentTypes = new HashMap<>();
         contentTypes.put("ogv", "video/ogg");
         contentTypes.put("mp4", "video/mp4");
         contentTypes.put("webm", "video/webm");
 
         videoContentTypes = Collections.unmodifiableMap(contentTypes);
-        client = new AmazonS3Client(config.getAWSCredentials(), config.getClientConfiguration());
-        transferManager = new TransferManager(client);
+        client = AmazonS3Client.builder()
+                .withCredentials(new AWSStaticCredentialsProvider(config.getAWSCredentials()))
+                .withClientConfiguration(config.getClientConfiguration())
+                .build();
+        transferManager = TransferManagerBuilder.standard()
+                .withS3Client(client)
+                .build();
     }
 
     public List<String> bucketRegions() {
-        List<String> regions = newArrayList();
+        List<String> regions = new ArrayList<>();
         for (Region region : Region.values()) {
             regions.add(region.name());
         }
@@ -87,7 +94,7 @@ public class WebClientService implements Service {
     }
 
     public List<S3Bucket> listAllMyBuckets() {
-        List<S3Bucket> buckets = newArrayList();
+        List<S3Bucket> buckets = new ArrayList<>();
         for (Bucket bucket : client.listBuckets()) {
             buckets.add(new S3Bucket(bucket.getName()));
         }
@@ -95,7 +102,7 @@ public class WebClientService implements Service {
     }
 
     public boolean bucketExists(String bucketName) {
-        return client.doesBucketExist(bucketName);
+        return client.doesBucketExistV2(bucketName);
     }
 
     public void createBucket(String bucketName, String region) {
@@ -111,7 +118,7 @@ public class WebClientService implements Service {
     }
 
     public List<S3Object> listObjectsInBucket(String bucketName) {
-        List<S3Object> objects = newArrayList();
+        List<S3Object> objects = new ArrayList<>();
         ObjectListing objectListing = client.listObjects(bucketName);
         for (S3ObjectSummary summary : objectListing.getObjectSummaries()) {
             DateTime lastModified = new DateTime(summary.getLastModified());
@@ -155,7 +162,7 @@ public class WebClientService implements Service {
     }
 
     public String getPublicUrl(String bucketName, String objectKey, DateTime expires) {
-        return client.generatePresignedUrl(bucketName, objectKey, expires.toDate()).toExternalForm();
+        return client.generatePresignedUrl(bucketName, objectKey, expires.toDate(), HttpMethod.GET).toExternalForm();
     }
 
     public void deleteObject(String bucketName, String objectKey) {
