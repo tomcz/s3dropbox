@@ -28,8 +28,8 @@
 package com.tomczarniecki.s3.gui;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.FormLayout;
 import com.tomczarniecki.s3.Pair;
 import org.apache.commons.lang.StringUtils;
@@ -72,19 +72,18 @@ public class CreateBucketDialog extends JDialog {
     }
 
     private JPanel createDisplayPanel() {
-        CellConstraints cc = new CellConstraints();
         String cols = "pref,5dlu,100dlu";
         String rows = "pref,5dlu,pref,5dlu,pref";
 
-        PanelBuilder builder = new PanelBuilder(new FormLayout(cols, rows));
-        builder.setDefaultDialogBorder();
-        builder.addLabel("Folder Name", cc.xy(1, 1));
-        builder.add(bucketName, cc.xy(3, 1));
-        builder.addLabel("S3 Region", cc.xy(1, 3));
-        builder.add(bucketRegion, cc.xy(3, 3));
-        builder.add(createButtonBar(), cc.xyw(1, 5, 3));
-
-        return builder.getPanel();
+        return FormBuilder.create()
+                .layout(new FormLayout(cols, rows))
+                .addLabel("Folder Name").xy(1, 1)
+                .add(bucketName).xy(3, 1)
+                .addLabel("S3 Region").xy(1, 3)
+                .add(bucketRegion).xy(3, 3)
+                .add(createButtonBar()).xyw(1, 5, 3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     private JPanel createButtonBar() {
@@ -94,12 +93,12 @@ public class CreateBucketDialog extends JDialog {
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new CancelAction());
 
-        ButtonBarBuilder buttonBar = ButtonBarBuilder.createLeftToRightBuilder();
-        buttonBar.addGlue();
-        buttonBar.addGridded(createButton);
-        buttonBar.addRelatedGap();
-        buttonBar.addGridded(cancelButton);
-        return buttonBar.getPanel();
+        return ButtonBarBuilder.create()
+                .addGlue()
+                .addButton(createButton)
+                .addRelatedGap()
+                .addButton(cancelButton)
+                .build();
     }
 
     private void setValues(Pair<String, String> bucketNameAndRegion) {

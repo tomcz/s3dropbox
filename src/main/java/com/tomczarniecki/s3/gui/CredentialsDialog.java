@@ -29,8 +29,8 @@
 package com.tomczarniecki.s3.gui;
 
 import com.jgoodies.forms.builder.ButtonBarBuilder;
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.FormLayout;
 import com.tomczarniecki.s3.rest.Configuration;
 
@@ -73,19 +73,18 @@ public class CredentialsDialog extends JDialog {
     }
 
     private JPanel createDisplayPanel() {
-        CellConstraints cc = new CellConstraints();
         String cols = "pref,5dlu,200dlu";
         String rows = "pref,5dlu,pref,5dlu,pref";
 
-        PanelBuilder builder = new PanelBuilder(new FormLayout(cols, rows));
-        builder.setDefaultDialogBorder();
-        builder.addLabel("Access Key ID", cc.xy(1, 1));
-        builder.add(accessKeyId, cc.xy(3, 1));
-        builder.addLabel("Secret Access Key", cc.xy(1, 3));
-        builder.add(secretAccessKey, cc.xy(3, 3));
-        builder.add(createButtonBar(), cc.xyw(1, 5, 3));
-
-        return builder.getPanel();
+        return FormBuilder.create()
+                .layout(new FormLayout(cols, rows))
+                .addLabel("Access Key ID").xy(1, 1)
+                .add(accessKeyId).xy(3, 1)
+                .addLabel("Secret Access Key").xy(1, 3)
+                .add(secretAccessKey).xy(3, 3)
+                .add(createButtonBar()).xyw(1, 5, 3)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     private JPanel createButtonBar() {
@@ -95,12 +94,12 @@ public class CredentialsDialog extends JDialog {
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new CancelAction());
 
-        ButtonBarBuilder buttonBar = ButtonBarBuilder.createLeftToRightBuilder();
-        buttonBar.addGlue();
-        buttonBar.addGridded(createButton);
-        buttonBar.addRelatedGap();
-        buttonBar.addGridded(cancelButton);
-        return buttonBar.getPanel();
+        return ButtonBarBuilder.create()
+                .addGlue()
+                .addButton(createButton)
+                .addRelatedGap()
+                .addButton(cancelButton)
+                .build();
     }
 
     private void createCredentials() {

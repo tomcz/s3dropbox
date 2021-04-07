@@ -28,14 +28,15 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.FormLayout;
 import com.tomczarniecki.s3.ProgressListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -61,15 +62,15 @@ class ProgressDialog extends JDialog implements ProgressListener {
         closeButton = new JButton("Close");
         closeButton.addActionListener(new CloseButtonClick());
 
-        CellConstraints cc = new CellConstraints();
-        PanelBuilder builder = new PanelBuilder(new FormLayout("225dlu,5dlu,70dlu", "100dlu,5dlu,pref"));
-        builder.setDefaultDialogBorder();
+        JPanel panel = FormBuilder.create()
+                .layout(new FormLayout("225dlu,5dlu,70dlu", "100dlu,5dlu,pref"))
+                .add(new JScrollPane(this.display)).xyw(1, 1, 3, "fill,fill")
+                .add(progress).xy(1, 3, "fill,fill")
+                .add(closeButton).xy(3, 3, "fill,fill")
+                .padding(Paddings.DIALOG)
+                .build();
 
-        builder.add(new JScrollPane(this.display), cc.xyw(1, 1, 3, "fill,fill"));
-        builder.add(progress, cc.xy(1, 3, "fill,fill"));
-        builder.add(closeButton, cc.xy(3, 3, "fill,fill"));
-
-        getContentPane().add(builder.getPanel());
+        getContentPane().add(panel);
         setResizable(false);
         pack();
 

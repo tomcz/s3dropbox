@@ -28,8 +28,8 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.builder.FormBuilder;
+import com.jgoodies.forms.factories.Paddings;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.IntRange;
@@ -117,21 +117,20 @@ class PublicLinkDialog extends JDialog {
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new CloseAction());
 
-        CellConstraints cc = new CellConstraints();
         String cols = "pref,2dlu,pref,2dlu,pref,2dlu,pref,2dlu,pref";
         String rows = "pref,5dlu,50dlu,5dlu,pref";
 
-        PanelBuilder builder = new PanelBuilder(new FormLayout(cols, rows));
-        builder.setDefaultDialogBorder();
-        builder.addLabel("Link expires in", cc.xy(1, 1));
-        builder.add(offsetSelect, cc.xy(3, 1));
-        builder.add(durationSelect, cc.xy(5, 1));
-        builder.add(createButton, cc.xy(7, 1));
-        builder.add(copyButton, cc.xy(9, 1));
-        builder.add(new JScrollPane(display), cc.xyw(1, 3, 9, "fill,fill"));
-        builder.add(closeButton, cc.xy(9, 5));
-
-        return builder.getPanel();
+        return FormBuilder.create()
+                .layout(new FormLayout(cols, rows))
+                .addLabel("Link expires in").xy(1, 1)
+                .add(offsetSelect).xy(3, 1)
+                .add(durationSelect).xy(5, 1)
+                .add(createButton).xy(7, 1)
+                .add(copyButton).xy(9, 1)
+                .add(new JScrollPane(display)).xyw(1, 3, 9, "fill,fill")
+                .add(closeButton).xy(9, 5)
+                .padding(Paddings.DIALOG)
+                .build();
     }
 
     private void copyToClipboard() {

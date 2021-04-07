@@ -21,10 +21,10 @@ dependencies {
   implementation 'commons-cli:commons-cli:1.2'
   implementation 'commons-lang:commons-lang:2.6'
 
-  implementation 'com.jgoodies:forms:1.2.1'
-  implementation 'com.jgoodies:looks:2.2.2'
+  implementation 'com.jgoodies:jgoodies-forms:1.9.0'
+  implementation 'com.jgoodies:jgoodies-looks:2.7.0'
 
-  implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.11.663'
+  implementation 'com.amazonaws:aws-java-sdk-s3:1.11.993'
 
   testImplementation 'junit:junit:4.10'
   testImplementation 'org.mockito:mockito-core:1.9.0'
