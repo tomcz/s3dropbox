@@ -9,3 +9,4 @@ test.txt
 build
 out
 .idea/
+gradle.properties

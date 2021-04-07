@@ -21,8 +21,9 @@ dependencies {
   implementation 'commons-cli:commons-cli:1.2'
   implementation 'commons-lang:commons-lang:2.6'
 
+  implementation 'com.formdev:flatlaf:1.1.1'
+
   implementation 'com.jgoodies:jgoodies-forms:1.9.0'
-  implementation 'com.jgoodies:jgoodies-looks:2.7.0'
 
   implementation 'com.amazonaws:aws-java-sdk-s3:1.11.993'
 

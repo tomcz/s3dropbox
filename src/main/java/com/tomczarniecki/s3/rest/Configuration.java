@@ -32,7 +32,6 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -40,7 +39,7 @@ public class Configuration {
 
     private final String accessKeyId;
     private final String secretAccessKey;
-    private final String useSecureProtocol;
+    private final boolean useSecureProtocol;
 
     private final String proxyHost;
     private final String proxyPort;
@@ -51,15 +50,17 @@ public class Configuration {
     private final String ntlmHost;
     private final String ntlmDomain;
 
+    private final boolean useDarkTheme;
+
     public Configuration(String accessKeyId, String secretAccessKey) {
-        this(accessKeyId, secretAccessKey, "", "", "", "", "", "", "");
+        this(accessKeyId, secretAccessKey, "", "", "", "", "", "", true, true);
     }
 
     public Configuration(String accessKeyId, String secretAccessKey,
                          String proxyHost, String proxyPort,
                          String proxyUserName, String proxyPassword,
                          String ntlmHost, String ntlmDomain,
-                         String useSecureProtocol) {
+                         boolean useSecureProtocol, boolean useDarkTheme) {
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
@@ -73,6 +74,8 @@ public class Configuration {
 
         this.ntlmHost = ntlmHost;
         this.ntlmDomain = ntlmDomain;
+
+        this.useDarkTheme = useDarkTheme;
     }
 
     public String getAccessKeyId() {
@@ -83,7 +86,7 @@ public class Configuration {
         return secretAccessKey;
     }
 
-    public String getUseSecureProtocol() {
+    public boolean useSecureProtocol() {
         return useSecureProtocol;
     }
 
@@ -111,6 +114,10 @@ public class Configuration {
         return ntlmDomain;
     }
 
+    public boolean useDarkTheme() {
+        return useDarkTheme;
+    }
+
     public AWSCredentials getAWSCredentials() {
         return new BasicAWSCredentials(accessKeyId, secretAccessKey);
     }
@@ -127,10 +134,9 @@ public class Configuration {
         config.setProxyDomain(StringUtils.defaultIfEmpty(ntlmDomain, config.getProxyDomain()));
         config.setProxyWorkstation(StringUtils.defaultIfEmpty(ntlmHost, config.getProxyWorkstation()));
 
-        if (StringUtils.isNotEmpty(useSecureProtocol) && !BooleanUtils.toBoolean(useSecureProtocol)) {
+        if (!useSecureProtocol) {
             config.setProtocol(Protocol.HTTP);
         }
-
         return config;
     }
 }

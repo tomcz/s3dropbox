@@ -29,6 +29,7 @@
 package com.tomczarniecki.s3.rest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -46,7 +47,7 @@ public class ConfigurationFactory {
         PROXY_HOST, PROXY_PORT,
         PROXY_USERNAME, PROXY_PASSWORD,
         NTLM_HOST, NTLM_DOMAIN,
-        USE_SSL
+        USE_SSL, DARK_THEME
     }
 
     private final File source;
@@ -66,7 +67,8 @@ public class ConfigurationFactory {
                 getOptional(props, Keys.PROXY_PASSWORD),
                 getOptional(props, Keys.NTLM_HOST),
                 getOptional(props, Keys.NTLM_DOMAIN),
-                getOptional(props, Keys.USE_SSL)
+                BooleanUtils.toBoolean(props.getProperty(Keys.USE_SSL.name(), "true")),
+                BooleanUtils.toBoolean(props.getProperty(Keys.DARK_THEME.name(), "true"))
         );
     }
 
@@ -78,7 +80,8 @@ public class ConfigurationFactory {
         setProperty(props, Keys.PROXY_PORT, credentials.getProxyPort());
         setProperty(props, Keys.PROXY_USERNAME, credentials.getProxyUserName());
         setProperty(props, Keys.PROXY_PASSWORD, credentials.getProxyPassword());
-        setProperty(props, Keys.USE_SSL, credentials.getUseSecureProtocol());
+        setProperty(props, Keys.USE_SSL, credentials.useSecureProtocol());
+        setProperty(props, Keys.DARK_THEME, credentials.useDarkTheme());
         saveProperties(props);
     }
 
