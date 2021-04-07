@@ -6,12 +6,6 @@ Amazon S3 account. You can create public links to these files, and paste these l
 the files can be downloaded later (using any web browser) by clicking on the link, or you can download the
 files yourself at a later stage using the application.
 
-Download
---------
-
-* Latest [Mac DMG](https://s3.amazonaws.com/watchitlater/S3DropBox-20131209.dmg)
-* Latest [Tarball](https://s3.amazonaws.com/watchitlater/S3DropBox-20131209.tar.gz)
-
 Usage
 -----
 
