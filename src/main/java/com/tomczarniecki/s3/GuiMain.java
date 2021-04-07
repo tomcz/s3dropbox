@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -68,12 +69,16 @@ public class GuiMain implements Runnable {
     }
 
     private void setupLookAndFeel() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            try {
-                UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-            } catch (Exception e) {
-                // not to worry, can still use platform default L&F
-            }
+        if (SystemUtils.IS_OS_MAC_OSX) {
+            System.setProperty("apple.laf.useScreenMenuBar", "false");
+            System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
+            System.setProperty("com.apple.mrj.application.live-resize", "true");
+            System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
+        }
+        try {
+            UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+        } catch (Exception e) {
+            // not to worry, can still use platform default L&F
         }
     }
 
