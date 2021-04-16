@@ -33,6 +33,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -58,7 +59,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,12 +70,7 @@ public class WebClientService implements Service {
 
     public WebClientService(Configuration config) {
         // proper HTML5 video content types so that browsers can play the videos
-        Map<String, String> contentTypes = new HashMap<>();
-        contentTypes.put("ogv", "video/ogg");
-        contentTypes.put("mp4", "video/mp4");
-        contentTypes.put("webm", "video/webm");
-
-        videoContentTypes = Collections.unmodifiableMap(contentTypes);
+        videoContentTypes = Map.of("ogv", "video/ogg", "mp4", "video/mp4", "webm", "video/webm");
         client = AmazonS3Client.builder()
                 .withCredentials(new AWSStaticCredentialsProvider(config.getAWSCredentials()))
                 .withClientConfiguration(config.getClientConfiguration())
@@ -107,7 +102,7 @@ public class WebClientService implements Service {
 
     public void createBucket(String bucketName, String region) {
         if (region != null) {
-            client.createBucket(bucketName, Region.valueOf(region));
+            client.createBucket(new CreateBucketRequest(bucketName, Region.valueOf(region)));
         } else {
             client.createBucket(bucketName);
         }
@@ -147,7 +142,7 @@ public class WebClientService implements Service {
             md.setContentType(contentType);
             request.setMetadata(md);
         }
-        request.setProgressListener(new ProgressListenerAdaptor(listener, source.length()));
+        request.setGeneralProgressListener(new ProgressListenerAdaptor(listener, source.length()));
         try {
             Upload upload = transferManager.upload(request);
             upload.waitForCompletion();

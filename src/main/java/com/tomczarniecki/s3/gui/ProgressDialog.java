@@ -107,6 +107,14 @@ class ProgressDialog extends JDialog implements ProgressListener {
         worker.executeOnEventLoop(new Runnable() {
             public void run() {
                 closeButton.setEnabled(true);
+                if (progress.isIndeterminate()) {
+                    progress.setMinimum(0);
+                    progress.setMaximum(100);
+                    progress.setStringPainted(true);
+                    progress.setIndeterminate(false);
+                }
+                int max = progress.getMaximum();
+                progress.setValue(max);
             }
         });
     }
