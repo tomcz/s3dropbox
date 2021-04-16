@@ -35,6 +35,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.IntRange;
 import org.joda.time.DateTime;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -51,7 +52,7 @@ class PublicLinkDialog extends JDialog {
 
     private enum Duration {
 
-        Seconds, Minutes, Hours, Days, Weeks, Months;
+        Seconds, Minutes, Hours, Days;
 
         public DateTime with(int offset) {
             DateTime now = new DateTime();
@@ -62,20 +63,23 @@ class PublicLinkDialog extends JDialog {
                     return now.plusHours(offset);
                 case Days:
                     return now.plusDays(offset);
-                case Weeks:
-                    return now.plusWeeks(offset);
-                case Months:
-                    return now.plusMonths(offset);
                 default:
                     return now.plusSeconds(offset);
             }
+        }
+
+        public IntRange offsets() {
+            if (this == Duration.Days) {
+                return new IntRange(1, 7);
+            }
+            return new IntRange(1, 100);
         }
     }
 
     private final Controller controller;
     private final JTextArea display;
-    private final JComboBox offsetSelect;
-    private final JComboBox durationSelect;
+    private final JComboBox<Integer> offsetSelect;
+    private final JComboBox<Duration> durationSelect;
 
     public PublicLinkDialog(JFrame parent, Controller controller) {
         super(parent, true);
@@ -86,14 +90,14 @@ class PublicLinkDialog extends JDialog {
         display.setEditable(false);
         display.setLineWrap(true);
 
-        IntRange offsetRange = new IntRange(1, 100);
-        offsetSelect = new JComboBox(ArrayUtils.toObject(offsetRange.toArray()));
+        Duration initial = Duration.Days;
+        offsetSelect = new JComboBox<>(ArrayUtils.toObject(initial.offsets().toArray()));
         offsetSelect.setSelectedItem(5);
         offsetSelect.addActionListener(new CreatePublicLinkAction());
 
-        durationSelect = new JComboBox(Duration.values());
-        durationSelect.setSelectedItem(Duration.Days);
-        durationSelect.addActionListener(new CreatePublicLinkAction());
+        durationSelect = new JComboBox<>(Duration.values());
+        durationSelect.setSelectedItem(initial);
+        durationSelect.addActionListener(new UpdateOffsetAction());
 
         getContentPane().add(createDisplayPanel());
         setResizable(false);
@@ -139,11 +143,30 @@ class PublicLinkDialog extends JDialog {
         clipboard.setContents(selection, selection);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void createPublicLink() {
         Integer offset = (Integer) offsetSelect.getSelectedItem();
         Duration duration = (Duration) durationSelect.getSelectedItem();
         display.setText(controller.getPublicUrlForCurrentObject(duration.with(offset)));
         display.setCaretPosition(0);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void updateOffset() {
+        Integer offset = (Integer) offsetSelect.getSelectedItem();
+        Duration duration = (Duration) durationSelect.getSelectedItem();
+        IntRange offsets = duration.offsets();
+        if (!offsets.containsInteger(offset)) {
+            offset = offsets.getMinimumInteger();
+        }
+        offsetSelect.setModel(new DefaultComboBoxModel<>(ArrayUtils.toObject(offsets.toArray())));
+        offsetSelect.setSelectedItem(offset);
+    }
+
+    private class UpdateOffsetAction implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            updateOffset();
+        }
     }
 
     private class CreatePublicLinkAction implements ActionListener {
