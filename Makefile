@@ -1,18 +1,17 @@
-.PHONY: build-jar build-dmg clean test deps
-
 GIT_SHA ?= $(shell git rev-parse --short=7 HEAD)
 
+.PHONY: build-jar
 build-jar: clean
 	./gradlew --console plain -Pversion=${GIT_SHA} shadowJar
 
-build-dmg: clean
-	./gradlew --console plain -Pversion=${GIT_SHA} createDmg
-
+.PHONY: clean
 clean:
 	./gradlew --console plain clean
 
+.PHONY: test
 test:
 	./gradlew --console plain test
 
+.PHONY: deps
 deps:
 	./gradlew dependencies
