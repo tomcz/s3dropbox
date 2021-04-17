@@ -41,8 +41,10 @@ import static org.mockito.BDDMockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class DoubleClickListenerTests {
 
-    @Mock Controller controller;
-    @Mock MouseEvent event;
+    @Mock
+    Controller controller;
+    @Mock
+    MouseEvent event;
 
     @Test
     public void shouldNotTriggerWhenNotDoubleClicked() {
@@ -73,6 +75,6 @@ public class DoubleClickListenerTests {
         DoubleClickListener listener = new DoubleClickListener(controller, new DirectExecutor());
         listener.mouseClicked(event);
 
-        verify(controller).showObjects();
+        verify(controller).showObjects(false);
     }
 }

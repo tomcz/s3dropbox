@@ -46,9 +46,12 @@ import static org.mockito.Matchers.anyListOf;
 @RunWith(MockitoJUnitRunner.class)
 public class CreateBucketActionTests {
 
-    @Mock Display display;
-    @Mock Controller controller;
-    @Mock CreateBucketDialog dialog;
+    @Mock
+    Display display;
+    @Mock
+    Controller controller;
+    @Mock
+    CreateBucketDialog dialog;
 
     @Test
     public void shouldCreateBucketWhenValidNameIsProvided() {

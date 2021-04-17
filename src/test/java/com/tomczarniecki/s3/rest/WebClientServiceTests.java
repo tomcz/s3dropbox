@@ -32,6 +32,7 @@ import com.amazonaws.services.s3.model.Region;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
+import com.tomczarniecki.s3.S3ObjectList;
 import com.tomczarniecki.s3.Service;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -47,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -87,13 +89,6 @@ public class WebClientServiceTests {
     }
 
     @Test
-    public void shouldExpectToFindPublicBucket() throws Exception {
-        Service service = new WebClientService(credentials);
-        assertTrue("'Public' bucket should exist", service.bucketExists("Public"));
-        assertTrue("'public' bucket should exist", service.bucketExists("public"));
-    }
-
-    @Test
     public void shouldCreateAndDeleteBucket() throws Exception {
         Service service = new WebClientService(credentials);
         String bucketName = "test-" + UUID.randomUUID();
@@ -124,12 +119,12 @@ public class WebClientServiceTests {
         service.createObject(bucketName, file.getName(), file, listener);
 
         assertTrue("Object should exist", service.objectExists(bucketName, file.getName()));
-        assertThat(service.listObjectsInBucket(bucketName), hasItem(object(file.getName())));
+        assertThat(service.listObjectsInBucket(bucketName, Optional.empty()).getObjects(), hasItem(object(file.getName())));
 
-        List<S3Object> objects = service.listObjectsInBucket(bucketName);
-        assertThat("Bucket should not be empty after object creation", objects.size(), equalTo(1));
+        S3ObjectList objects = service.listObjectsInBucket(bucketName, Optional.empty());
+        assertThat("Bucket should not be empty after object creation", objects.getObjects().size(), equalTo(1));
 
-        S3Object object = objects.get(0);
+        S3Object object = objects.getObjects().get(0);
         assertThat("Bad object key", object.getKey(), equalTo(file.getName()));
         assertThat("Bad object size", object.getSize(), equalTo(file.length()));
 
@@ -139,9 +134,9 @@ public class WebClientServiceTests {
 
         service.deleteObject(bucketName, file.getName());
 
-        objects = service.listObjectsInBucket(bucketName);
-        assertThat("Bucket should be empty after object deletion", objects.size(), equalTo(0));
-        assertThat(service.listObjectsInBucket(bucketName), not(hasItem(object(file.getName()))));
+        objects = service.listObjectsInBucket(bucketName, Optional.empty());
+        assertThat("Bucket should be empty after object deletion", objects.getObjects().size(), equalTo(0));
+        assertThat(service.listObjectsInBucket(bucketName, Optional.empty()).getObjects(), not(hasItem(object(file.getName()))));
 
         service.deleteBucket(bucketName);
     }

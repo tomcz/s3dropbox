@@ -45,10 +45,14 @@ import static org.mockito.BDDMockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class RightClickListenerTests {
 
-    @Mock Controller controller;
-    @Mock MouseEvent event;
-    @Mock JPopupMenu menu;
-    @Mock Display display;
+    @Mock
+    Controller controller;
+    @Mock
+    MouseEvent event;
+    @Mock
+    JPopupMenu menu;
+    @Mock
+    Display display;
 
     @Test
     public void shouldNotShowPopupWhenObjectIsNotSelected() {

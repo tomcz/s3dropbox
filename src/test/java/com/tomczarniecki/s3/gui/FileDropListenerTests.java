@@ -51,9 +51,12 @@ public class FileDropListenerTests {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Mock Display display;
-    @Mock DropBoxModel model;
-    @Mock Controller controller;
+    @Mock
+    Display display;
+    @Mock
+    DropBoxModel model;
+    @Mock
+    Controller controller;
 
     @Test
     public void shouldPassDroppedFilesToService() throws IOException {

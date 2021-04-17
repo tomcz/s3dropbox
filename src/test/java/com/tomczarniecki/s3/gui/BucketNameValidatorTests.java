@@ -41,7 +41,8 @@ import static org.mockito.BDDMockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class BucketNameValidatorTests {
 
-    @Mock Controller controller;
+    @Mock
+    Controller controller;
 
     @Test
     public void shouldNotPermitShortBucketNames() {

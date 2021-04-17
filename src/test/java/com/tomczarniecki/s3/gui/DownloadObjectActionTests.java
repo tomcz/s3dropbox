@@ -48,8 +48,10 @@ public class DownloadObjectActionTests {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Mock Display display;
-    @Mock Controller controller;
+    @Mock
+    Display display;
+    @Mock
+    Controller controller;
 
     @Test
     public void shouldDownloadObjectToSelectedFile() throws IOException {

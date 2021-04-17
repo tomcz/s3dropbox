@@ -31,6 +31,7 @@ package com.tomczarniecki.s3.tests;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
+import com.tomczarniecki.s3.S3ObjectList;
 import com.tomczarniecki.s3.Service;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -43,10 +44,10 @@ import org.joda.time.LocalDateTime;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static com.tomczarniecki.s3.Generics.newArrayList;
+import java.util.Optional;
 
 public class LocalService implements Service {
 
@@ -58,7 +59,7 @@ public class LocalService implements Service {
     }
 
     public List<S3Bucket> listAllMyBuckets() {
-        List<S3Bucket> buckets = newArrayList();
+        List<S3Bucket> buckets = new ArrayList<>();
         FileFilter filter = DirectoryFileFilter.INSTANCE;
         for (File dir : root.listFiles(filter)) {
             buckets.add(new S3Bucket(dir.getName()));
@@ -83,13 +84,14 @@ public class LocalService implements Service {
         Validate.isTrue(file.delete(), "Cannot delete ", file);
     }
 
-    public List<S3Object> listObjectsInBucket(String bucketName) {
-        List<S3Object> objects = newArrayList();
+    @Override
+    public S3ObjectList listObjectsInBucket(String bucketName, Optional<String> nextMarker) {
+        List<S3Object> objects = new ArrayList<>();
         FileFilter filter = FileFileFilter.FILE;
         for (File file : bucketFile(bucketName).listFiles(filter)) {
             objects.add(new S3Object(file.getName(), file.length(), new LocalDateTime(file.lastModified())));
         }
-        return objects;
+        return new S3ObjectList(objects, Optional.empty(), true);
     }
 
     public boolean objectExists(String bucketName, String objectKey) {

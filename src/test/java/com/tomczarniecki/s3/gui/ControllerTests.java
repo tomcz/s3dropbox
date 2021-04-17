@@ -28,16 +28,18 @@
 package com.tomczarniecki.s3.gui;
 
 import com.tomczarniecki.s3.S3Bucket;
-import com.tomczarniecki.s3.S3Object;
+import com.tomczarniecki.s3.S3ObjectList;
 import com.tomczarniecki.s3.Service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static com.tomczarniecki.s3.Generics.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -47,13 +49,14 @@ import static org.mockito.BDDMockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class ControllerTests {
 
-    @Mock Service service;
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
+    Service service;
 
     @Test
     public void shouldNotifyListenersWhenBucketsAreUpdated() {
         ControllerListener listener = mock(ControllerListener.class);
 
-        List<S3Bucket> buckets = newArrayList();
+        List<S3Bucket> buckets = new ArrayList<>();
         given(service.listAllMyBuckets()).willReturn(buckets);
 
         Controller controller = new Controller(service);
@@ -67,22 +70,25 @@ public class ControllerTests {
     public void shouldNotifyListenersWhenObjectsAreLoaded() {
         ControllerListener listener = mock(ControllerListener.class);
 
-        List<S3Object> objects = newArrayList();
-        given(service.listObjectsInBucket("bucket")).willReturn(objects);
+        S3ObjectList list = new S3ObjectList(new ArrayList<>(), Optional.empty(), true);
+        given(service.listObjectsInBucket("bucket", Optional.empty())).willReturn(list);
 
         Controller controller = new Controller(service);
         controller.addListener(listener);
         controller.selectBucket("bucket");
-        controller.showObjects();
+        controller.showObjects(false);
 
-        verify(listener).updatedObjects("bucket", objects);
+        verify(listener).updatedObjects("bucket", list);
     }
 
     @Test
     public void shouldShowBucketsWhenObjectsAreVisibleAndBackLinkIsSelected() {
+        S3ObjectList list = new S3ObjectList(new ArrayList<>(), Optional.empty(), true);
+        given(service.listObjectsInBucket("bucket", Optional.empty())).willReturn(list);
+
         Controller controller = new Controller(service);
         controller.selectBucket("bucket");
-        controller.showObjects();
+        controller.showObjects(false);
         controller.updateSelectedName(Constants.BACK_LINK);
 
         assertThat(controller.canShowBuckets(), equalTo(true));
@@ -101,9 +107,12 @@ public class ControllerTests {
 
     @Test
     public void shouldReportObjectAsSelectedWhenSelectedObjectKeyIsNotBackLink() {
+        S3ObjectList list = new S3ObjectList(new ArrayList<>(), Optional.empty(), true);
+        given(service.listObjectsInBucket("bucket", Optional.empty())).willReturn(list);
+
         Controller controller = new Controller(service);
         controller.selectBucket("bucket");
-        controller.showObjects();
+        controller.showObjects(false);
         controller.updateSelectedName("bucket");
 
         assertThat(controller.isObjectSelected(), equalTo(true));
@@ -111,9 +120,12 @@ public class ControllerTests {
 
     @Test
     public void shouldReportObjectAsNotSelectedWhenSelectedObjectKeyIsBackLink() {
+        S3ObjectList list = new S3ObjectList(new ArrayList<>(), Optional.empty(), true);
+        given(service.listObjectsInBucket("bucket", Optional.empty())).willReturn(list);
+
         Controller controller = new Controller(service);
         controller.selectBucket("bucket");
-        controller.showObjects();
+        controller.showObjects(false);
         controller.updateSelectedName(Constants.BACK_LINK);
 
         assertThat(controller.isObjectSelected(), equalTo(false));

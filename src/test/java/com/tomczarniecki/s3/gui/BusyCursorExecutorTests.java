@@ -40,8 +40,10 @@ import static org.mockito.Mockito.inOrder;
 @RunWith(MockitoJUnitRunner.class)
 public class BusyCursorExecutorTests {
 
-    @Mock Display display;
-    @Mock Runnable command;
+    @Mock
+    Display display;
+    @Mock
+    Runnable command;
 
     @Test
     public void shouldSetBusyCursorWhileCommandIsRunningAndRevertBackToNormalAfterwards() {
