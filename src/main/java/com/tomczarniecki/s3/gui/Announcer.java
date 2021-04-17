@@ -60,6 +60,7 @@ class Announcer<T> {
             for (T target : targets) {
                 method.invoke(target, args);
             }
+            //not mocking out equals here, so let's stop the nagging
             //noinspection SuspiciousInvocationHandlerImplementation
             return null;
         }));
