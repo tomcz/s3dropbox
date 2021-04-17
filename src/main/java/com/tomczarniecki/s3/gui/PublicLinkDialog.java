@@ -57,22 +57,26 @@ class PublicLinkDialog extends JDialog {
         public DateTime with(int offset) {
             DateTime now = new DateTime();
             switch (this) {
-                case Minutes:
-                    return now.plusMinutes(offset);
-                case Hours:
-                    return now.plusHours(offset);
                 case Days:
                     return now.plusDays(offset);
+                case Hours:
+                    return now.plusHours(offset);
+                case Minutes:
+                    return now.plusMinutes(offset);
                 default:
                     return now.plusSeconds(offset);
             }
         }
 
         public IntRange offsets() {
-            if (this == Duration.Days) {
-                return new IntRange(1, 7);
+            switch (this) {
+                case Days:
+                    return new IntRange(1, 7);
+                case Hours:
+                    return new IntRange(1, 24);
+                default:
+                    return new IntRange(1, 60);
             }
-            return new IntRange(1, 100);
         }
     }
 
