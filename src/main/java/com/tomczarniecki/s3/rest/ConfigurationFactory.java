@@ -46,7 +46,6 @@ public class ConfigurationFactory {
         AMAZON_ACCESS_KEY_ID, AMAZON_SECRET_ACCESS_KEY,
         PROXY_HOST, PROXY_PORT,
         PROXY_USERNAME, PROXY_PASSWORD,
-        NTLM_HOST, NTLM_DOMAIN,
         USE_SSL, DARK_THEME
     }
 
@@ -65,8 +64,6 @@ public class ConfigurationFactory {
                 getOptional(props, Keys.PROXY_PORT),
                 getOptional(props, Keys.PROXY_USERNAME),
                 getOptional(props, Keys.PROXY_PASSWORD),
-                getOptional(props, Keys.NTLM_HOST),
-                getOptional(props, Keys.NTLM_DOMAIN),
                 BooleanUtils.toBoolean(props.getProperty(Keys.USE_SSL.name(), "true")),
                 BooleanUtils.toBoolean(props.getProperty(Keys.DARK_THEME.name(), "true"))
         );

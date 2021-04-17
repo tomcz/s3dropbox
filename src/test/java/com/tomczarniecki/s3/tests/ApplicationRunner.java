@@ -39,7 +39,7 @@ public class ApplicationRunner {
 
         Runnable main = new Runnable() {
             public void run() {
-                Main.main();
+                Main.start();
             }
         };
 

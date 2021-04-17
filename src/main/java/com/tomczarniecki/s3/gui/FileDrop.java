@@ -72,6 +72,7 @@ public class FileDrop {
         remove(component, true);
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static void remove(Component component, boolean recursive) {
         component.setDropTarget(null);
         if (recursive && (component instanceof Container)) {
@@ -82,6 +83,7 @@ public class FileDrop {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private static void makeDropTarget(Component component, DropTargetListener listener, boolean recursive) {
         try {
             DropTarget dt = new DropTarget();
@@ -105,7 +107,7 @@ public class FileDrop {
         }
     }
 
-    public static interface Listener {
+    public interface Listener {
         void filesDropped(File[] files);
     }
 
@@ -234,7 +236,6 @@ public class FileDrop {
             return convertToArray(files);
         }
 
-        @SuppressWarnings({"unchecked"})
         private List<String> readLines(Reader reader) throws Exception {
             try {
                 return IOUtils.readLines(reader);
@@ -243,9 +244,9 @@ public class FileDrop {
             }
         }
 
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings({"rawtypes", "unchecked"})
         private File[] convertToArray(List files) {
-            return (File[]) files.toArray(new File[files.size()]);
+            return (File[]) files.toArray(new File[0]);
         }
     }
 

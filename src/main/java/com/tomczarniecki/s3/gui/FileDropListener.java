@@ -50,17 +50,9 @@ class FileDropListener implements FileDrop.Listener {
 
     public void filesDropped(final File[] files) {
         if (controller.isShowingObjects()) {
-            worker.executeInBackground(new Runnable() {
-                public void run() {
-                    uploader.uploadFiles(files);
-                }
-            });
+            worker.executeInBackground(() -> uploader.uploadFiles(files));
         } else {
-            worker.executeOnEventLoop(new Runnable() {
-                public void run() {
-                    selectBucketAndUploadFiles(files);
-                }
-            });
+            worker.executeOnEventLoop(() -> selectBucketAndUploadFiles(files));
         }
     }
 
@@ -68,12 +60,10 @@ class FileDropListener implements FileDrop.Listener {
         List<String> names = model.getCurrentNames();
         final String bucketName = display.selectOption("Select Folder", "Please choose a folder for your files.", names);
         if (bucketName != null) {
-            worker.executeInBackground(new Runnable() {
-                public void run() {
-                    controller.selectBucket(bucketName);
-                    controller.showObjects();
-                    uploader.uploadFiles(files);
-                }
+            worker.executeInBackground(() -> {
+                controller.selectBucket(bucketName);
+                controller.showObjects(false);
+                uploader.uploadFiles(files);
             });
         }
     }

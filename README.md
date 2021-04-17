@@ -15,8 +15,6 @@ The credentials file is optional. If not present, the application will look for 
 in your home directory. If that is not present you will be asked for some AWS credentials when the
 application starts and then a `.s3dropbox` file will be created for you in your home directory.
 
-NOTE: You can also run the S3DropBox without a GUI via `java -jar S3DropBox.jar -cli`
-
 Here are the values that the `.s3dropbox` file will contain:
 
 AMAZON\_ACCESS\_KEY\_ID

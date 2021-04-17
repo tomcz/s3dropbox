@@ -121,6 +121,7 @@ public class UploadWorker {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void resolveFile(List<Pair<String, File>> list, File file, String prefix) {
         if (file.isFile()) {
             list.add(pair(prefix + file.getName(), file));

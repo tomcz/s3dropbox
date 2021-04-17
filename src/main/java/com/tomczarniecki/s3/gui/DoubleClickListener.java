@@ -48,26 +48,19 @@ class DoubleClickListener extends MouseAdapter {
         if (clickCount == 2) {
             if (controller.canShowBuckets()) {
                 showBuckets();
-
             } else if (controller.canShowObjects()) {
-                showObjects();
+                showObjects(false);
+            } else if (controller.canShowMoreObjects()) {
+                showObjects(true);
             }
         }
     }
 
     private void showBuckets() {
-        executor.execute(new Runnable() {
-            public void run() {
-                controller.showBuckets();
-            }
-        });
+        executor.execute(controller::showBuckets);
     }
 
-    private void showObjects() {
-        executor.execute(new Runnable() {
-            public void run() {
-                controller.showObjects();
-            }
-        });
+    private void showObjects(final boolean useNextMarker) {
+        executor.execute(() -> controller.showObjects(useNextMarker));
     }
 }

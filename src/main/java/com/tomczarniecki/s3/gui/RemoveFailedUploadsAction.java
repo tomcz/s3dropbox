@@ -51,26 +51,24 @@ public class RemoveFailedUploadsAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        worker.executeInBackground(new Runnable() {
-            public void run() {
-                dialog.begin();
-                try {
-                    dialog.append("Removing failed uploads from:\n");
-                    List<S3Bucket> buckets = controller.listAllMyBuckets();
-                    for (int i = 0; i < buckets.size(); i++) {
-                        S3Bucket bucket = buckets.get(i);
-                        dialog.append("%s ... ", bucket.getName());
-                        controller.removeFailedUploads(bucket.getName());
-                        dialog.processed(i + 1, buckets.size());
-                        dialog.append("Done\n");
-                    }
-                } catch (Exception e) {
-                    logger.info("Cleanup failed", e);
-                    dialog.append("\n\nERROR - %s", e.toString());
-
-                } finally {
-                    dialog.finish();
+        worker.executeInBackground(() -> {
+            dialog.begin();
+            try {
+                dialog.append("Removing failed uploads from:\n");
+                List<S3Bucket> buckets = controller.listAllMyBuckets();
+                for (int i = 0; i < buckets.size(); i++) {
+                    S3Bucket bucket = buckets.get(i);
+                    dialog.append("%s ... ", bucket.getName());
+                    controller.removeFailedUploads(bucket.getName());
+                    dialog.processed(i + 1, buckets.size());
+                    dialog.append("Done\n");
                 }
+            } catch (Exception e1) {
+                logger.info("Cleanup failed", e1);
+                dialog.append("\n\nERROR - %s", e1.toString());
+
+            } finally {
+                dialog.finish();
             }
         });
     }

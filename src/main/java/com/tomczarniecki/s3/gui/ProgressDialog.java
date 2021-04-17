@@ -78,13 +78,11 @@ class ProgressDialog extends JDialog implements ProgressListener {
     }
 
     public void begin() {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                setLocationRelativeTo(getOwner());
-                closeButton.setEnabled(false);
-                display.setText("");
-                setVisible(true);
-            }
+        worker.executeOnEventLoop(() -> {
+            setLocationRelativeTo(getOwner());
+            closeButton.setEnabled(false);
+            display.setText("");
+            setVisible(true);
         });
         next();
     }
@@ -94,51 +92,43 @@ class ProgressDialog extends JDialog implements ProgressListener {
     }
 
     public void append(final String text, final Object... args) {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                display.append(String.format(text, args));
-                int length = display.getDocument().getLength();
-                display.setCaretPosition(length);
-            }
+        worker.executeOnEventLoop(() -> {
+            display.append(String.format(text, args));
+            int length = display.getDocument().getLength();
+            display.setCaretPosition(length);
         });
     }
 
     public void finish() {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                closeButton.setEnabled(true);
-                if (progress.isIndeterminate()) {
-                    progress.setMinimum(0);
-                    progress.setMaximum(100);
-                    progress.setStringPainted(true);
-                    progress.setIndeterminate(false);
-                }
-                int max = progress.getMaximum();
-                progress.setValue(max);
+        worker.executeOnEventLoop(() -> {
+            closeButton.setEnabled(true);
+            if (progress.isIndeterminate()) {
+                progress.setMinimum(0);
+                progress.setMaximum(100);
+                progress.setStringPainted(true);
+                progress.setIndeterminate(false);
             }
+            int max = progress.getMaximum();
+            progress.setValue(max);
         });
     }
 
     public void next() {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                progress.setValue(0);
-                progress.setIndeterminate(true);
-            }
+        worker.executeOnEventLoop(() -> {
+            progress.setValue(0);
+            progress.setIndeterminate(true);
         });
     }
 
     public void processed(final long count, final long length) {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                if (progress.isIndeterminate()) {
-                    progress.setMinimum(0);
-                    progress.setMaximum((int) length);
-                    progress.setStringPainted(true);
-                    progress.setIndeterminate(false);
-                }
-                progress.setValue((int) count);
+        worker.executeOnEventLoop(() -> {
+            if (progress.isIndeterminate()) {
+                progress.setMinimum(0);
+                progress.setMaximum((int) length);
+                progress.setStringPainted(true);
+                progress.setIndeterminate(false);
             }
+            progress.setValue((int) count);
         });
     }
 

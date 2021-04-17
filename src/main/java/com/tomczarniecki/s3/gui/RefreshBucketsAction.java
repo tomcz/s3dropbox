@@ -44,10 +44,6 @@ class RefreshBucketsAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        executor.execute(new Runnable() {
-            public void run() {
-                controller.showBuckets();
-            }
-        });
+        executor.execute(controller::showBuckets);
     }
 }

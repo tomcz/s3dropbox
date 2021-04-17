@@ -159,10 +159,6 @@ public class DropBox extends JFrame {
 
     public void showBuckets() {
         setVisible(true);
-        executor.execute(new Runnable() {
-            public void run() {
-                controller.showBuckets();
-            }
-        });
+        executor.execute(controller::showBuckets);
     }
 }

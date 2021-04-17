@@ -48,7 +48,7 @@ import static com.tomczarniecki.s3.Pair.pair;
 public class CreateBucketDialog extends JDialog {
 
     private final JTextField bucketName;
-    private final JComboBox bucketRegion;
+    private final JComboBox<String> bucketRegion;
 
     private boolean createBucket;
 
@@ -57,7 +57,8 @@ public class CreateBucketDialog extends JDialog {
         setModal(true);
 
         bucketName = new JTextField();
-        bucketRegion = new JComboBox(regions.toArray());
+        String[] array = regions.toArray(new String[0]);
+        bucketRegion = new JComboBox<>(array);
 
         getContentPane().add(createDisplayPanel());
         setResizable(false);

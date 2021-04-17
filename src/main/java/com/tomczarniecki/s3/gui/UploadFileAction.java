@@ -49,11 +49,7 @@ public class UploadFileAction extends AbstractAction {
     public void actionPerformed(ActionEvent evt) {
         final File[] files = display.selectFiles("Select files or folders", "Upload");
         if (!ArrayUtils.isEmpty(files)) {
-            worker.executeInBackground(new Runnable() {
-                public void run() {
-                    uploader.uploadFiles(files);
-                }
-            });
+            worker.executeInBackground(() -> uploader.uploadFiles(files));
         }
     }
 }

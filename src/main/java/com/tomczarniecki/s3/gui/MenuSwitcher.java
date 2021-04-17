@@ -29,7 +29,7 @@
 package com.tomczarniecki.s3.gui;
 
 import com.tomczarniecki.s3.S3Bucket;
-import com.tomczarniecki.s3.S3Object;
+import com.tomczarniecki.s3.S3ObjectList;
 
 import javax.swing.JMenu;
 import java.util.List;
@@ -52,22 +52,18 @@ class MenuSwitcher implements ControllerListener {
     }
 
     public void updatedBuckets(List<S3Bucket> buckets) {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                display.setTitle(String.format(FOLDER_NAME, ALL_FOLDERS));
-                bucketMenu.setVisible(true);
-                objectMenu.setVisible(false);
-            }
+        worker.executeOnEventLoop(() -> {
+            display.setTitle(String.format(FOLDER_NAME, ALL_FOLDERS));
+            bucketMenu.setVisible(true);
+            objectMenu.setVisible(false);
         });
     }
 
-    public void updatedObjects(final String bucketName, List<S3Object> objects) {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                display.setTitle(String.format(FOLDER_NAME, bucketName));
-                bucketMenu.setVisible(false);
-                objectMenu.setVisible(true);
-            }
+    public void updatedObjects(final String bucketName, S3ObjectList list) {
+        worker.executeOnEventLoop(() -> {
+            display.setTitle(String.format(FOLDER_NAME, bucketName));
+            bucketMenu.setVisible(false);
+            objectMenu.setVisible(true);
         });
     }
 }

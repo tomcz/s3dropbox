@@ -75,10 +75,6 @@ class CreateBucketAction extends AbstractAction {
     }
 
     private void createBucket(final String bucketName, final String region) {
-        executor.execute(new Runnable() {
-            public void run() {
-                controller.createBucket(bucketName, region);
-            }
-        });
+        executor.execute(() -> controller.createBucket(bucketName, region));
     }
 }

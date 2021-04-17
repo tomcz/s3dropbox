@@ -32,6 +32,7 @@ public class Constants {
     public static final String FOLDER_NAME = "S3 Drop Box [%s]";
     public static final String ALL_FOLDERS = "all my folders";
     public static final String BACK_LINK = "..";
+    public static final String MORE_LINK = "<more>";
 
     public static final String MAIN_WINDOW_NAME = "dropBoxMainWindow";
     public static final String MAIN_TABLE_NAME = "dropBoxMainTable";

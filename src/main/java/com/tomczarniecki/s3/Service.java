@@ -32,6 +32,7 @@ import org.joda.time.DateTime;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 public interface Service {
 
@@ -45,7 +46,7 @@ public interface Service {
 
     void deleteBucket(String bucketName);
 
-    List<S3Object> listObjectsInBucket(String bucketName);
+    S3ObjectList listObjectsInBucket(String bucketName, Optional<String> nextMarker);
 
     boolean objectExists(String bucketName, String objectKey);
 

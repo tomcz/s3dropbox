@@ -31,6 +31,7 @@ package com.tomczarniecki.s3.gui;
 import com.tomczarniecki.s3.FileSize;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
+import com.tomczarniecki.s3.S3ObjectList;
 import org.apache.commons.lang.SystemUtils;
 
 import javax.swing.Icon;
@@ -106,7 +107,7 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
     public List<String> getCurrentNames() {
         List<String> result = new ArrayList<>();
         for (DropBoxTableItem item : items) {
-            if (!Constants.BACK_LINK.equals(item.name)) {
+            if (!Constants.BACK_LINK.equals(item.name) && !Constants.MORE_LINK.equals(item.name)) {
                 result.add(item.name);
             }
         }
@@ -124,16 +125,19 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
         updateView();
     }
 
-    public void updatedObjects(String bucketName, List<S3Object> objects) {
-        items.clear();
-
-        DropBoxTableItem backLink = new DropBoxTableItem();
-        backLink.name = Constants.BACK_LINK;
-        backLink.icon = bucketIcon;
-        items.add(backLink);
-
+    public void updatedObjects(String bucketName, S3ObjectList list) {
+        if (list.isFirstPage()) {
+            items.clear();
+            DropBoxTableItem backLink = new DropBoxTableItem();
+            backLink.name = Constants.BACK_LINK;
+            backLink.icon = bucketIcon;
+            items.add(backLink);
+        } else {
+            // remove the more link so we can append more objects
+            items.remove(items.size() - 1);
+        }
         FileSize size = new FileSize();
-        for (S3Object object : objects) {
+        for (S3Object object : list.getObjects()) {
             DropBoxTableItem item = new DropBoxTableItem();
             item.lastModified = object.getLastModified().toString("dd/MM/yyyy HH:mm:ss");
             item.size = size.format(object.getSize());
@@ -141,24 +145,26 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
             item.icon = objectIcon;
             items.add(item);
         }
+        if (list.isTruncated()) {
+            DropBoxTableItem moreLink = new DropBoxTableItem();
+            moreLink.name = Constants.MORE_LINK;
+            moreLink.icon = bucketIcon;
+            items.add(moreLink);
+        }
         updateView();
     }
 
     private void updateView() {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                fireTableDataChanged();
-            }
-        });
+        worker.executeOnEventLoop(this::fireTableDataChanged);
     }
 
-    static enum Column {
+    enum Column {
 
         ICON(""), FILE_NAME("File Name"), SIZE("Size"), LAST_MODIFIED("Last Modified");
 
         final String title;
 
-        private Column(String title) {
+        Column(String title) {
             this.title = title;
         }
 

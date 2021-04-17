@@ -28,7 +28,7 @@
 package com.tomczarniecki.s3.gui;
 
 import com.tomczarniecki.s3.S3Bucket;
-import com.tomczarniecki.s3.S3Object;
+import com.tomczarniecki.s3.S3ObjectList;
 
 import java.util.List;
 
@@ -36,5 +36,5 @@ interface ControllerListener {
 
     void updatedBuckets(List<S3Bucket> buckets);
 
-    void updatedObjects(String bucketName, List<S3Object> objects);
+    void updatedObjects(String bucketName, S3ObjectList objects);
 }

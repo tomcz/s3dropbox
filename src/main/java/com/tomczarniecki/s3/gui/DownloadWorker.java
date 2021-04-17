@@ -47,26 +47,24 @@ public class DownloadWorker {
     }
 
     public void download(final File targetFile) {
-        worker.executeInBackground(new Runnable() {
-            public void run() {
-                dialog.begin();
-                try {
-                    dialog.append("Attempting download\n\nFrom: %s/%s\n\nTo: %s",
-                            controller.getSelectedBucketName(),
-                            controller.getSelectedObjectKey(),
-                            targetFile.getAbsolutePath());
+        worker.executeInBackground(() -> {
+            dialog.begin();
+            try {
+                dialog.append("Attempting download\n\nFrom: %s/%s\n\nTo: %s",
+                        controller.getSelectedBucketName(),
+                        controller.getSelectedObjectKey(),
+                        targetFile.getAbsolutePath());
 
-                    controller.downloadCurrentObject(targetFile, dialog);
+                controller.downloadCurrentObject(targetFile, dialog);
 
-                    dialog.append("\n\nDone");
+                dialog.append("\n\nDone");
 
-                } catch (Exception e) {
-                    logger.info("Download failed for " + targetFile, e);
-                    dialog.append("\n\nERROR - %s", e.toString());
+            } catch (Exception e) {
+                logger.info("Download failed for " + targetFile, e);
+                dialog.append("\n\nERROR - %s", e.toString());
 
-                } finally {
-                    dialog.finish();
-                }
+            } finally {
+                dialog.finish();
             }
         });
     }

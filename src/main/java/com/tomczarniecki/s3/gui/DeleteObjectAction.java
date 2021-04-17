@@ -52,11 +52,7 @@ class DeleteObjectAction extends AbstractAction {
     }
 
     private void deleteObject() {
-        executor.execute(new Runnable() {
-            public void run() {
-                controller.deleteCurrentObject();
-            }
-        });
+        executor.execute(controller::deleteCurrentObject);
     }
 
     private boolean confirmDeletion() {

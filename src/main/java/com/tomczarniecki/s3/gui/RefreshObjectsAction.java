@@ -44,10 +44,6 @@ class RefreshObjectsAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        executor.execute(new Runnable() {
-            public void run() {
-                controller.showObjects();
-            }
-        });
+        executor.execute(() -> controller.showObjects(false));
     }
 }

@@ -47,47 +47,42 @@ class BusyCursorExecutor implements Executor {
     }
 
     public void execute(final Runnable command) {
-        worker.executeInBackground(new Runnable() {
-            public void run() {
-                String error = null;
-                setCursor(true);
-                try {
-                    command.run();
+        worker.executeInBackground(() -> {
+            String error = null;
+            setCursor(true);
+            try {
+                command.run();
 
-                } catch (Exception e) {
-                    logger.warn("Task failed", e);
-                    error = e.toString();
+            } catch (Exception e) {
+                logger.warn("Task failed", e);
+                error = e.toString();
 
-                } finally {
-                    setCursor(false);
-                }
-                if (error != null) {
-                    showError(error);
-                }
+            } finally {
+                setCursor(false);
+            }
+            if (error != null) {
+                showError(error);
             }
         });
     }
 
     private void setCursor(final boolean busy) {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                if (busy) {
-                    display.showBusyCursor();
-                } else {
-                    display.showNormalCursor();
-                }
+        worker.executeOnEventLoop(() -> {
+            if (busy) {
+                display.showBusyCursor();
+            } else {
+                display.showNormalCursor();
             }
         });
     }
 
     private void showError(final String error) {
-        worker.executeOnEventLoop(new Runnable() {
-            public void run() {
-                display.showErrorMessage("Oops", "Something bad has happended.\n" +
-                        "Any saves, updates or deletes may be incomplete.\n" +
-                        "Error is: " + WordUtils.wrap(error, 80) + "\n" +
-                        "Please wait a bit and try again.\n");
-            }
+        worker.executeOnEventLoop(() -> {
+            String message = "Something bad has happended.\n" +
+                    "Any saves, updates or deletes may be incomplete.\n" +
+                    "Error is: " + WordUtils.wrap(error, 80) + "\n" +
+                    "Please wait a bit and try again.\n";
+            display.showErrorMessage("Oops", message);
         });
     }
 }

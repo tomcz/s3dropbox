@@ -27,8 +27,6 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +41,7 @@ class Announcer<T> {
     }
 
     public static <T> Announcer<T> createFor(Class<T> type) {
-        return new Announcer<T>(type);
+        return new Announcer<>(type);
     }
 
     public void add(T target) {
@@ -55,15 +53,15 @@ class Announcer<T> {
     }
 
     private T proxyFor(Class<T> type) {
+        //noinspection rawtypes
         Class[] proxyInterfaces = {type};
         ClassLoader classLoader = type.getClassLoader();
-        return type.cast(Proxy.newProxyInstance(classLoader, proxyInterfaces, new InvocationHandler() {
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                for (T target : targets) {
-                    method.invoke(target, args);
-                }
-                return null;
+        return type.cast(Proxy.newProxyInstance(classLoader, proxyInterfaces, (proxy, method, args) -> {
+            for (T target : targets) {
+                method.invoke(target, args);
             }
+            //noinspection SuspiciousInvocationHandlerImplementation
+            return null;
         }));
     }
 }

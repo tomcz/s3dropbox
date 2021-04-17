@@ -47,20 +47,17 @@ public class Configuration {
     private final String proxyUserName;
     private final String proxyPassword;
 
-    private final String ntlmHost;
-    private final String ntlmDomain;
-
     private final boolean useDarkTheme;
 
     public Configuration(String accessKeyId, String secretAccessKey) {
-        this(accessKeyId, secretAccessKey, "", "", "", "", "", "", true, true);
+        this(accessKeyId, secretAccessKey, "", "", "", "", true, true);
     }
 
     public Configuration(String accessKeyId, String secretAccessKey,
                          String proxyHost, String proxyPort,
                          String proxyUserName, String proxyPassword,
-                         String ntlmHost, String ntlmDomain,
-                         boolean useSecureProtocol, boolean useDarkTheme) {
+                         boolean useSecureProtocol,
+                         boolean useDarkTheme) {
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
@@ -71,9 +68,6 @@ public class Configuration {
 
         this.proxyUserName = proxyUserName;
         this.proxyPassword = proxyPassword;
-
-        this.ntlmHost = ntlmHost;
-        this.ntlmDomain = ntlmDomain;
 
         this.useDarkTheme = useDarkTheme;
     }
@@ -106,14 +100,6 @@ public class Configuration {
         return proxyPassword;
     }
 
-    public String getNtlmHost() {
-        return ntlmHost;
-    }
-
-    public String getNtlmDomain() {
-        return ntlmDomain;
-    }
-
     public boolean useDarkTheme() {
         return useDarkTheme;
     }
@@ -130,9 +116,6 @@ public class Configuration {
 
         config.setProxyUsername(StringUtils.defaultIfEmpty(proxyUserName, config.getProxyUsername()));
         config.setProxyPassword(StringUtils.defaultIfEmpty(proxyPassword, config.getProxyPassword()));
-
-        config.setProxyDomain(StringUtils.defaultIfEmpty(ntlmDomain, config.getProxyDomain()));
-        config.setProxyWorkstation(StringUtils.defaultIfEmpty(ntlmHost, config.getProxyWorkstation()));
 
         if (!useSecureProtocol) {
             config.setProtocol(Protocol.HTTP);

@@ -29,12 +29,13 @@ package com.tomczarniecki.s3.gui;
 
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
-import com.tomczarniecki.s3.S3Object;
+import com.tomczarniecki.s3.S3ObjectList;
 import com.tomczarniecki.s3.Service;
 import org.joda.time.DateTime;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 class Controller {
 
@@ -44,9 +45,11 @@ class Controller {
     private boolean showingObjects;
     private String selectedBucketName;
     private String selectedObjectKey;
+    private Optional<String> nextMarker;
 
     public Controller(Service service) {
         this.announcer = Announcer.createFor(ControllerListener.class);
+        this.nextMarker = Optional.empty();
         this.service = service;
     }
 
@@ -62,8 +65,12 @@ class Controller {
         announcer.announce().updatedBuckets(buckets);
     }
 
-    public void showObjects() {
-        List<S3Object> objects = service.listObjectsInBucket(selectedBucketName);
+    public void showObjects(boolean useNextMarker) {
+        if (!useNextMarker) {
+            nextMarker = Optional.empty();
+        }
+        S3ObjectList objects = service.listObjectsInBucket(selectedBucketName, nextMarker);
+        nextMarker = objects.getNextMarker();
         selectedObjectKey = null;
         showingObjects = true;
         announcer.announce().updatedObjects(selectedBucketName, objects);
@@ -113,12 +120,12 @@ class Controller {
 
     public void createObject(String bucketName, String objectKey, File source, ProgressListener listener) {
         service.createObject(bucketName, objectKey, source, listener);
-        showObjects();
+        showObjects(false);
     }
 
     public void deleteCurrentObject() {
         service.deleteObject(selectedBucketName, selectedObjectKey);
-        showObjects();
+        showObjects(false);
     }
 
     public void downloadCurrentObject(File target, ProgressListener listener) {
@@ -138,19 +145,21 @@ class Controller {
     }
 
     public boolean isObjectSelected() {
-        return (selectedObjectKey != null) && !isBackLinkSelected();
+        return (selectedObjectKey != null)
+                && !Constants.BACK_LINK.equals(selectedObjectKey)
+                && !Constants.MORE_LINK.equals(selectedObjectKey);
     }
 
     public boolean canShowBuckets() {
-        return showingObjects && isBackLinkSelected();
+        return showingObjects && Constants.BACK_LINK.equals(selectedObjectKey);
     }
 
     public boolean canShowObjects() {
         return !showingObjects && isBucketSelected();
     }
 
-    private boolean isBackLinkSelected() {
-        return Constants.BACK_LINK.equals(selectedObjectKey);
+    public boolean canShowMoreObjects() {
+        return showingObjects && Constants.MORE_LINK.equals(selectedObjectKey);
     }
 
     public List<S3Bucket> listAllMyBuckets() {
