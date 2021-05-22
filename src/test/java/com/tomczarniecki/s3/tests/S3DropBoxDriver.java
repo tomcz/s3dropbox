@@ -39,6 +39,7 @@ import javax.swing.table.JTableHeader;
 import static com.objogate.wl.swing.matcher.IterableComponentsMatcher.matching;
 import static com.objogate.wl.swing.matcher.JLabelTextMatcher.withLabelText;
 
+@SuppressWarnings("unchecked")
 public class S3DropBoxDriver extends JFrameDriver {
 
     public S3DropBoxDriver(int timeout) {

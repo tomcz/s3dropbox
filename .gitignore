@@ -10,3 +10,7 @@ build
 out
 .idea/
 gradle.properties
+.project
+.settings
+.classpath
+bin

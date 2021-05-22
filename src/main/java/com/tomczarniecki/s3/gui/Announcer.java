@@ -52,8 +52,8 @@ class Announcer<T> {
         return proxy;
     }
 
+    @SuppressWarnings("rawtypes") 
     private T proxyFor(Class<T> type) {
-        //noinspection rawtypes
         Class[] proxyInterfaces = {type};
         ClassLoader classLoader = type.getClassLoader();
         return type.cast(Proxy.newProxyInstance(classLoader, proxyInterfaces, (proxy, method, args) -> {
