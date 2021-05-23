@@ -47,17 +47,14 @@ public class Configuration {
     private final String proxyUserName;
     private final String proxyPassword;
 
-    private final boolean useDarkTheme;
-
     public Configuration(String accessKeyId, String secretAccessKey) {
-        this(accessKeyId, secretAccessKey, "", "", "", "", true, true);
+        this(accessKeyId, secretAccessKey, "", "", "", "", true);
     }
 
     public Configuration(String accessKeyId, String secretAccessKey,
                          String proxyHost, String proxyPort,
                          String proxyUserName, String proxyPassword,
-                         boolean useSecureProtocol,
-                         boolean useDarkTheme) {
+                         boolean useSecureProtocol) {
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
@@ -68,8 +65,6 @@ public class Configuration {
 
         this.proxyUserName = proxyUserName;
         this.proxyPassword = proxyPassword;
-
-        this.useDarkTheme = useDarkTheme;
     }
 
     public String getAccessKeyId() {
@@ -98,10 +93,6 @@ public class Configuration {
 
     public String getProxyPassword() {
         return proxyPassword;
-    }
-
-    public boolean useDarkTheme() {
-        return useDarkTheme;
     }
 
     public AWSCredentials getAWSCredentials() {

@@ -27,8 +27,10 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import com.tomczarniecki.s3.PreferenceSetter;
 import com.tomczarniecki.s3.Service;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -39,6 +41,8 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.util.concurrent.Executor;
 
 import static com.tomczarniecki.s3.gui.Constants.ALL_FOLDERS;
@@ -55,7 +59,7 @@ public class DropBox extends JFrame {
     private final Display display;
     private final Worker worker;
 
-    public DropBox(Service service) {
+    public DropBox(Service service, PreferenceSetter prefs) {
         super(String.format(FOLDER_NAME, ALL_FOLDERS));
         setName(MAIN_WINDOW_NAME);
 
@@ -78,7 +82,7 @@ public class DropBox extends JFrame {
         JScrollPane pane = new JScrollPane(createTable(model));
         FileDrop.add(pane, new FileDropListener(controller, model, display, worker, uploader));
 
-        setJMenuBar(createMenuBar(bucketMenu, objectMenu));
+        setJMenuBar(createMenuBar(bucketMenu, objectMenu, prefs));
         getContentPane().add(pane);
 
         setSize(600, 300);
@@ -116,11 +120,12 @@ public class DropBox extends JFrame {
         return table;
     }
 
-    private JMenuBar createMenuBar(JMenu bucketMenu, JMenu objectMenu) {
+    private JMenuBar createMenuBar(JMenu bucketMenu, JMenu objectMenu, PreferenceSetter prefs) {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(bucketMenu);
         menuBar.add(objectMenu);
         menuBar.add(toolsMenu());
+        menuBar.add(viewMenu(prefs));
         return menuBar;
     }
 
@@ -146,6 +151,14 @@ public class DropBox extends JFrame {
     private JMenu toolsMenu() {
         JMenu menu = new JMenu("Tools");
         menu.add(new JMenuItem(new RemoveFailedUploadsAction(controller, display, worker)));
+        return menu;
+    }
+
+    private JMenu viewMenu(PreferenceSetter prefs) {
+        JCheckBoxMenuItem item = new JCheckBoxMenuItem("Dark Mode (on restart)", prefs.isDarkMode());
+        item.addActionListener(EventHandler.create(ActionListener.class, prefs, "darkMode", "source.selected"));
+        JMenu menu = new JMenu("View");
+        menu.add(item);
         return menu;
     }
 

@@ -46,7 +46,7 @@ public class ConfigurationFactory {
         AMAZON_ACCESS_KEY_ID, AMAZON_SECRET_ACCESS_KEY,
         PROXY_HOST, PROXY_PORT,
         PROXY_USERNAME, PROXY_PASSWORD,
-        USE_SSL, DARK_THEME
+        USE_SSL
     }
 
     private final File source;
@@ -64,8 +64,7 @@ public class ConfigurationFactory {
                 getOptional(props, Keys.PROXY_PORT),
                 getOptional(props, Keys.PROXY_USERNAME),
                 getOptional(props, Keys.PROXY_PASSWORD),
-                BooleanUtils.toBoolean(props.getProperty(Keys.USE_SSL.name(), "true")),
-                BooleanUtils.toBoolean(props.getProperty(Keys.DARK_THEME.name(), "true"))
+                BooleanUtils.toBoolean(props.getProperty(Keys.USE_SSL.name(), "true"))
         );
     }
 
@@ -78,7 +77,6 @@ public class ConfigurationFactory {
         setProperty(props, Keys.PROXY_USERNAME, credentials.getProxyUserName());
         setProperty(props, Keys.PROXY_PASSWORD, credentials.getProxyPassword());
         setProperty(props, Keys.USE_SSL, credentials.useSecureProtocol());
-        setProperty(props, Keys.DARK_THEME, credentials.useDarkTheme());
         saveProperties(props);
     }
 

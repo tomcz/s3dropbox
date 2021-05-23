@@ -1,5 +1,5 @@
-/* ===================================================================================
- * Copyright (c) 2008, Thomas Czarniecki
+/*
+ * Copyright (c) 2021, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -24,23 +24,24 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * ===================================================================================
  */
-package com.tomczarniecki.s3.tests;
+package com.tomczarniecki.s3;
 
-import com.tomczarniecki.s3.PreferenceSetter;
-import com.tomczarniecki.s3.gui.DropBox;
+import java.util.prefs.Preferences;
 
-import javax.swing.SwingUtilities;
+public class PreferenceSetter {
 
-public class TestMain {
+    private final Preferences prefs;
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                DropBox box = new DropBox(new LocalService(), new PreferenceSetter());
-                box.showBuckets();
-            }
-        });
+    public PreferenceSetter() {
+        prefs = Preferences.userNodeForPackage(PreferenceSetter.class);
+    }
+
+    public boolean isDarkMode() {
+        return prefs.getBoolean("darkMode", false);
+    }
+
+    public void setDarkMode(boolean darkMode) {
+        prefs.putBoolean("darkMode", darkMode);
     }
 }

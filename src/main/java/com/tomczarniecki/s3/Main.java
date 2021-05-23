@@ -49,11 +49,13 @@ public class Main implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(Main.class);
 
     private final ConfigurationFactory factory;
+    private final PreferenceSetter prefs;
     private Configuration configuration;
 
     public Main(String[] args) {
         File file = (args.length > 0) ? new File(args[0]) : null;
         factory = new ConfigurationFactory(file);
+        prefs = new PreferenceSetter();
         try {
             configuration = factory.load();
         } catch (Exception e) {
@@ -78,7 +80,7 @@ public class Main implements Runnable {
             System.setProperty("com.apple.mrj.application.live-resize", "true");
             System.setProperty("com.apple.mrj.application.growbox.intrudes", "false");
         }
-        if (configuration != null && configuration.useDarkTheme()) {
+        if (prefs.isDarkMode()) {
             FlatDarkLaf.install();
         } else {
             FlatLightLaf.install();
@@ -88,7 +90,7 @@ public class Main implements Runnable {
     public void run() {
         ensureConfigurationExists();
         final Service service = new WebClientService(configuration);
-        DropBox box = new DropBox(service);
+        DropBox box = new DropBox(service, prefs);
         box.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         box.addWindowListener(new WindowAdapter() {
             @Override
