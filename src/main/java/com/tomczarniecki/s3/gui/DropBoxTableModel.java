@@ -28,7 +28,6 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import com.tomczarniecki.s3.FileSize;
 import com.tomczarniecki.s3.S3Bucket;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.S3ObjectList;
@@ -136,11 +135,10 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
             // remove the more link so we can append more objects
             items.remove(items.size() - 1);
         }
-        FileSize size = new FileSize();
         for (S3Object object : list.getObjects()) {
             DropBoxTableItem item = new DropBoxTableItem();
-            item.lastModified = object.getLastModified().toString("dd/MM/yyyy HH:mm:ss");
-            item.size = size.format(object.getSize());
+            item.lastModified = object.getLastModified();
+            item.size = object.getSize();
             item.name = object.getKey();
             item.icon = objectIcon;
             items.add(item);

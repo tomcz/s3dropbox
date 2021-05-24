@@ -48,7 +48,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -119,9 +118,9 @@ public class WebClientServiceTests {
         service.createObject(bucketName, file.getName(), file, listener);
 
         assertTrue("Object should exist", service.objectExists(bucketName, file.getName()));
-        assertThat(service.listObjectsInBucket(bucketName, Optional.empty()).getObjects(), hasItem(object(file.getName())));
+        assertThat(service.listObjectsInBucket(bucketName, "").getObjects(), hasItem(object(file.getName())));
 
-        S3ObjectList objects = service.listObjectsInBucket(bucketName, Optional.empty());
+        S3ObjectList objects = service.listObjectsInBucket(bucketName, "");
         assertThat("Bucket should not be empty after object creation", objects.getObjects().size(), equalTo(1));
 
         S3Object object = objects.getObjects().get(0);
@@ -134,9 +133,9 @@ public class WebClientServiceTests {
 
         service.deleteObject(bucketName, file.getName());
 
-        objects = service.listObjectsInBucket(bucketName, Optional.empty());
+        objects = service.listObjectsInBucket(bucketName, "");
         assertThat("Bucket should be empty after object deletion", objects.getObjects().size(), equalTo(0));
-        assertThat(service.listObjectsInBucket(bucketName, Optional.empty()).getObjects(), not(hasItem(object(file.getName()))));
+        assertThat(service.listObjectsInBucket(bucketName, "").getObjects(), not(hasItem(object(file.getName()))));
 
         service.deleteBucket(bucketName);
     }

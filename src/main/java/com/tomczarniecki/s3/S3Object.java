@@ -46,12 +46,12 @@ public class S3Object implements Comparable<S3Object> {
         return key;
     }
 
-    public long getSize() {
-        return size;
+    public String getSize() {
+        return FileSize.format(size);
     }
 
-    public LocalDateTime getLastModified() {
-        return lastModified;
+    public String getLastModified() {
+        return lastModified.toString("yyyy/MM/dd HH:mm:ss");
     }
 
     public int compareTo(S3Object other) {

@@ -52,7 +52,7 @@ class Announcer<T> {
         return proxy;
     }
 
-    @SuppressWarnings("rawtypes") 
+    @SuppressWarnings("rawtypes")
     private T proxyFor(Class<T> type) {
         Class[] proxyInterfaces = {type};
         ClassLoader classLoader = type.getClassLoader();

@@ -35,6 +35,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -45,11 +47,13 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
+import com.tomczarniecki.s3.S3List;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.S3ObjectList;
 import com.tomczarniecki.s3.Service;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -62,7 +66,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class WebClientService implements Service {
 
@@ -114,10 +117,12 @@ public class WebClientService implements Service {
         client.deleteBucket(bucketName);
     }
 
-    public S3ObjectList listObjectsInBucket(String bucketName, Optional<String> nextMarker) {
+    public S3ObjectList listObjectsInBucket(String bucketName, String nextMarker) {
         ListObjectsRequest req = new ListObjectsRequest();
         req.setBucketName(bucketName);
-        nextMarker.ifPresent(req::setMarker);
+        if (!nextMarker.isEmpty()) {
+            req.setMarker(nextMarker);
+        }
         ObjectListing listing = client.listObjects(req);
         List<S3Object> objects = new ArrayList<>();
         for (S3ObjectSummary summary : listing.getObjectSummaries()) {
@@ -125,7 +130,25 @@ public class WebClientService implements Service {
             lastModified = lastModified.toDateTime(DateTimeZone.getDefault());
             objects.add(new S3Object(summary.getKey(), summary.getSize(), lastModified.toLocalDateTime()));
         }
-        return new S3ObjectList(objects, Optional.ofNullable(listing.getNextMarker()), nextMarker.isEmpty());
+        String next = StringUtils.defaultString(listing.getNextMarker());
+        return new S3ObjectList(objects, next, nextMarker.isEmpty());
+    }
+
+    @Override
+    public S3List listItemsInBucket(String bucketName, String prefix) {
+        ListObjectsV2Request req = new ListObjectsV2Request()
+                .withBucketName(bucketName)
+                .withDelimiter(DELIMITER);
+        if (!prefix.isEmpty()) {
+            req = req.withPrefix(prefix);
+        }
+        ListObjectsV2Result res = client.listObjectsV2(req);
+        List<String> folders = res.getCommonPrefixes();
+        List<String> files = new ArrayList<>();
+        for (S3ObjectSummary summary : res.getObjectSummaries()) {
+            files.add(summary.getKey());
+        }
+        return new S3List(folders, files);
     }
 
     public boolean objectExists(String bucketName, String objectKey) {
@@ -154,6 +177,14 @@ public class WebClientService implements Service {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public S3Object getObject(String bucketName, String objectKey) {
+        ObjectMetadata md = client.getObjectMetadata(bucketName, objectKey);
+        DateTime lastModified = new DateTime(md.getLastModified());
+        lastModified = lastModified.toDateTime(DateTimeZone.getDefault());
+        return new S3Object(objectKey, md.getInstanceLength(), lastModified.toLocalDateTime());
     }
 
     public void downloadObject(String bucketName, String objectKey, File target, ProgressListener listener) {

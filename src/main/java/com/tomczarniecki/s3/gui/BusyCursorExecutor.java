@@ -78,7 +78,7 @@ class BusyCursorExecutor implements Executor {
 
     private void showError(final String error) {
         worker.executeOnEventLoop(() -> {
-            String message = "Something bad has happended.\n" +
+            String message = "Something bad has happened.\n" +
                     "Any saves, updates or deletes may be incomplete.\n" +
                     "Error is: " + WordUtils.wrap(error, 80) + "\n" +
                     "Please wait a bit and try again.\n";

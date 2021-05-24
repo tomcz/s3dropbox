@@ -1,15 +1,14 @@
 package com.tomczarniecki.s3;
 
 import java.util.List;
-import java.util.Optional;
 
 public class S3ObjectList {
 
     private final List<S3Object> objects;
-    private final Optional<String> nextMarker;
+    private final String nextMarker;
     private final boolean firstPage;
 
-    public S3ObjectList(List<S3Object> objects, Optional<String> nextMarker, boolean firstPage) {
+    public S3ObjectList(List<S3Object> objects, String nextMarker, boolean firstPage) {
         this.objects = objects;
         this.nextMarker = nextMarker;
         this.firstPage = firstPage;
@@ -19,7 +18,7 @@ public class S3ObjectList {
         return objects;
     }
 
-    public Optional<String> getNextMarker() {
+    public String getNextMarker() {
         return nextMarker;
     }
 
@@ -28,6 +27,6 @@ public class S3ObjectList {
     }
 
     public boolean isTruncated() {
-        return nextMarker.isPresent();
+        return !nextMarker.isEmpty();
     }
 }

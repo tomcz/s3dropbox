@@ -105,8 +105,8 @@ public class CreateBucketDialog extends JDialog {
     private void setValues(Pair<String, String> bucketNameAndRegion) {
         createBucket = false;
         if (bucketNameAndRegion != null) {
-            this.bucketName.setText(bucketNameAndRegion.getKey());
-            this.bucketRegion.setSelectedItem(bucketNameAndRegion.getValue());
+            this.bucketName.setText(bucketNameAndRegion.getLeft());
+            this.bucketRegion.setSelectedItem(bucketNameAndRegion.getRight());
         }
     }
 

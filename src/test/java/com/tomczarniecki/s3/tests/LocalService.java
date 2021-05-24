@@ -30,12 +30,14 @@ package com.tomczarniecki.s3.tests;
 
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
+import com.tomczarniecki.s3.S3List;
 import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.S3ObjectList;
 import com.tomczarniecki.s3.Service;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.Validate;
 import org.joda.time.DateTime;
@@ -47,7 +49,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class LocalService implements Service {
 
@@ -61,6 +62,7 @@ public class LocalService implements Service {
     public List<S3Bucket> listAllMyBuckets() {
         List<S3Bucket> buckets = new ArrayList<>();
         FileFilter filter = DirectoryFileFilter.INSTANCE;
+        //noinspection ConstantConditions
         for (File dir : root.listFiles(filter)) {
             buckets.add(new S3Bucket(dir.getName()));
         }
@@ -85,13 +87,24 @@ public class LocalService implements Service {
     }
 
     @Override
-    public S3ObjectList listObjectsInBucket(String bucketName, Optional<String> nextMarker) {
+    public S3ObjectList listObjectsInBucket(String bucketName, String nextMarker) {
         List<S3Object> objects = new ArrayList<>();
         FileFilter filter = FileFileFilter.FILE;
+        //noinspection ConstantConditions
         for (File file : bucketFile(bucketName).listFiles(filter)) {
             objects.add(new S3Object(file.getName(), file.length(), new LocalDateTime(file.lastModified())));
         }
-        return new S3ObjectList(objects, Optional.empty(), true);
+        return new S3ObjectList(objects, "", true);
+    }
+
+    @Override
+    public S3List listItemsInBucket(String bucketName, String prefix) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public S3Object getObject(String bucketName, String objectKey) {
+        throw new NotImplementedException();
     }
 
     public boolean objectExists(String bucketName, String objectKey) {

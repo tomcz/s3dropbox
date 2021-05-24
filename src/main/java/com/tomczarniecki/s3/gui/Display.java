@@ -37,6 +37,7 @@ import java.io.File;
 import java.util.List;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
@@ -73,7 +74,7 @@ class Display {
         return new JPopupMenu();
     }
 
-    public PublicLinkDialog createPublicLinkDialog(Controller controller) {
+    public PublicLinkDialog createPublicLinkDialog(ObjectController controller) {
         return new PublicLinkDialog(frame, controller);
     }
 
@@ -85,12 +86,16 @@ class Display {
         return new CreateBucketDialog(regions);
     }
 
+    public void showMessage(String title, String message) {
+        showMessageDialog(frame, message, title, INFORMATION_MESSAGE);
+    }
+
     public void showErrorMessage(String title, String message) {
         showMessageDialog(frame, message, title, ERROR_MESSAGE);
     }
 
-    public boolean confirmMessage(String tilte, String message) {
-        int result = showConfirmDialog(frame, message, tilte, YES_NO_OPTION, WARNING_MESSAGE);
+    public boolean confirmMessage(String title, String message) {
+        int result = showConfirmDialog(frame, message, title, YES_NO_OPTION, WARNING_MESSAGE);
         return result == YES_OPTION;
     }
 

@@ -27,26 +27,26 @@
  */
 package com.tomczarniecki.s3;
 
-public class Pair<K, V> {
+public class Pair<L, R> {
 
-    private final K key;
-    private final V value;
+    private final L left;
+    private final R right;
 
-    public Pair(K key, V value) {
-        this.key = key;
-        this.value = value;
+    public Pair(L left, R right) {
+        this.left = left;
+        this.right = right;
     }
 
     public static <K, V> Pair<K, V> pair(K key, V value) {
         return new Pair<K, V>(key, value);
     }
 
-    public K getKey() {
-        return key;
+    public L getLeft() {
+        return left;
     }
 
-    public V getValue() {
-        return value;
+    public R getRight() {
+        return right;
     }
 }
 

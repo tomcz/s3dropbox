@@ -32,9 +32,10 @@ import org.joda.time.DateTime;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
 public interface Service {
+
+    String DELIMITER = "/";
 
     List<String> bucketRegions();
 
@@ -46,7 +47,9 @@ public interface Service {
 
     void deleteBucket(String bucketName);
 
-    S3ObjectList listObjectsInBucket(String bucketName, Optional<String> nextMarker);
+    S3ObjectList listObjectsInBucket(String bucketName, String nextMarker);
+
+    S3List listItemsInBucket(String bucketName, String prefix);
 
     boolean objectExists(String bucketName, String objectKey);
 
@@ -55,6 +58,8 @@ public interface Service {
     void createObject(String bucketName, String objectKey, File source, ProgressListener listener);
 
     void downloadObject(String bucketName, String objectKey, File target, ProgressListener listener);
+
+    S3Object getObject(String bucketName, String objectKey);
 
     void deleteObject(String bucketName, String objectKey);
 

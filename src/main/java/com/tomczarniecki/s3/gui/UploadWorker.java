@@ -43,14 +43,11 @@ public class UploadWorker {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ProgressDialog dialog;
-    private final FileSize fileSize;
-
     private final Controller controller;
     private final Display display;
 
     public UploadWorker(Controller controller, Display display, Worker worker) {
         this.dialog = display.createProgressDialog("Upload Progress", worker);
-        this.fileSize = new FileSize();
         this.controller = controller;
         this.display = display;
     }
@@ -76,7 +73,7 @@ public class UploadWorker {
         dialog.append("Attempting upload of %d %s to folder %s\n\n", files.size(), plural, bucketName);
 
         for (Pair<String, File> entry : files) {
-            uploadFile(bucketName, entry.getKey(), entry.getValue());
+            uploadFile(bucketName, entry.getLeft(), entry.getRight());
         }
     }
 
@@ -99,7 +96,7 @@ public class UploadWorker {
     private void attemptObjectCreation(String bucketName, String objectKey, File file) {
         dialog.next();
         try {
-            dialog.append("File %s (%s) ...", file.getAbsolutePath(), fileSize.format(file.length()));
+            dialog.append("File %s (%s) ...", file.getAbsolutePath(), FileSize.format(file.length()));
             controller.createObject(bucketName, objectKey, file, dialog);
             dialog.append(" OK\n");
 

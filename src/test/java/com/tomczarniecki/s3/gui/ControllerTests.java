@@ -38,7 +38,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -70,8 +69,8 @@ public class ControllerTests {
     public void shouldNotifyListenersWhenObjectsAreLoaded() {
         ControllerListener listener = mock(ControllerListener.class);
 
-        S3ObjectList list = new S3ObjectList(new ArrayList<>(), Optional.empty(), true);
-        given(service.listObjectsInBucket("bucket", Optional.empty())).willReturn(list);
+        S3ObjectList list = new S3ObjectList(new ArrayList<>(), "", true);
+        given(service.listObjectsInBucket("bucket", "")).willReturn(list);
 
         Controller controller = new Controller(service);
         controller.addListener(listener);
@@ -83,8 +82,8 @@ public class ControllerTests {
 
     @Test
     public void shouldShowBucketsWhenObjectsAreVisibleAndBackLinkIsSelected() {
-        S3ObjectList list = new S3ObjectList(new ArrayList<>(), Optional.empty(), true);
-        given(service.listObjectsInBucket("bucket", Optional.empty())).willReturn(list);
+        S3ObjectList list = new S3ObjectList(new ArrayList<>(), "", true);
+        given(service.listObjectsInBucket("bucket", "")).willReturn(list);
 
         Controller controller = new Controller(service);
         controller.selectBucket("bucket");
@@ -107,8 +106,8 @@ public class ControllerTests {
 
     @Test
     public void shouldReportObjectAsSelectedWhenSelectedObjectKeyIsNotBackLink() {
-        S3ObjectList list = new S3ObjectList(new ArrayList<>(), Optional.empty(), true);
-        given(service.listObjectsInBucket("bucket", Optional.empty())).willReturn(list);
+        S3ObjectList list = new S3ObjectList(new ArrayList<>(), "", true);
+        given(service.listObjectsInBucket("bucket", "")).willReturn(list);
 
         Controller controller = new Controller(service);
         controller.selectBucket("bucket");
@@ -120,8 +119,8 @@ public class ControllerTests {
 
     @Test
     public void shouldReportObjectAsNotSelectedWhenSelectedObjectKeyIsBackLink() {
-        S3ObjectList list = new S3ObjectList(new ArrayList<>(), Optional.empty(), true);
-        given(service.listObjectsInBucket("bucket", Optional.empty())).willReturn(list);
+        S3ObjectList list = new S3ObjectList(new ArrayList<>(), "", true);
+        given(service.listObjectsInBucket("bucket", "")).willReturn(list);
 
         Controller controller = new Controller(service);
         controller.selectBucket("bucket");

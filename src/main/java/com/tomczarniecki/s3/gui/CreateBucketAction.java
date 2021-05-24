@@ -53,7 +53,7 @@ class CreateBucketAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         Pair<String, String> bucketNameAndRegion = getBucketNameAndRegion();
         if (bucketNameAndRegion != null) {
-            createBucket(bucketNameAndRegion.getKey(), bucketNameAndRegion.getValue());
+            createBucket(bucketNameAndRegion.getLeft(), bucketNameAndRegion.getRight());
         }
     }
 
@@ -64,7 +64,7 @@ class CreateBucketAction extends AbstractAction {
             if (bucketNameAndRegion == null) {
                 return null;
             }
-            String errorMessage = validator.validate(bucketNameAndRegion.getKey());
+            String errorMessage = validator.validate(bucketNameAndRegion.getLeft());
             if (errorMessage == null) {
                 return bucketNameAndRegion;
             }

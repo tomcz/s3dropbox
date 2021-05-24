@@ -36,11 +36,14 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import java.awt.CardLayout;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.Executor;
@@ -52,12 +55,12 @@ import static com.tomczarniecki.s3.gui.Constants.MAIN_WINDOW_NAME;
 
 public class DropBox extends JFrame {
 
-    private final DownloadWorker downloader;
     private final UploadWorker uploader;
     private final Controller controller;
     private final Executor executor;
     private final Display display;
     private final Worker worker;
+    private final JPanel cards;
 
     public DropBox(Service service, PreferenceSetter prefs) {
         super(String.format(FOLDER_NAME, ALL_FOLDERS));
@@ -68,22 +71,27 @@ public class DropBox extends JFrame {
         controller = new Controller(service);
         executor = new BusyCursorExecutor(display, worker);
         uploader = new UploadWorker(controller, display, worker);
-        downloader = new DownloadWorker(controller, display, worker);
 
         JMenu bucketMenu = createBucketMenu();
         JMenu objectMenu = createObjectMenu();
 
-        DropBoxTableModel model = new DropBoxTableModel(worker);
+        DropBoxTableModel table = new DropBoxTableModel(worker);
+        DropBoxTreeModel tree = new DropBoxTreeModel(service, worker);
         MenuSwitcher switcher = new MenuSwitcher(display, bucketMenu, objectMenu, worker);
 
-        controller.addListener(model);
+        controller.addListener(tree);
+        controller.addListener(table);
         controller.addListener(switcher);
 
-        JScrollPane pane = new JScrollPane(createTable(model));
-        FileDrop.add(pane, new FileDropListener(controller, model, display, worker, uploader));
+        setJMenuBar(createMenuBar(bucketMenu, objectMenu, prefs, tree));
 
-        setJMenuBar(createMenuBar(bucketMenu, objectMenu, prefs));
-        getContentPane().add(pane);
+        cards = new JPanel(new CardLayout());
+        cards.add("tree", createTree(tree));
+        cards.add("table", createTable(table));
+
+        JScrollPane scrollPane = new JScrollPane(cards);
+        FileDrop.add(scrollPane, new FileDropListener(controller, table, display, worker, uploader));
+        getContentPane().add(scrollPane);
 
         setSize(600, 300);
         setLocationRelativeTo(null);
@@ -115,17 +123,27 @@ public class DropBox extends JFrame {
         table.getSelectionModel().addListSelectionListener(new DropBoxTableListener(controller, model, table));
 
         table.addMouseListener(new DoubleClickListener(controller, executor));
-        table.addMouseListener(createRightClickListener());
+        table.addMouseListener(createRightClickListener(controller));
 
         return table;
     }
 
-    private JMenuBar createMenuBar(JMenu bucketMenu, JMenu objectMenu, PreferenceSetter prefs) {
+    private JTree createTree(DropBoxTreeModel model) {
+        JTree tree = new JTree(model.getModel());
+        tree.addMouseListener(createRightClickListener(model));
+        tree.addTreeWillExpandListener(model);
+        tree.addTreeSelectionListener(model);
+        tree.setShowsRootHandles(true);
+        tree.setRootVisible(false);
+        return tree;
+    }
+
+    private JMenuBar createMenuBar(JMenu bucketMenu, JMenu objectMenu, PreferenceSetter prefs, DropBoxTreeModel tree) {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(bucketMenu);
         menuBar.add(objectMenu);
         menuBar.add(toolsMenu());
-        menuBar.add(viewMenu(prefs));
+        menuBar.add(viewMenu(prefs, tree));
         return menuBar;
     }
 
@@ -141,6 +159,7 @@ public class DropBox extends JFrame {
         JMenu menu = new JMenu("Files");
         menu.add(new JMenuItem(new UploadFileAction(display, worker, uploader)));
         menu.add(new JMenuItem(new CreatePublicLinkAction(controller, display)));
+        DownloadWorker downloader = new DownloadWorker(controller, display, worker);
         menu.add(new JMenuItem(new DownloadObjectAction(controller, display, downloader)));
         menu.add(new JMenuItem(new DeleteObjectAction(controller, display, executor)));
         menu.add(new JMenuItem(new RefreshObjectsAction(controller, executor)));
@@ -154,17 +173,33 @@ public class DropBox extends JFrame {
         return menu;
     }
 
-    private JMenu viewMenu(PreferenceSetter prefs) {
-        JCheckBoxMenuItem item = new JCheckBoxMenuItem("Dark Mode (on restart)", prefs.isDarkMode());
-        item.addActionListener(EventHandler.create(ActionListener.class, prefs, "darkMode", "source.selected"));
+    private JMenu viewMenu(PreferenceSetter prefs, DropBoxTreeModel tree) {
+        JCheckBoxMenuItem darkMode = new JCheckBoxMenuItem("Dark Mode (on restart)", prefs.isDarkMode());
+        darkMode.addActionListener(EventHandler.create(ActionListener.class, prefs, "darkMode", "source.selected"));
+
+        JCheckBoxMenuItem showTree = new JCheckBoxMenuItem("Tree View", true);
+        showTree.addActionListener(e -> {
+            tree.setVisible(showTree.isVisible());
+            executor.execute(controller::showBuckets);
+            CardLayout layout = (CardLayout) cards.getLayout();
+            if (showTree.isSelected()) {
+                layout.show(cards, "tree");
+            } else {
+                layout.show(cards, "table");
+            }
+        });
+
         JMenu menu = new JMenu("View");
-        menu.add(item);
+        menu.add(showTree);
+        menu.add(darkMode);
         return menu;
     }
 
-    private RightClickListener createRightClickListener() {
+    private RightClickListener createRightClickListener(ObjectController controller) {
         RightClickListener listener = new RightClickListener(controller, display);
+        listener.addAction(new ShowDetailsAction(controller, display, executor, worker));
         listener.addAction(new CreatePublicLinkAction(controller, display));
+        DownloadWorker downloader = new DownloadWorker(controller, display, worker);
         listener.addAction(new DownloadObjectAction(controller, display, downloader));
         listener.addAction(new DeleteObjectAction(controller, display, executor));
         return listener;

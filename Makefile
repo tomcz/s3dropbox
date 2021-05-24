@@ -10,7 +10,7 @@ clean:
 
 .PHONY: test
 test:
-	./gradlew --console plain test
+	./gradlew --console plain test -Dignore.integration.tests='true'
 
 .PHONY: deps
 deps:

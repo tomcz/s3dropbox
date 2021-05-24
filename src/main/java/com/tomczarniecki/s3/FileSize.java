@@ -37,10 +37,12 @@ import static com.tomczarniecki.s3.Pair.pair;
 
 public class FileSize {
 
+    private static final FileSize INSTANCE = new FileSize();
+
     private final List<Pair<String, Long>> sizes;
     private final DecimalFormat format;
 
-    public FileSize() {
+    private FileSize() {
         sizes = new ArrayList<>();
         sizes.add(pair("GB", FileUtils.ONE_GB));
         sizes.add(pair("MB", FileUtils.ONE_MB));
@@ -48,11 +50,15 @@ public class FileSize {
         format = new DecimalFormat(",##0.0");
     }
 
-    public String format(long size) {
+    public static String format(long size) {
+        return INSTANCE.fmt(size);
+    }
+
+    private String fmt(long size) {
         for (Pair<String, Long> entry : sizes) {
-            if (size / entry.getValue() > 0) {
-                double value = ((double) size) / ((double) entry.getValue());
-                return format.format(value) + " " + entry.getKey();
+            if (size / entry.getRight() > 0) {
+                double value = ((double) size) / ((double) entry.getRight());
+                return format.format(value) + " " + entry.getLeft();
             }
         }
         return size + " bytes";

@@ -36,11 +36,9 @@ import javax.swing.SwingUtilities;
 public class TestMain {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                DropBox box = new DropBox(new LocalService(), new PreferenceSetter());
-                box.showBuckets();
-            }
+        SwingUtilities.invokeLater(() -> {
+            DropBox box = new DropBox(new LocalService(), new PreferenceSetter());
+            box.showBuckets();
         });
     }
 }

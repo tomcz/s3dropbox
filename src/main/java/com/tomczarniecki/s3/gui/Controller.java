@@ -29,15 +29,15 @@ package com.tomczarniecki.s3.gui;
 
 import com.tomczarniecki.s3.ProgressListener;
 import com.tomczarniecki.s3.S3Bucket;
+import com.tomczarniecki.s3.S3Object;
 import com.tomczarniecki.s3.S3ObjectList;
 import com.tomczarniecki.s3.Service;
 import org.joda.time.DateTime;
 
 import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
-class Controller {
+class Controller implements ObjectController {
 
     private final Announcer<ControllerListener> announcer;
     private final Service service;
@@ -45,12 +45,12 @@ class Controller {
     private boolean showingObjects;
     private String selectedBucketName;
     private String selectedObjectKey;
-    private Optional<String> nextMarker;
+    private String nextMarker;
 
     public Controller(Service service) {
         this.announcer = Announcer.createFor(ControllerListener.class);
-        this.nextMarker = Optional.empty();
         this.service = service;
+        this.nextMarker = "";
     }
 
     public void addListener(ControllerListener listener) {
@@ -67,7 +67,7 @@ class Controller {
 
     public void showObjects(boolean useNextMarker) {
         if (!useNextMarker) {
-            nextMarker = Optional.empty();
+            nextMarker = "";
         }
         S3ObjectList objects = service.listObjectsInBucket(selectedBucketName, nextMarker);
         nextMarker = objects.getNextMarker();
@@ -168,5 +168,11 @@ class Controller {
 
     public void removeFailedUploads(String bucketName) {
         service.removeFailedUploads(bucketName);
+    }
+
+    @Override
+    public void getSelectedObject(Callback callback) {
+        S3Object object = service.getObject(selectedBucketName, selectedObjectKey);
+        callback.selectedObject(object);
     }
 }
