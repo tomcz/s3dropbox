@@ -86,8 +86,8 @@ public class DropBox extends JFrame {
         setJMenuBar(createMenuBar(bucketMenu, objectMenu, prefs, tree));
 
         cards = new JPanel(new CardLayout());
-        cards.add("tree", createTree(tree));
         cards.add("table", createTable(table));
+        cards.add("tree", createTree(tree));
 
         JScrollPane scrollPane = new JScrollPane(cards);
         FileDrop.add(scrollPane, new FileDropListener(controller, table, display, worker, uploader));
@@ -177,7 +177,7 @@ public class DropBox extends JFrame {
         JCheckBoxMenuItem darkMode = new JCheckBoxMenuItem("Dark Mode (on restart)", prefs.isDarkMode());
         darkMode.addActionListener(EventHandler.create(ActionListener.class, prefs, "darkMode", "source.selected"));
 
-        JCheckBoxMenuItem showTree = new JCheckBoxMenuItem("Tree View", true);
+        JCheckBoxMenuItem showTree = new JCheckBoxMenuItem("Tree View", false);
         showTree.addActionListener(e -> {
             tree.setVisible(showTree.isVisible());
             executor.execute(controller::showBuckets);
