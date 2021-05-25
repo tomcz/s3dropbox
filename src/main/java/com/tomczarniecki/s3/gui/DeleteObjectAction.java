@@ -34,11 +34,11 @@ import java.util.concurrent.Executor;
 
 class DeleteObjectAction extends AbstractAction {
 
-    private final ObjectController controller;
+    private final Controller controller;
     private final Executor executor;
     private final Display display;
 
-    public DeleteObjectAction(ObjectController controller, Display display, Executor executor) {
+    public DeleteObjectAction(Controller controller, Display display, Executor executor) {
         super("Delete File");
         this.controller = controller;
         this.executor = executor;

@@ -37,10 +37,10 @@ public class DownloadWorker {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ProgressDialog dialog;
-    private final ObjectController controller;
+    private final Controller controller;
     private final Worker worker;
 
-    public DownloadWorker(ObjectController controller, Display display, Worker worker) {
+    public DownloadWorker(Controller controller, Display display, Worker worker) {
         this.dialog = display.createProgressDialog("Download Progress", worker);
         this.controller = controller;
         this.worker = worker;

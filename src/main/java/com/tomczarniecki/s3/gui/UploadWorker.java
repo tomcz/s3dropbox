@@ -52,10 +52,10 @@ public class UploadWorker {
         this.display = display;
     }
 
-    public void uploadFiles(final File[] files) {
+    public void uploadFiles(String bucketName, File[] files) {
         dialog.begin();
         try {
-            uploadFiles(resolveKeys(files));
+            uploadFiles(bucketName, resolveKeys(files));
             dialog.append("\nDone");
 
         } catch (Exception e) {
@@ -67,8 +67,7 @@ public class UploadWorker {
         }
     }
 
-    private void uploadFiles(List<Pair<String, File>> files) {
-        String bucketName = controller.getSelectedBucketName();
+    private void uploadFiles(String bucketName, List<Pair<String, File>> files) {
         String plural = (files.size() > 1) ? "files" : "file";
         dialog.append("Attempting upload of %d %s to folder %s\n\n", files.size(), plural, bucketName);
 

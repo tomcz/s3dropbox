@@ -35,21 +35,24 @@ import java.io.File;
 
 public class UploadFileAction extends AbstractAction {
 
+    private final Controller controller;
     private final UploadWorker uploader;
     private final Display display;
     private final Worker worker;
 
-    public UploadFileAction(Display display, Worker worker, UploadWorker uploader) {
+    public UploadFileAction(Controller controller, Display display, Worker worker, UploadWorker uploader) {
         super("Upload File");
         this.worker = worker;
         this.display = display;
         this.uploader = uploader;
+        this.controller = controller;
     }
 
     public void actionPerformed(ActionEvent evt) {
         final File[] files = display.selectFiles("Select files or folders", "Upload");
         if (!ArrayUtils.isEmpty(files)) {
-            worker.executeInBackground(() -> uploader.uploadFiles(files));
+            String bucketName = controller.getSelectedBucketName();
+            worker.executeInBackground(() -> uploader.uploadFiles(bucketName, files));
         }
     }
 }

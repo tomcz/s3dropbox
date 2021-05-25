@@ -34,9 +34,9 @@ import java.awt.event.ActionEvent;
 class CreatePublicLinkAction extends AbstractAction {
 
     private final PublicLinkDialog dialog;
-    private final ObjectController controller;
+    private final Controller controller;
 
-    public CreatePublicLinkAction(ObjectController controller, Display display) {
+    public CreatePublicLinkAction(Controller controller, Display display) {
         super("Create Public Link");
         this.dialog = display.createPublicLinkDialog(controller);
         this.controller = controller;

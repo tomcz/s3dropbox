@@ -36,11 +36,11 @@ import java.io.File;
 
 class DownloadObjectAction extends AbstractAction {
 
-    private final ObjectController controller;
+    private final Controller controller;
     private final DownloadWorker worker;
     private final Display display;
 
-    public DownloadObjectAction(ObjectController controller, Display display, DownloadWorker worker) {
+    public DownloadObjectAction(Controller controller, Display display, DownloadWorker worker) {
         super("Download File");
         this.controller = controller;
         this.display = display;

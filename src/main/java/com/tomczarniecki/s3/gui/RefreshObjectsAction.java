@@ -44,6 +44,6 @@ class RefreshObjectsAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        executor.execute(() -> controller.showObjects(false));
+        executor.execute(controller::refreshObjects);
     }
 }

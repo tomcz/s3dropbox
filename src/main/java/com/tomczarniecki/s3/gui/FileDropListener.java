@@ -27,44 +27,43 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import com.tomczarniecki.s3.S3Bucket;
+
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class FileDropListener implements FileDrop.Listener {
 
     private final Controller controller;
     private final UploadWorker uploader;
-    private final DropBoxModel model;
     private final Display display;
     private final Worker worker;
 
-    public FileDropListener(Controller controller, DropBoxModel model, Display display,
-                            Worker worker, UploadWorker uploader) {
-
+    public FileDropListener(Controller controller, Display display, Worker worker, UploadWorker uploader) {
         this.controller = controller;
         this.uploader = uploader;
         this.display = display;
         this.worker = worker;
-        this.model = model;
     }
 
     public void filesDropped(final File[] files) {
-        if (controller.isShowingObjects()) {
-            worker.executeInBackground(() -> uploader.uploadFiles(files));
+        if (controller.isBucketSelected()) {
+            String bucketName = controller.getSelectedBucketName();
+            worker.executeInBackground(() -> uploader.uploadFiles(bucketName, files));
         } else {
-            worker.executeOnEventLoop(() -> selectBucketAndUploadFiles(files));
+            worker.executeInBackground(() -> {
+                List<S3Bucket> buckets = controller.listAllMyBuckets();
+                List<String> names = buckets.stream().map(S3Bucket::getName).collect(Collectors.toList());
+                worker.executeOnEventLoop(() -> selectBucketAndUploadFiles(names, files));
+            });
         }
     }
 
-    private void selectBucketAndUploadFiles(final File[] files) {
-        List<String> names = model.getCurrentNames();
-        final String bucketName = display.selectOption("Select Folder", "Please choose a folder for your files.", names);
+    private void selectBucketAndUploadFiles(List<String> names, File[] files) {
+        String bucketName = display.selectOption("Select Folder", "Please choose a folder for your files.", names);
         if (bucketName != null) {
-            worker.executeInBackground(() -> {
-                controller.selectBucket(bucketName);
-                controller.showObjects(false);
-                uploader.uploadFiles(files);
-            });
+            worker.executeInBackground(() -> uploader.uploadFiles(bucketName, files));
         }
     }
 }

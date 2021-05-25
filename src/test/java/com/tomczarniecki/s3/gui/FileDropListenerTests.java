@@ -53,8 +53,7 @@ public class FileDropListenerTests {
 
     @Mock
     Display display;
-    @Mock
-    DropBoxModel model;
+
     @Mock
     Controller controller;
 
@@ -64,14 +63,14 @@ public class FileDropListenerTests {
         ProgressDialog dialog = mock(ProgressDialog.class);
 
         given(display.createProgressDialog("Upload Progress", worker)).willReturn(dialog);
-        given(controller.isShowingObjects()).willReturn(true);
+        given(controller.isBucketSelected()).willReturn(true);
         given(controller.getSelectedBucketName()).willReturn("bucket");
 
         File file1 = folder.newFile("file1.jpg");
         File file2 = folder.newFile("file2.doc");
 
         UploadWorker uploader = new UploadWorker(controller, display, worker);
-        FileDropListener listener = new FileDropListener(controller, model, display, worker, uploader);
+        FileDropListener listener = new FileDropListener(controller, display, worker, uploader);
         listener.filesDropped(new File[]{file1, file2});
 
         verify(controller).createObject("bucket", "file1.jpg", file1, dialog);
@@ -84,7 +83,6 @@ public class FileDropListenerTests {
         ProgressDialog dialog = mock(ProgressDialog.class);
 
         given(display.createProgressDialog("Upload Progress", worker)).willReturn(dialog);
-        given(controller.isShowingObjects()).willReturn(false);
         given(display.selectOption(eq("Select Folder"), anyString(), anyListOf(String.class))).willReturn("bucket");
         given(controller.getSelectedBucketName()).willReturn("bucket");
 
@@ -92,10 +90,9 @@ public class FileDropListenerTests {
         File file2 = folder.newFile("file2.doc");
 
         UploadWorker uploader = new UploadWorker(controller, display, worker);
-        FileDropListener listener = new FileDropListener(controller, model, display, worker, uploader);
+        FileDropListener listener = new FileDropListener(controller, display, worker, uploader);
         listener.filesDropped(new File[]{file1, file2});
 
-        verify(controller).selectBucket("bucket");
         verify(controller).createObject("bucket", "file1.jpg", file1, dialog);
         verify(controller).createObject("bucket", "file2.doc", file2, dialog);
     }
@@ -106,7 +103,7 @@ public class FileDropListenerTests {
         ProgressDialog dialog = mock(ProgressDialog.class);
 
         given(display.createProgressDialog("Upload Progress", worker)).willReturn(dialog);
-        given(controller.isShowingObjects()).willReturn(true);
+        given(controller.isBucketSelected()).willReturn(true);
         given(controller.getSelectedBucketName()).willReturn("bucket");
 
         File directory = folder.newFolder("folder");
@@ -117,7 +114,7 @@ public class FileDropListenerTests {
         FileUtils.touch(file2);
 
         UploadWorker uploader = new UploadWorker(controller, display, worker);
-        FileDropListener listener = new FileDropListener(controller, model, display, worker, uploader);
+        FileDropListener listener = new FileDropListener(controller, display, worker, uploader);
         listener.filesDropped(new File[]{directory});
 
         verify(controller).createObject("bucket", "folder/file1.jpg", file1, dialog);

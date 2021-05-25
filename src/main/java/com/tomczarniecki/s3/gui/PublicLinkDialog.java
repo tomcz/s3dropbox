@@ -80,12 +80,12 @@ class PublicLinkDialog extends JDialog {
         }
     }
 
-    private final ObjectController controller;
+    private final Controller controller;
     private final JTextArea display;
     private final JComboBox<Integer> offsetSelect;
     private final JComboBox<Duration> durationSelect;
 
-    public PublicLinkDialog(JFrame parent, ObjectController controller) {
+    public PublicLinkDialog(JFrame parent, Controller controller) {
         super(parent, true);
 
         this.controller = controller;

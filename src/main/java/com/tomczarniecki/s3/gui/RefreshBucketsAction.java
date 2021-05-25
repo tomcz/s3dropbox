@@ -44,6 +44,6 @@ class RefreshBucketsAction extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent e) {
-        executor.execute(controller::showBuckets);
+        executor.execute(controller::refreshBuckets);
     }
 }

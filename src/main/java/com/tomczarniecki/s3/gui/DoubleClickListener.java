@@ -34,10 +34,10 @@ import java.util.concurrent.Executor;
 
 class DoubleClickListener extends MouseAdapter {
 
-    private final Controller controller;
+    private final TableController controller;
     private final Executor executor;
 
-    public DoubleClickListener(Controller controller, Executor executor) {
+    public DoubleClickListener(TableController controller, Executor executor) {
         this.controller = controller;
         this.executor = executor;
     }
@@ -57,7 +57,7 @@ class DoubleClickListener extends MouseAdapter {
     }
 
     private void showBuckets() {
-        executor.execute(controller::showBuckets);
+        executor.execute(controller::refreshBuckets);
     }
 
     private void showObjects(final boolean useNextMarker) {

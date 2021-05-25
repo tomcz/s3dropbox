@@ -74,7 +74,7 @@ class Display {
         return new JPopupMenu();
     }
 
-    public PublicLinkDialog createPublicLinkDialog(ObjectController controller) {
+    public PublicLinkDialog createPublicLinkDialog(Controller controller) {
         return new PublicLinkDialog(frame, controller);
     }
 

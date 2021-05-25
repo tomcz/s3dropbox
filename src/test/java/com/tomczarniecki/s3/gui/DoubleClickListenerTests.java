@@ -42,7 +42,8 @@ import static org.mockito.BDDMockito.verifyZeroInteractions;
 public class DoubleClickListenerTests {
 
     @Mock
-    Controller controller;
+    TableController controller;
+
     @Mock
     MouseEvent event;
 
@@ -64,7 +65,7 @@ public class DoubleClickListenerTests {
         DoubleClickListener listener = new DoubleClickListener(controller, new DirectExecutor());
         listener.mouseClicked(event);
 
-        verify(controller).showBuckets();
+        verify(controller).refreshBuckets();
     }
 
     @Test

@@ -33,13 +33,11 @@ import javax.swing.event.ListSelectionListener;
 
 class DropBoxTableListener implements ListSelectionListener {
 
-    private final Controller controller;
-    private final DropBoxModel model;
+    private final TableController controller;
     private final JTable table;
 
-    public DropBoxTableListener(Controller controller, DropBoxModel model, JTable table) {
+    public DropBoxTableListener(TableController controller, JTable table) {
         this.controller = controller;
-        this.model = model;
         this.table = table;
     }
 
@@ -47,8 +45,7 @@ class DropBoxTableListener implements ListSelectionListener {
         if (!evt.getValueIsAdjusting()) {
             int index = table.getSelectedRow();
             if (index >= 0) {
-                String name = model.getNameAt(index);
-                controller.updateSelectedName(name);
+                controller.updateSelectedName(index);
             }
         }
     }

@@ -28,11 +28,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
-import com.tomczarniecki.s3.S3Bucket;
-import com.tomczarniecki.s3.S3ObjectList;
-
 import javax.swing.JMenu;
-import java.util.List;
 
 import static com.tomczarniecki.s3.gui.Constants.ALL_FOLDERS;
 import static com.tomczarniecki.s3.gui.Constants.FOLDER_NAME;
@@ -51,7 +47,8 @@ class MenuSwitcher implements ControllerListener {
         this.worker = worker;
     }
 
-    public void updatedBuckets(List<S3Bucket> buckets) {
+    @Override
+    public void showingBuckets() {
         worker.executeOnEventLoop(() -> {
             display.setTitle(String.format(FOLDER_NAME, ALL_FOLDERS));
             bucketMenu.setVisible(true);
@@ -59,7 +56,8 @@ class MenuSwitcher implements ControllerListener {
         });
     }
 
-    public void updatedObjects(final String bucketName, S3ObjectList list) {
+    @Override
+    public void showingObjects(String bucketName) {
         worker.executeOnEventLoop(() -> {
             display.setTitle(String.format(FOLDER_NAME, bucketName));
             bucketMenu.setVisible(false);

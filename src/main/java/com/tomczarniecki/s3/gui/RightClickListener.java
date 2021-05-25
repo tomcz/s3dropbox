@@ -35,10 +35,10 @@ import java.awt.event.MouseEvent;
 
 class RightClickListener extends MouseAdapter {
 
-    private final ObjectController controller;
+    private final Controller controller;
     private final JPopupMenu menu;
 
-    public RightClickListener(ObjectController controller, Display display) {
+    public RightClickListener(Controller controller, Display display) {
         this.menu = display.createPopupMenu();
         this.controller = controller;
     }

@@ -41,7 +41,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, ControllerListener {
+class DropBoxTableModel extends AbstractTableModel {
 
     private final List<DropBoxTableItem> items = new ArrayList<>();
 
@@ -103,16 +103,6 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
         return items.get(index).name;
     }
 
-    public List<String> getCurrentNames() {
-        List<String> result = new ArrayList<>();
-        for (DropBoxTableItem item : items) {
-            if (!Constants.BACK_LINK.equals(item.name) && !Constants.MORE_LINK.equals(item.name)) {
-                result.add(item.name);
-            }
-        }
-        return result;
-    }
-
     public void updatedBuckets(List<S3Bucket> buckets) {
         items.clear();
         for (S3Bucket bucket : buckets) {
@@ -124,7 +114,7 @@ class DropBoxTableModel extends AbstractTableModel implements DropBoxModel, Cont
         updateView();
     }
 
-    public void updatedObjects(String bucketName, S3ObjectList list) {
+    public void updatedObjects(S3ObjectList list) {
         if (list.isFirstPage()) {
             items.clear();
             DropBoxTableItem backLink = new DropBoxTableItem();
