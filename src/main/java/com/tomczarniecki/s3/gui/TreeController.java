@@ -20,6 +20,7 @@ import javax.swing.tree.TreePath;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public class TreeController implements TreeSelectionListener, TreeWillExpandListener, Controller {
 
@@ -29,15 +30,17 @@ public class TreeController implements TreeSelectionListener, TreeWillExpandList
     private final Announcer<ControllerListener> announcer;
     private final DefaultMutableTreeNode root;
     private final DefaultTreeModel model;
+    private final Executor executor;
     private final Service service;
     private final Worker worker;
 
     private TreePath selectedPath;
 
-    public TreeController(Service service, Worker worker) {
+    public TreeController(Service service, Worker worker, Executor executor) {
         this.root = loadingNode("root");
         this.model = new DefaultTreeModel(root);
         this.announcer = Announcer.createFor(ControllerListener.class);
+        this.executor = executor;
         this.service = service;
         this.worker = worker;
     }
@@ -145,16 +148,14 @@ public class TreeController implements TreeSelectionListener, TreeWillExpandList
     }
 
     public void refreshBuckets() {
-        worker.executeInBackground(() -> {
-            List<S3Bucket> buckets = service.listAllMyBuckets();
-            worker.executeOnEventLoop(() -> {
-                root.removeAllChildren();
-                for (S3Bucket bucket : buckets) {
-                    root.add(loadingNode(bucket.getName()));
-                }
-                model.reload(root);
-                selectedPath = null;
-            });
+        List<S3Bucket> buckets = service.listAllMyBuckets();
+        worker.executeOnEventLoop(() -> {
+            root.removeAllChildren();
+            for (S3Bucket bucket : buckets) {
+                root.add(loadingNode(bucket.getName()));
+            }
+            model.reload(root);
+            selectedPath = null;
         });
     }
 
@@ -194,7 +195,7 @@ public class TreeController implements TreeSelectionListener, TreeWillExpandList
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
         String childName = node.getFirstChild().toString();
         if (childName.equals(LOADING) || childName.equals(EMPTY)) {
-            loadChildren(bucketAndObjectKey(path), node);
+            executor.execute(() -> loadChildren(bucketAndObjectKey(path), node));
         }
     }
 
@@ -203,22 +204,20 @@ public class TreeController implements TreeSelectionListener, TreeWillExpandList
     }
 
     private void loadChildren(Pair<String, String> bucketAndPrefix, DefaultMutableTreeNode node) {
-        worker.executeInBackground(() -> {
-            String bucketName = bucketAndPrefix.getLeft();
-            String prefix = bucketAndPrefix.getRight();
-            S3List res = service.listItemsInBucket(bucketName, prefix);
-            worker.executeOnEventLoop(() -> {
-                node.removeAllChildren();
-                for (String folder : res.getFolders()) {
-                    node.add(loadingNode(StringUtils.removeStart(folder, prefix)));
-                }
-                for (String file : res.getFiles()) {
-                    node.add(leafNode(StringUtils.removeStart(file, prefix)));
-                }
-                mustBeParent(node);
-                model.reload(node);
-                selectedPath = null;
-            });
+        String bucketName = bucketAndPrefix.getLeft();
+        String prefix = bucketAndPrefix.getRight();
+        S3List res = service.listItemsInBucket(bucketName, prefix);
+        worker.executeOnEventLoop(() -> {
+            node.removeAllChildren();
+            for (String folder : res.getFolders()) {
+                node.add(loadingNode(StringUtils.removeStart(folder, prefix)));
+            }
+            for (String file : res.getFiles()) {
+                node.add(leafNode(StringUtils.removeStart(file, prefix)));
+            }
+            mustBeParent(node);
+            model.reload(node);
+            selectedPath = null;
         });
     }
 

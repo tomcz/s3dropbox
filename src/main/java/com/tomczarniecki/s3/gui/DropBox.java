@@ -70,7 +70,7 @@ public class DropBox extends JFrame {
         executor = new BusyCursorExecutor(display, worker);
 
         TableController tableCtrl = new TableController(service, worker);
-        TreeController treeCtrl = new TreeController(service, worker);
+        TreeController treeCtrl = new TreeController(service, worker, executor);
 
         controller = new DualController(treeCtrl, tableCtrl);
         layout = new DualLayout(controller, createTable(tableCtrl), createTree(treeCtrl));
