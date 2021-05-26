@@ -36,14 +36,12 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.CardLayout;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.Executor;
@@ -59,9 +57,9 @@ public class DropBox extends JFrame {
     private final DownloadWorker downloader;
     private final UploadWorker uploader;
     private final Executor executor;
+    private final DualLayout layout;
     private final Display display;
     private final Worker worker;
-    private final JPanel cards;
 
     public DropBox(Service service, PreferenceSetter prefs) {
         super(String.format(FOLDER_NAME, ALL_FOLDERS));
@@ -75,24 +73,20 @@ public class DropBox extends JFrame {
         TreeController treeCtrl = new TreeController(service, worker);
 
         controller = new DualController(treeCtrl, tableCtrl);
-        controller.activateTable();
+        layout = new DualLayout(controller, createTable(tableCtrl), createTree(treeCtrl));
+        layout.show(prefs.isTreeView());
 
         uploader = new UploadWorker(controller, display, worker);
         downloader = new DownloadWorker(controller, display, worker);
 
         JMenu bucketMenu = createBucketMenu();
         JMenu objectMenu = createObjectMenu();
+        setJMenuBar(createMenuBar(bucketMenu, objectMenu, prefs));
 
         MenuSwitcher switcher = new MenuSwitcher(display, bucketMenu, objectMenu, worker);
         controller.addControllerListener(switcher);
 
-        setJMenuBar(createMenuBar(bucketMenu, objectMenu, prefs));
-
-        cards = new JPanel(new CardLayout());
-        cards.add("table", createTable(tableCtrl));
-        cards.add("tree", createTree(treeCtrl));
-
-        JScrollPane scrollPane = new JScrollPane(cards);
+        JScrollPane scrollPane = new JScrollPane(layout.getPanel());
         FileDrop.add(scrollPane, new FileDropListener(controller, display, worker, uploader));
         getContentPane().add(scrollPane);
 
@@ -179,16 +173,10 @@ public class DropBox extends JFrame {
         JCheckBoxMenuItem darkMode = new JCheckBoxMenuItem("Dark Mode (on restart)", prefs.isDarkMode());
         darkMode.addActionListener(EventHandler.create(ActionListener.class, prefs, "darkMode", "source.selected"));
 
-        JCheckBoxMenuItem showTree = new JCheckBoxMenuItem("Tree View", false);
+        JCheckBoxMenuItem showTree = new JCheckBoxMenuItem("Tree View", prefs.isTreeView());
         showTree.addActionListener(e -> {
-            CardLayout layout = (CardLayout) cards.getLayout();
-            if (showTree.isSelected()) {
-                layout.show(cards, "tree");
-                controller.activateTree();
-            } else {
-                layout.show(cards, "table");
-                controller.activateTable();
-            }
+            layout.show(showTree.isSelected());
+            prefs.setTreeView(showTree.isSelected());
             executor.execute(controller::refreshBuckets);
         });
 

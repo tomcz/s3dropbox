@@ -44,4 +44,12 @@ public class PreferenceSetter {
     public void setDarkMode(boolean darkMode) {
         prefs.putBoolean("darkMode", darkMode);
     }
+
+    public boolean isTreeView() {
+        return prefs.getBoolean("treeView", false);
+    }
+
+    public void setTreeView(boolean treeView) {
+        prefs.putBoolean("treeView", treeView);
+    }
 }
