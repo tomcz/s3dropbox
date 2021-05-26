@@ -161,10 +161,7 @@ public class TreeController implements TreeSelectionListener, TreeWillExpandList
     public void refreshObjects() {
         if (selectedPath == null) {
             refreshBuckets();
-            return;
-        }
-
-        if (isBucketSelected()) {
+        } else if (isBucketSelected()) {
             refreshObjects(getSelectedBucketName());
         }
     }
