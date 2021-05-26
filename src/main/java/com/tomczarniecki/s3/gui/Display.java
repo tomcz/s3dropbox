@@ -78,7 +78,7 @@ class Display {
         return new PublicLinkDialog(frame, controller);
     }
 
-    public ProgressDialog createProgressDialog(String title, Worker worker) {
+    public ProgressDialog createProgressDialog(String title, SwingWorker worker) {
         return new ProgressDialog(frame, title, worker);
     }
 

@@ -32,11 +32,11 @@ public class TreeController implements TreeSelectionListener, TreeWillExpandList
     private final DefaultTreeModel model;
     private final Executor executor;
     private final Service service;
-    private final Worker worker;
+    private final SwingWorker worker;
 
     private TreePath selectedPath;
 
-    public TreeController(Service service, Worker worker, Executor executor) {
+    public TreeController(Service service, SwingWorker worker, Executor executor) {
         this.root = loadingNode("root");
         this.model = new DefaultTreeModel(root);
         this.announcer = Announcer.createFor(ControllerListener.class);

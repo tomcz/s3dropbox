@@ -38,9 +38,9 @@ class MenuSwitcher implements ControllerListener {
     private final Display display;
     private final JMenu bucketMenu;
     private final JMenu objectMenu;
-    private final Worker worker;
+    private final SwingWorker worker;
 
-    public MenuSwitcher(Display display, JMenu bucketMenu, JMenu objectMenu, Worker worker) {
+    public MenuSwitcher(Display display, JMenu bucketMenu, JMenu objectMenu, SwingWorker worker) {
         this.bucketMenu = bucketMenu;
         this.objectMenu = objectMenu;
         this.display = display;

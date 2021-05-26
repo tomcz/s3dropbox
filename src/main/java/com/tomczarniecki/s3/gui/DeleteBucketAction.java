@@ -42,9 +42,9 @@ class DeleteBucketAction extends AbstractAction {
     private final Controller controller;
     private final Executor executor;
     private final Display display;
-    private final Worker worker;
+    private final SwingWorker worker;
 
-    public DeleteBucketAction(Controller controller, Display display, Executor executor, Worker worker) {
+    public DeleteBucketAction(Controller controller, Display display, Executor executor, SwingWorker worker) {
         super("Delete Folder");
         this.controller = controller;
         this.executor = executor;

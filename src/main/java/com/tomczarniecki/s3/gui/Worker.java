@@ -27,9 +27,6 @@
  */
 package com.tomczarniecki.s3.gui;
 
-interface Worker {
-
+interface Worker extends SwingWorker {
     void executeInBackground(Runnable command);
-
-    void executeOnEventLoop(Runnable command);
 }

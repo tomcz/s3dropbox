@@ -46,7 +46,7 @@ public class UploadWorker {
     private final Controller controller;
     private final Display display;
 
-    public UploadWorker(Controller controller, Display display, Worker worker) {
+    public UploadWorker(Controller controller, Display display, SwingWorker worker) {
         this.dialog = display.createProgressDialog("Upload Progress", worker);
         this.controller = controller;
         this.display = display;

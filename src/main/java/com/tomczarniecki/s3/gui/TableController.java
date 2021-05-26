@@ -48,7 +48,7 @@ class TableController implements Controller {
     private String selectedObjectKey;
     private String nextMarker = "";
 
-    public TableController(Service service, Worker worker) {
+    public TableController(Service service, SwingWorker worker) {
         this.announcer = Announcer.createFor(ControllerListener.class);
         this.model = new DropBoxTableModel(worker);
         this.service = service;

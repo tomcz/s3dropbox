@@ -11,9 +11,9 @@ public class ShowDetailsAction extends AbstractAction implements Controller.Call
     private final Controller controller;
     private final Display display;
     private final Executor executor;
-    private final Worker worker;
+    private final SwingWorker worker;
 
-    public ShowDetailsAction(Controller controller, Display display, Executor executor, Worker worker) {
+    public ShowDetailsAction(Controller controller, Display display, Executor executor, SwingWorker worker) {
         super("Show Details");
         this.controller = controller;
         this.display = display;

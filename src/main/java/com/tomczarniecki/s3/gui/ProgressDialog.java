@@ -48,9 +48,9 @@ class ProgressDialog extends JDialog implements ProgressListener {
     private final JTextArea display;
     private final JProgressBar progress;
     private final JButton closeButton;
-    private final Worker worker;
+    private final SwingWorker worker;
 
-    public ProgressDialog(JFrame parent, String title, Worker worker) {
+    public ProgressDialog(JFrame parent, String title, SwingWorker worker) {
         super(parent, title, true);
         this.worker = worker;
 

@@ -47,9 +47,9 @@ class DropBoxTableModel extends AbstractTableModel {
 
     private final Icon bucketIcon;
     private final Icon objectIcon;
-    private final Worker worker;
+    private final SwingWorker worker;
 
-    public DropBoxTableModel(Worker worker) {
+    public DropBoxTableModel(SwingWorker worker) {
         try {
             this.worker = worker;
 
