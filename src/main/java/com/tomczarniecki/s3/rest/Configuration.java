@@ -40,6 +40,7 @@ public class Configuration {
     private final String accessKeyId;
     private final String secretAccessKey;
     private final boolean useSecureProtocol;
+    private final String awsRegion;
 
     private final String proxyHost;
     private final String proxyPort;
@@ -48,17 +49,17 @@ public class Configuration {
     private final String proxyPassword;
 
     public Configuration(String accessKeyId, String secretAccessKey) {
-        this(accessKeyId, secretAccessKey, "", "", "", "", true);
+        this(accessKeyId, secretAccessKey, "", "", "", "", "", true);
     }
 
-    public Configuration(String accessKeyId, String secretAccessKey,
-                         String proxyHost, String proxyPort,
-                         String proxyUserName, String proxyPassword,
+    public Configuration(String accessKeyId, String secretAccessKey, String awsRegion,
+                         String proxyHost, String proxyPort, String proxyUserName, String proxyPassword,
                          boolean useSecureProtocol) {
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
         this.useSecureProtocol = useSecureProtocol;
+        this.awsRegion = awsRegion;
 
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
@@ -73,6 +74,10 @@ public class Configuration {
 
     public String getSecretAccessKey() {
         return secretAccessKey;
+    }
+
+    public String getAwsRegion() {
+        return awsRegion;
     }
 
     public boolean useSecureProtocol() {

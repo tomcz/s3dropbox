@@ -76,9 +76,11 @@ public class WebClientService implements Service {
     public WebClientService(Configuration config) {
         // proper HTML5 video content types so that browsers can play the videos
         videoContentTypes = Map.of("ogv", "video/ogg", "mp4", "video/mp4", "webm", "video/webm");
+        String region = StringUtils.defaultIfEmpty(config.getAwsRegion(), "us-east-1");
         client = AmazonS3Client.builder()
                 .withCredentials(new AWSStaticCredentialsProvider(config.getAWSCredentials()))
                 .withClientConfiguration(config.getClientConfiguration())
+                .withRegion(region)
                 .build();
         transferManager = TransferManagerBuilder.standard()
                 .withS3Client(client)

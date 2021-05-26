@@ -43,9 +43,8 @@ import java.util.Properties;
 public class ConfigurationFactory {
 
     private enum Keys {
-        AMAZON_ACCESS_KEY_ID, AMAZON_SECRET_ACCESS_KEY,
-        PROXY_HOST, PROXY_PORT,
-        PROXY_USERNAME, PROXY_PASSWORD,
+        AMAZON_ACCESS_KEY_ID, AMAZON_SECRET_ACCESS_KEY, AWS_REGION,
+        PROXY_HOST, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD,
         USE_SSL
     }
 
@@ -60,6 +59,7 @@ public class ConfigurationFactory {
         return new Configuration(
                 getRequired(props, Keys.AMAZON_ACCESS_KEY_ID),
                 getRequired(props, Keys.AMAZON_SECRET_ACCESS_KEY),
+                getOptional(props, Keys.AWS_REGION),
                 getOptional(props, Keys.PROXY_HOST),
                 getOptional(props, Keys.PROXY_PORT),
                 getOptional(props, Keys.PROXY_USERNAME),
@@ -72,6 +72,7 @@ public class ConfigurationFactory {
         Properties props = new Properties();
         setProperty(props, Keys.AMAZON_ACCESS_KEY_ID, credentials.getAccessKeyId());
         setProperty(props, Keys.AMAZON_SECRET_ACCESS_KEY, credentials.getSecretAccessKey());
+        setProperty(props, Keys.AWS_REGION, credentials.getAwsRegion());
         setProperty(props, Keys.PROXY_HOST, credentials.getProxyHost());
         setProperty(props, Keys.PROXY_PORT, credentials.getProxyPort());
         setProperty(props, Keys.PROXY_USERNAME, credentials.getProxyUserName());
