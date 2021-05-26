@@ -1,8 +1,11 @@
-GIT_SHA ?= $(shell git rev-parse --short=7 HEAD)
+GIT_TAG := $(shell git describe --tags 2>/dev/null)
+
+.PHONY: all
+all: clean test build-jar
 
 .PHONY: build-jar
 build-jar: clean
-	./gradlew --console plain -Pversion=${GIT_SHA} shadowJar
+	./gradlew --console plain -Pversion=${GIT_TAG} shadowJar
 
 .PHONY: clean
 clean:
