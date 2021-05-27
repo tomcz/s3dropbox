@@ -1,10 +1,10 @@
 GIT_TAG := $(shell git describe --tags 2>/dev/null)
 
 .PHONY: all
-all: clean test build-jar
+all: clean test build
 
-.PHONY: build-jar
-build-jar: clean
+.PHONY: build
+build: clean
 	./gradlew --console plain -Pversion=${GIT_TAG} shadowJar
 
 .PHONY: clean
