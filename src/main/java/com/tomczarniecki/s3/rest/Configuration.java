@@ -32,6 +32,7 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -40,6 +41,7 @@ public class Configuration {
     private final String accessKeyId;
     private final String secretAccessKey;
     private final boolean useSecureProtocol;
+    private final String awsEndpoint;
     private final String awsRegion;
 
     private final String proxyHost;
@@ -49,15 +51,16 @@ public class Configuration {
     private final String proxyPassword;
 
     public Configuration(String accessKeyId, String secretAccessKey) {
-        this(accessKeyId, secretAccessKey, "", "", "", "", "", true);
+        this(accessKeyId, secretAccessKey, "", "", "", "", "", "", true);
     }
 
-    public Configuration(String accessKeyId, String secretAccessKey, String awsRegion,
+    public Configuration(String accessKeyId, String secretAccessKey, String awsRegion, String awsEndpoint,
                          String proxyHost, String proxyPort, String proxyUserName, String proxyPassword,
                          boolean useSecureProtocol) {
 
         this.accessKeyId = accessKeyId;
         this.secretAccessKey = secretAccessKey;
+        this.awsEndpoint = awsEndpoint;
         this.useSecureProtocol = useSecureProtocol;
         this.awsRegion = awsRegion;
 
@@ -78,6 +81,10 @@ public class Configuration {
 
     public String getAwsRegion() {
         return awsRegion;
+    }
+
+    public String getAwsEndpoint() {
+        return awsEndpoint;
     }
 
     public boolean useSecureProtocol() {
@@ -102,6 +109,13 @@ public class Configuration {
 
     public AWSCredentials getAWSCredentials() {
         return new BasicAWSCredentials(accessKeyId, secretAccessKey);
+    }
+
+    public EndpointConfiguration getEndpointConfiguration() {
+        if (StringUtils.isNotEmpty(awsEndpoint)) {
+            return new EndpointConfiguration(awsEndpoint, awsRegion);
+        }
+        return null;
     }
 
     public ClientConfiguration getClientConfiguration() {

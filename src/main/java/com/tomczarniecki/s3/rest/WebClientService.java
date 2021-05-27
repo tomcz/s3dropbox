@@ -30,8 +30,10 @@ package com.tomczarniecki.s3.rest;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
@@ -76,12 +78,15 @@ public class WebClientService implements Service {
     public WebClientService(Configuration config) {
         // proper HTML5 video content types so that browsers can play the videos
         videoContentTypes = Map.of("ogv", "video/ogg", "mp4", "video/mp4", "webm", "video/webm");
-        String region = StringUtils.defaultIfEmpty(config.getAwsRegion(), "us-east-1");
-        client = AmazonS3Client.builder()
+        AmazonS3ClientBuilder builder = AmazonS3Client.builder()
                 .withCredentials(new AWSStaticCredentialsProvider(config.getAWSCredentials()))
                 .withClientConfiguration(config.getClientConfiguration())
-                .withRegion(region)
-                .build();
+                .withRegion(config.getAwsRegion());
+        EndpointConfiguration endpointCfg = config.getEndpointConfiguration();
+        if (endpointCfg != null) {
+            builder = builder.withEndpointConfiguration(endpointCfg);
+        }
+        client = builder.build();
         transferManager = TransferManagerBuilder.standard()
                 .withS3Client(client)
                 .build();
