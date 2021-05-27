@@ -80,11 +80,12 @@ public class WebClientService implements Service {
         videoContentTypes = Map.of("ogv", "video/ogg", "mp4", "video/mp4", "webm", "video/webm");
         AmazonS3ClientBuilder builder = AmazonS3Client.builder()
                 .withCredentials(new AWSStaticCredentialsProvider(config.getAWSCredentials()))
-                .withClientConfiguration(config.getClientConfiguration())
-                .withRegion(config.getAwsRegion());
+                .withClientConfiguration(config.getClientConfiguration());
         EndpointConfiguration endpointCfg = config.getEndpointConfiguration();
         if (endpointCfg != null) {
             builder = builder.withEndpointConfiguration(endpointCfg);
+        } else {
+            builder = builder.withRegion(config.getAwsRegion());
         }
         client = builder.build();
         transferManager = TransferManagerBuilder.standard()
