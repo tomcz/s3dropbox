@@ -65,6 +65,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,7 @@ public class WebClientService implements Service {
         for (Bucket bucket : client.listBuckets()) {
             buckets.add(new S3Bucket(bucket.getName()));
         }
+        Collections.sort(buckets);
         return buckets;
     }
 
@@ -145,6 +147,7 @@ public class WebClientService implements Service {
             lastModified = lastModified.toDateTime(DateTimeZone.getDefault());
             objects.add(new S3Object(summary.getKey(), summary.getSize(), lastModified.toLocalDateTime()));
         }
+        Collections.sort(objects);
         String next = StringUtils.defaultString(listing.getNextMarker());
         return new S3ObjectList(objects, next, nextMarker.isEmpty());
     }
@@ -159,10 +162,15 @@ public class WebClientService implements Service {
         }
         ListObjectsV2Result res = client.listObjectsV2(req);
         List<String> folders = res.getCommonPrefixes();
+        Collections.sort(folders);
         List<String> files = new ArrayList<>();
         for (S3ObjectSummary summary : res.getObjectSummaries()) {
-            files.add(summary.getKey());
+            String key = summary.getKey();
+            if (!key.endsWith(DELIMITER)) {
+                files.add(key);
+            }
         }
+        Collections.sort(files);
         return new S3List(folders, files);
     }
 
