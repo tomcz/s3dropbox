@@ -72,12 +72,14 @@ import java.util.Map;
 public class WebClientService implements Service {
 
     private final AmazonS3 client;
+    private final String regionName;
     private final TransferManager transferManager;
     private final Map<String, String> videoContentTypes;
 
     public WebClientService(Configuration config) {
         // proper HTML5 video content types so that browsers can play the videos
         videoContentTypes = Map.of("ogv", "video/ogg", "mp4", "video/mp4", "webm", "video/webm");
+        regionName = config.getAwsRegion();
         AmazonS3ClientBuilder builder = AmazonS3Client.builder()
                 .withCredentials(new AWSStaticCredentialsProvider(config.getAWSCredentials()))
                 .withClientConfiguration(config.getClientConfiguration());
@@ -98,7 +100,10 @@ public class WebClientService implements Service {
         for (Region region : Region.values()) {
             regions.add(region.name());
         }
-        return regions;
+        if (regions.contains(regionName)) {
+            return regions;
+        }
+        return List.of(regionName);
     }
 
     public List<S3Bucket> listAllMyBuckets() {
