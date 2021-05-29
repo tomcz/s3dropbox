@@ -42,7 +42,7 @@ class CreateBucketAction extends AbstractAction {
     private final Display display;
 
     public CreateBucketAction(Controller controller, Display display, Executor executor) {
-        super("Create Folder");
+        super("Create Bucket");
         this.dialog = display.createBucketDialog(controller.bucketRegions());
         this.validator = new BucketNameValidator(controller);
         this.controller = controller;

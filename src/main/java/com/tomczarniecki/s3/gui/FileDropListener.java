@@ -27,6 +27,7 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import com.tomczarniecki.s3.Pair;
 import com.tomczarniecki.s3.S3Bucket;
 
 import java.io.File;
@@ -48,22 +49,16 @@ class FileDropListener implements FileDrop.Listener {
     }
 
     public void filesDropped(final File[] files) {
-        if (controller.isBucketSelected()) {
-            String bucketName = controller.getSelectedBucketName();
-            worker.executeInBackground(() -> uploader.uploadFiles(bucketName, files));
-        } else {
-            worker.executeInBackground(() -> {
-                List<S3Bucket> buckets = controller.listAllMyBuckets();
-                List<String> names = buckets.stream().map(S3Bucket::getName).collect(Collectors.toList());
-                worker.executeOnEventLoop(() -> selectBucketAndUploadFiles(names, files));
+        worker.executeInBackground(() -> {
+            List<S3Bucket> buckets = controller.listAllMyBuckets();
+            List<String> names = buckets.stream().map(S3Bucket::getName).collect(Collectors.toList());
+            worker.executeOnEventLoop(() -> {
+                ChooseBucketDialog dialog = display.chooseBucketDialog(names);
+                Pair<String, String> bp = dialog.get(controller.getSelectedBucketName(), controller.getCurrentPrefix());
+                if (bp != null) {
+                    worker.executeInBackground(() -> uploader.uploadFiles(bp.getLeft(), bp.getRight(), files));
+                }
             });
-        }
-    }
-
-    private void selectBucketAndUploadFiles(List<String> names, File[] files) {
-        String bucketName = display.selectOption("Select Folder", "Please choose a folder for your files.", names);
-        if (bucketName != null) {
-            worker.executeInBackground(() -> uploader.uploadFiles(bucketName, files));
-        }
+        });
     }
 }

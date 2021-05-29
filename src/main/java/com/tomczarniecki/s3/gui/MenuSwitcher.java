@@ -30,7 +30,7 @@ package com.tomczarniecki.s3.gui;
 
 import javax.swing.JMenu;
 
-import static com.tomczarniecki.s3.gui.Constants.ALL_FOLDERS;
+import static com.tomczarniecki.s3.gui.Constants.ALL_BUCKETS;
 import static com.tomczarniecki.s3.gui.Constants.FOLDER_NAME;
 
 class MenuSwitcher implements ControllerListener {
@@ -50,7 +50,7 @@ class MenuSwitcher implements ControllerListener {
     @Override
     public void showingBuckets() {
         worker.executeOnEventLoop(() -> {
-            display.setTitle(String.format(FOLDER_NAME, ALL_FOLDERS));
+            display.setTitle(String.format(FOLDER_NAME, ALL_BUCKETS));
             bucketMenu.setVisible(true);
             objectMenu.setVisible(false);
         });

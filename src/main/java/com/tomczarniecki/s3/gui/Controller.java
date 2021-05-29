@@ -55,6 +55,8 @@ public interface Controller {
 
     String getSelectedBucketName();
 
+    String getCurrentPrefix();
+
     void deleteCurrentBucket();
 
     void refreshObjects();

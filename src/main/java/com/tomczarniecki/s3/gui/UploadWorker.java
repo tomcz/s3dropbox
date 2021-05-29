@@ -52,10 +52,10 @@ public class UploadWorker {
         this.display = display;
     }
 
-    public void uploadFiles(String bucketName, File[] files) {
+    public void uploadFiles(String bucketName, String prefix, File[] files) {
         dialog.begin();
         try {
-            uploadFiles(bucketName, resolveKeys(files));
+            uploadFiles(bucketName, resolveKeys(files, prefix));
             dialog.append("\nDone");
 
         } catch (Exception e) {
@@ -69,7 +69,7 @@ public class UploadWorker {
 
     private void uploadFiles(String bucketName, List<Pair<String, File>> files) {
         String plural = (files.size() > 1) ? "files" : "file";
-        dialog.append("Attempting upload of %d %s to folder %s\n\n", files.size(), plural, bucketName);
+        dialog.append("Attempting upload of %d %s to bucket %s\n\n", files.size(), plural, bucketName);
 
         for (Pair<String, File> entry : files) {
             uploadFile(bucketName, entry.getLeft(), entry.getRight());
@@ -86,7 +86,7 @@ public class UploadWorker {
 
     private boolean canCreateObject(String bucketName, String objectKey, File file) {
         if (controller.objectExists(bucketName, objectKey)) {
-            String message = "File %s already exists in folder %s.\nDo you want to overwrite?";
+            String message = "File %s already exists in bucket %s.\nDo you want to overwrite?";
             return display.confirmMessage("Oops", String.format(message, file.getName(), bucketName));
         }
         return true;
@@ -105,9 +105,9 @@ public class UploadWorker {
         }
     }
 
-    private List<Pair<String, File>> resolveKeys(File[] files) {
+    private List<Pair<String, File>> resolveKeys(File[] files, String prefix) {
         List<Pair<String, File>> list = new ArrayList<>();
-        resolveFolders(list, files, "");
+        resolveFolders(list, files, prefix);
         return list;
     }
 

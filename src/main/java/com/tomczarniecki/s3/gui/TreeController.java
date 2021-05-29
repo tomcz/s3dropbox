@@ -116,25 +116,19 @@ public class TreeController implements TreeSelectionListener, TreeWillExpandList
     }
 
     public boolean isBucketSelected() {
-        if (selectedPath == null) {
-            return false;
-        }
-        Pair<String, String> pair = bucketAndObjectKey(selectedPath);
-        return !pair.getLeft().isEmpty();
+        return selectedPath != null && selectedPath.getPathCount() > 1;
     }
 
     public boolean isObjectSelected() {
-        if (selectedPath == null) {
+        if (selectedPath == null || selectedPath.getPathCount() <= 2) {
             return false;
         }
-        Pair<String, String> pair = bucketAndObjectKey(selectedPath);
-        String bucket = pair.getLeft();
-        String key = pair.getRight();
-        return !bucket.isEmpty()
-                && !key.isEmpty()
-                && !key.endsWith(EMPTY)
-                && !key.endsWith(LOADING)
-                && !key.endsWith(Service.DELIMITER);
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+        if (node.isLeaf()) {
+            String name = node.toString();
+            return !name.equals(EMPTY) && !name.equals(LOADING);
+        }
+        return false;
     }
 
     public String getSelectedBucketName() {
@@ -142,6 +136,17 @@ public class TreeController implements TreeSelectionListener, TreeWillExpandList
     }
 
     public String getSelectedObjectKey() {
+        return bucketAndObjectKey(selectedPath).getRight();
+    }
+
+    public String getCurrentPrefix() {
+        if (selectedPath == null || selectedPath.getPathCount() <= 2) {
+            return "";
+        }
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+        if (node.isLeaf()) {
+            return bucketAndObjectKey(selectedPath.getParentPath()).getRight();
+        }
         return bucketAndObjectKey(selectedPath).getRight();
     }
 

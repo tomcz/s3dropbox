@@ -45,7 +45,7 @@ class DeleteBucketAction extends AbstractAction {
     private final SwingWorker worker;
 
     public DeleteBucketAction(Controller controller, Display display, Executor executor, SwingWorker worker) {
-        super("Delete Folder");
+        super("Delete Bucket");
         this.controller = controller;
         this.executor = executor;
         this.display = display;
@@ -70,13 +70,13 @@ class DeleteBucketAction extends AbstractAction {
     }
 
     private boolean confirmDeletion() {
-        String text = "Are you sure that you want to delete folder %s?\nYou will not be able to undo this action.";
+        String text = "Are you sure that you want to delete bucket %s?\nYou will not be able to undo this action.";
         return display.confirmMessage("Just Checking", String.format(text, controller.getSelectedBucketName()));
     }
 
     private void deleteError() {
         worker.executeOnEventLoop(() -> {
-            String text = "Cannot delete folder %s.\nPlease make sure that it is empty and try again.";
+            String text = "Cannot delete bucket %s.\nPlease make sure that it is empty and try again.";
             display.showErrorMessage("Delete failed", String.format(text, controller.getSelectedBucketName()));
         });
     }

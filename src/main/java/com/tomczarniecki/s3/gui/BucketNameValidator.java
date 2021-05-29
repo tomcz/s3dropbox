@@ -28,7 +28,6 @@
 package com.tomczarniecki.s3.gui;
 
 import com.amazonaws.services.s3.internal.BucketNameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,20 +49,20 @@ class BucketNameValidator {
 
     public String validate(String bucketName) {
         if (!validNamePattern.matcher(bucketName).matches()) {
-            return "Folder name can only contain lowercase letters, digits, periods\n" +
+            return "Bucket name can only contain lowercase letters, digits, periods\n" +
                     "and dashes, and must start and end with a letter or a digit.";
         }
         if (ipAddressPattern.matcher(bucketName).matches()) {
-            return "Folder name cannot be in an IP address format.";
+            return "Bucket name cannot be in an IP address format.";
         }
         try {
             BucketNameUtils.validateBucketName(bucketName);
         } catch (IllegalArgumentException e) {
-            return StringUtils.replace(e.getMessage(), "Bucket", "Folder");
+            return e.getMessage();
         }
         try {
             if (controller.bucketExists(bucketName)) {
-                return "You cannot use this folder name since someone else is already using it.";
+                return "You cannot use this bucket name since someone else is already using it.";
             }
         } catch (Exception e) {
             logger.warn("Cannot check if bucket '" + bucketName + "' exists: " + e);

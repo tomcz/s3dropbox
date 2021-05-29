@@ -102,6 +102,11 @@ public class DualController implements Controller {
     }
 
     @Override
+    public String getCurrentPrefix() {
+        return active.get().getCurrentPrefix();
+    }
+
+    @Override
     public void deleteCurrentBucket() {
         active.get().deleteCurrentBucket();
     }

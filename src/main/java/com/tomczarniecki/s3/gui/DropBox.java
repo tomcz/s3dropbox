@@ -46,7 +46,7 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.Executor;
 
-import static com.tomczarniecki.s3.gui.Constants.ALL_FOLDERS;
+import static com.tomczarniecki.s3.gui.Constants.ALL_BUCKETS;
 import static com.tomczarniecki.s3.gui.Constants.FOLDER_NAME;
 import static com.tomczarniecki.s3.gui.Constants.MAIN_TABLE_NAME;
 import static com.tomczarniecki.s3.gui.Constants.MAIN_WINDOW_NAME;
@@ -62,7 +62,7 @@ public class DropBox extends JFrame {
     private final Worker worker;
 
     public DropBox(Service service, PreferenceSetter prefs) {
-        super(String.format(FOLDER_NAME, ALL_FOLDERS));
+        super(String.format(FOLDER_NAME, ALL_BUCKETS));
         setName(MAIN_WINDOW_NAME);
 
         display = new Display(this);
@@ -145,7 +145,7 @@ public class DropBox extends JFrame {
     }
 
     private JMenu createBucketMenu() {
-        JMenu menu = new JMenu("Folders");
+        JMenu menu = new JMenu("Buckets");
         menu.add(new JMenuItem(new CreateBucketAction(controller, display, executor)));
         menu.add(new JMenuItem(new DeleteBucketAction(controller, display, executor, worker)));
         menu.add(new JMenuItem(new RefreshBucketsAction(controller, executor)));
@@ -153,8 +153,9 @@ public class DropBox extends JFrame {
     }
 
     private JMenu createObjectMenu() {
+        FileDropListener listener = new FileDropListener(controller, display, worker, uploader);
         JMenu menu = new JMenu("Files");
-        menu.add(new JMenuItem(new UploadFileAction(controller, display, worker, uploader)));
+        menu.add(new JMenuItem(new UploadFileAction(display, listener)));
         menu.add(new JMenuItem(new CreatePublicLinkAction(controller, display)));
         menu.add(new JMenuItem(new DownloadObjectAction(controller, display, downloader)));
         menu.add(new JMenuItem(new DeleteObjectAction(controller, display, executor)));

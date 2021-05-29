@@ -42,6 +42,7 @@ import javax.swing.JTextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.Vector;
 
 import static com.tomczarniecki.s3.Pair.pair;
 
@@ -53,12 +54,11 @@ public class CreateBucketDialog extends JDialog {
     private boolean createBucket;
 
     public CreateBucketDialog(List<String> regions) {
-        setTitle("Create Folder");
+        setTitle("Create Bucket");
         setModal(true);
 
         bucketName = new JTextField();
-        String[] array = regions.toArray(new String[0]);
-        bucketRegion = new JComboBox<>(array);
+        bucketRegion = new JComboBox<>(new Vector<>(regions));
 
         getContentPane().add(createDisplayPanel());
         setResizable(false);
@@ -78,7 +78,7 @@ public class CreateBucketDialog extends JDialog {
 
         return FormBuilder.create()
                 .layout(new FormLayout(cols, rows))
-                .addLabel("Folder Name").xy(1, 1)
+                .addLabel("Bucket Name").xy(1, 1)
                 .add(bucketName).xy(3, 1)
                 .addLabel("S3 Region").xy(1, 3)
                 .add(bucketRegion).xy(3, 3)

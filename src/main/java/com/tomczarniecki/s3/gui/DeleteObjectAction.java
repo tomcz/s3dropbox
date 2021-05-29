@@ -56,7 +56,7 @@ class DeleteObjectAction extends AbstractAction {
     }
 
     private boolean confirmDeletion() {
-        String text = "Are you sure that you want to delete file %s from folder %s?\nYou will not be able to undo this action.";
+        String text = "Are you sure that you want to delete file %s from bucket %s?\nYou will not be able to undo this action.";
         String message = String.format(text, controller.getSelectedObjectKey(), controller.getSelectedBucketName());
         return display.confirmMessage("Just Checking", message);
     }

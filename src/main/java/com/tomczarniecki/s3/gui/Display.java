@@ -86,6 +86,10 @@ class Display {
         return new CreateBucketDialog(regions);
     }
 
+    public ChooseBucketDialog chooseBucketDialog(List<String> buckets) {
+        return new ChooseBucketDialog(buckets);
+    }
+
     public void showMessage(String title, String message) {
         showMessageDialog(frame, message, title, INFORMATION_MESSAGE);
     }

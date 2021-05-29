@@ -47,7 +47,7 @@ public class ApplicationRunner {
         thread.setDaemon(true);
         thread.start();
 
-        driver.hasTitle(String.format(Constants.FOLDER_NAME, Constants.ALL_FOLDERS));
+        driver.hasTitle(String.format(Constants.FOLDER_NAME, Constants.ALL_BUCKETS));
         driver.hasColumnTitles();
     }
 

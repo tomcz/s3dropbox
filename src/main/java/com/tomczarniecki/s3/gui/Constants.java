@@ -30,7 +30,7 @@ package com.tomczarniecki.s3.gui;
 public class Constants {
 
     public static final String FOLDER_NAME = "S3 Drop Box [%s]";
-    public static final String ALL_FOLDERS = "all my folders";
+    public static final String ALL_BUCKETS = "all my buckets";
     public static final String BACK_LINK = "..";
     public static final String MORE_LINK = "<more>";
 
