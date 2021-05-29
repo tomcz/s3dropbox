@@ -59,6 +59,11 @@ public class LocalService implements Service {
         root.mkdirs();
     }
 
+    @Override
+    public boolean isCreateBucketsAllowed() {
+        return true;
+    }
+
     public List<S3Bucket> listAllMyBuckets() {
         List<S3Bucket> buckets = new ArrayList<>();
         FileFilter filter = DirectoryFileFilter.INSTANCE;

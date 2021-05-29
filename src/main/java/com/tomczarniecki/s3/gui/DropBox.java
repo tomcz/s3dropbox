@@ -79,8 +79,8 @@ public class DropBox extends JFrame {
         uploader = new UploadWorker(controller, display, worker);
         downloader = new DownloadWorker(controller, display, worker);
 
-        JMenu bucketMenu = createBucketMenu();
         JMenu objectMenu = createObjectMenu();
+        JMenu bucketMenu = createBucketMenu(service);
         setJMenuBar(createMenuBar(bucketMenu, objectMenu, prefs));
 
         MenuSwitcher switcher = new MenuSwitcher(display, bucketMenu, objectMenu, worker);
@@ -144,10 +144,12 @@ public class DropBox extends JFrame {
         return menuBar;
     }
 
-    private JMenu createBucketMenu() {
+    private JMenu createBucketMenu(Service service) {
         JMenu menu = new JMenu("Buckets");
-        menu.add(new JMenuItem(new CreateBucketAction(controller, display, executor)));
-        menu.add(new JMenuItem(new DeleteBucketAction(controller, display, executor, worker)));
+        if (service.isCreateBucketsAllowed()) {
+            menu.add(new JMenuItem(new CreateBucketAction(controller, display, executor)));
+            menu.add(new JMenuItem(new DeleteBucketAction(controller, display, executor, worker)));
+        }
         menu.add(new JMenuItem(new RefreshBucketsAction(controller, executor)));
         return menu;
     }

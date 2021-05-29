@@ -72,14 +72,14 @@ import java.util.Map;
 public class WebClientService implements Service {
 
     private final AmazonS3 client;
-    private final String regionName;
+    private final boolean createBucketsAllowed;
     private final TransferManager transferManager;
     private final Map<String, String> videoContentTypes;
 
     public WebClientService(Configuration config) {
         // proper HTML5 video content types so that browsers can play the videos
         videoContentTypes = Map.of("ogv", "video/ogg", "mp4", "video/mp4", "webm", "video/webm");
-        regionName = config.getAwsRegion();
+        createBucketsAllowed = isAwsRegion(config.getAwsRegion());
         AmazonS3ClientBuilder builder = AmazonS3Client.builder()
                 .withCredentials(new AWSStaticCredentialsProvider(config.getAWSCredentials()))
                 .withClientConfiguration(config.getClientConfiguration());
@@ -95,15 +95,17 @@ public class WebClientService implements Service {
                 .build();
     }
 
+    @Override
+    public boolean isCreateBucketsAllowed() {
+        return createBucketsAllowed;
+    }
+
     public List<String> bucketRegions() {
         List<String> regions = new ArrayList<>();
         for (Region region : Region.values()) {
             regions.add(region.name());
         }
-        if (regions.contains(regionName)) {
-            return regions;
-        }
-        return List.of(regionName);
+        return regions;
     }
 
     public List<S3Bucket> listAllMyBuckets() {
@@ -220,7 +222,7 @@ public class WebClientService implements Service {
         transferManager.shutdownNow();
     }
 
-    private void writeToFile(com.amazonaws.services.s3.model.S3Object object, File target, ProgressListener listener) {
+    private static void writeToFile(com.amazonaws.services.s3.model.S3Object object, File target, ProgressListener listener) {
         long fileLength = object.getObjectMetadata().getContentLength();
         OutputStream output = null;
         InputStream input = null;
@@ -235,6 +237,15 @@ public class WebClientService implements Service {
         } finally {
             IOUtils.closeQuietly(input);
             IOUtils.closeQuietly(output);
+        }
+    }
+
+    private static boolean isAwsRegion(String awsRegion) {
+        try {
+            Region.fromValue(awsRegion);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 }

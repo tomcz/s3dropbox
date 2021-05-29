@@ -39,6 +39,8 @@ public interface Service {
 
     List<String> bucketRegions();
 
+    boolean isCreateBucketsAllowed();
+
     List<S3Bucket> listAllMyBuckets();
 
     boolean bucketExists(String bucketName);
