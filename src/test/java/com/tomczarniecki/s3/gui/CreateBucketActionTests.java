@@ -30,6 +30,7 @@ package com.tomczarniecki.s3.gui;
 import com.tomczarniecki.s3.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -46,17 +47,17 @@ import static org.mockito.Matchers.anyListOf;
 @RunWith(MockitoJUnitRunner.class)
 public class CreateBucketActionTests {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     Display display;
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     Controller controller;
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     CreateBucketDialog dialog;
 
     @Test
     public void shouldCreateBucketWhenValidNameIsProvided() {
         given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
-        given(dialog.get(any(Pair.class))).willReturn(pair("bucket", ""));
+        given(dialog.get(any())).willReturn(pair("bucket", ""));
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
@@ -67,6 +68,7 @@ public class CreateBucketActionTests {
     @Test
     public void shouldNotAttemptToCreateBucketWhenUserDoesNotProvideBucketName() {
         given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
+        given(dialog.get(any())).willReturn(null);
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
         action.actionPerformed(null);
@@ -77,7 +79,7 @@ public class CreateBucketActionTests {
     @Test
     public void shouldNotAttemptToCreateBucketWhenInvalidBucketNameIsProvided() {
         given(display.createBucketDialog(anyListOf(String.class))).willReturn(dialog);
-        given(dialog.get(any(Pair.class))).willReturn(pair("bucket", ""));
+        given(dialog.get(any())).willReturn(pair("bucket", ""));
         given(controller.bucketExists("bucket")).willReturn(true);
 
         CreateBucketAction action = new CreateBucketAction(controller, display, new DirectExecutor());
@@ -93,7 +95,7 @@ public class CreateBucketActionTests {
         given(controller.bucketExists("bucket")).willReturn(true);
         given(display.confirmMessage(eq("Oops"), anyString())).willReturn(true);
 
-        given(dialog.get(any(Pair.class)))
+        given(dialog.get(any()))
                 .willReturn(pair("bucket", ""))
                 .willReturn(pair("foo", ""));
 

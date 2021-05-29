@@ -29,6 +29,7 @@ package com.tomczarniecki.s3.gui;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -45,13 +46,13 @@ import static org.mockito.BDDMockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class RightClickListenerTests {
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     Controller controller;
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     MouseEvent event;
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     JPopupMenu menu;
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     Display display;
 
     @Test
