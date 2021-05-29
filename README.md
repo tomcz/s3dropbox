@@ -27,6 +27,17 @@ AMAZON\_SECRET\_ACCESS\_KEY
 * Required entry.
 * This is the secret key provided to you by Amazon when you sign up for an S3 account.
 
+AWS\_REGION
+
+* Required entry.
+* Set to "us-east-1" by default.
+* You'll need to set this to an appropriate value for non-AWS endpoints.
+
+AWS\_ENDPOINT
+
+* Optional entry.
+* Set this to use non-AWS endpoints, like [DigitalOcean's Spaces](https://www.digitalocean.com/products/spaces/).
+
 USE\_SSL
 
 * Optional entry.
@@ -46,10 +57,3 @@ PROXY\_USERNAME and PROXY\_PASSWORD
 * If your HTTP proxy requires username and password authentication then you should
   provide them via these options. The S3DropBox is capable of using BASIC, DIGEST
   and NTLM authentication mechanisms.
-
-NTLM\_HOST and NTLM\_DOMAIN
-
-* Optional entries.
-* These are not usually required even if you need to use NTLM authentication with
-  a HTTP proxy. If you are unable to authenticate with an NTLM proxy using just the
-  username and password options then you may need to provide the HOST and DOMAIN options.
