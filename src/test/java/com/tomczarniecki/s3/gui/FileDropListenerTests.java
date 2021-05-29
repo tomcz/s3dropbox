@@ -27,20 +27,21 @@
  */
 package com.tomczarniecki.s3.gui;
 
+import com.tomczarniecki.s3.Pair;
+import com.tomczarniecki.s3.S3Bucket;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-import static org.mockito.BDDMockito.anyListOf;
-import static org.mockito.BDDMockito.anyString;
-import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.verify;
@@ -51,40 +52,27 @@ public class FileDropListenerTests {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     Display display;
 
-    @Mock
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
+    ChooseBucketDialog chooseDialog;
+
+    @Mock(answer = Answers.RETURNS_SMART_NULLS)
     Controller controller;
 
     @Test
-    public void shouldPassDroppedFilesToService() throws IOException {
-        DirectWorker worker = new DirectWorker();
-        ProgressDialog dialog = mock(ProgressDialog.class);
-
-        given(display.createProgressDialog("Upload Progress", worker)).willReturn(dialog);
-        given(controller.isBucketSelected()).willReturn(true);
-        given(controller.getSelectedBucketName()).willReturn("bucket");
-
-        File file1 = folder.newFile("file1.jpg");
-        File file2 = folder.newFile("file2.doc");
-
-        UploadWorker uploader = new UploadWorker(controller, display, worker);
-        FileDropListener listener = new FileDropListener(controller, display, worker, uploader);
-        listener.filesDropped(new File[]{file1, file2});
-
-        verify(controller).createObject("bucket", "file1.jpg", file1, dialog);
-        verify(controller).createObject("bucket", "file2.doc", file2, dialog);
-    }
-
-    @Test
     public void shouldSelectBucketAndThenPassDroppedFilesToService() throws IOException {
+        given(controller.listAllMyBuckets()).willReturn(List.of(new S3Bucket("test")));
+        given(controller.getSelectedBucketName()).willReturn("bucket");
+        given(controller.getCurrentPrefix()).willReturn("prefix/");
+
+        given(display.chooseBucketDialog(List.of("test"))).willReturn(chooseDialog);
+        given(chooseDialog.get("bucket", "prefix/")).willReturn(Pair.pair("foo", "bar/"));
+
         DirectWorker worker = new DirectWorker();
         ProgressDialog dialog = mock(ProgressDialog.class);
-
         given(display.createProgressDialog("Upload Progress", worker)).willReturn(dialog);
-        given(display.selectOption(eq("Select Folder"), anyString(), anyListOf(String.class))).willReturn("bucket");
-        given(controller.getSelectedBucketName()).willReturn("bucket");
 
         File file1 = folder.newFile("file1.jpg");
         File file2 = folder.newFile("file2.doc");
@@ -93,18 +81,22 @@ public class FileDropListenerTests {
         FileDropListener listener = new FileDropListener(controller, display, worker, uploader);
         listener.filesDropped(new File[]{file1, file2});
 
-        verify(controller).createObject("bucket", "file1.jpg", file1, dialog);
-        verify(controller).createObject("bucket", "file2.doc", file2, dialog);
+        verify(controller).createObject("foo", "bar/file1.jpg", file1, dialog);
+        verify(controller).createObject("foo", "bar/file2.doc", file2, dialog);
     }
 
     @Test
     public void shouldUploadFilesInDirectory() throws IOException {
+        given(controller.listAllMyBuckets()).willReturn(List.of(new S3Bucket("test")));
+        given(controller.getSelectedBucketName()).willReturn("bucket");
+        given(controller.getCurrentPrefix()).willReturn("prefix/");
+
+        given(display.chooseBucketDialog(List.of("test"))).willReturn(chooseDialog);
+        given(chooseDialog.get("bucket", "prefix/")).willReturn(Pair.pair("foo", "bar/"));
+
         DirectWorker worker = new DirectWorker();
         ProgressDialog dialog = mock(ProgressDialog.class);
-
         given(display.createProgressDialog("Upload Progress", worker)).willReturn(dialog);
-        given(controller.isBucketSelected()).willReturn(true);
-        given(controller.getSelectedBucketName()).willReturn("bucket");
 
         File directory = folder.newFolder("folder");
         File file1 = new File(directory, "file1.jpg");
@@ -117,7 +109,7 @@ public class FileDropListenerTests {
         FileDropListener listener = new FileDropListener(controller, display, worker, uploader);
         listener.filesDropped(new File[]{directory});
 
-        verify(controller).createObject("bucket", "folder/file1.jpg", file1, dialog);
-        verify(controller).createObject("bucket", "folder/file2.doc", file2, dialog);
+        verify(controller).createObject("foo", "bar/folder/file1.jpg", file1, dialog);
+        verify(controller).createObject("foo", "bar/folder/file2.doc", file2, dialog);
     }
 }
