@@ -38,12 +38,10 @@ import java.util.List;
 
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
 import static javax.swing.JOptionPane.WARNING_MESSAGE;
 import static javax.swing.JOptionPane.YES_NO_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
-import static javax.swing.JOptionPane.showInputDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 class Display {
@@ -101,10 +99,6 @@ class Display {
     public boolean confirmMessage(String title, String message) {
         int result = showConfirmDialog(frame, message, title, YES_NO_OPTION, WARNING_MESSAGE);
         return result == YES_OPTION;
-    }
-
-    public String selectOption(String title, String message, List<String> options) {
-        return (String) showInputDialog(frame, message, title, QUESTION_MESSAGE, null, options.toArray(), null);
     }
 
     public File selectDirectory(String title, String buttonText) {
