@@ -58,7 +58,6 @@ class TableController implements Controller {
         return model;
     }
 
-    @Override
     public void addControllerListener(ControllerListener listener) {
         announcer.add(listener);
     }
@@ -101,7 +100,6 @@ class TableController implements Controller {
         return selectedBucketName;
     }
 
-    @Override
     public String getCurrentPrefix() {
         return "";
     }
