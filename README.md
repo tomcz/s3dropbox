@@ -55,5 +55,5 @@ PROXY\_USERNAME and PROXY\_PASSWORD
 
 * Optional entries.
 * If your HTTP proxy requires username and password authentication then you should
-  provide them via these options. The S3DropBox is capable of using BASIC, DIGEST
-  and NTLM authentication mechanisms.
+  provide them via these options. The S3DropBox is capable of using BASIC and DIGEST
+  authentication mechanisms.
