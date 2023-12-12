@@ -69,7 +69,7 @@ public class WebClientServiceTests {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        assumeThat(Boolean.getBoolean("ignore.integration.tests"), equalTo(false));
+        assumeThat(Boolean.getBoolean("run.integration.tests"), equalTo(true));
         credentials = new ConfigurationFactory(null).load();
     }
 

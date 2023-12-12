@@ -40,7 +40,7 @@ public class S3DropBoxEndToEndTests {
 
     @BeforeClass
     public static void checkIfCanRun() {
-        assumeThat(Boolean.getBoolean("ignore.integration.tests"), equalTo(false));
+        assumeThat(Boolean.getBoolean("run.integration.tests"), equalTo(true));
     }
 
     @After

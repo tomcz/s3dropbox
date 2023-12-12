@@ -35,7 +35,3 @@ dependencies {
   testImplementation 'org.hamcrest:hamcrest-all:1.3'
   testImplementation 'com.googlecode.windowlicker:windowlicker-swing:r268'
 }
-
-test {
-  systemProperty "ignore.integration.tests", System.getProperty("ignore.integration.tests")
-}
