@@ -1,11 +1,15 @@
 plugins {
-  id 'com.github.johnrengelman.shadow' version '5.2.0'
-  id 'java'
+  id 'application'
+  id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 repositories {
   mavenCentral()
 }
+
+defaultTasks 'clean', 'test', 'build', 'shadowJar'
+
+mainClassName = 'com.tomczarniecki.s3.Main'
 
 configurations.all {
   exclude(group: 'commons-logging')
@@ -34,13 +38,4 @@ dependencies {
 
 test {
   systemProperty "ignore.integration.tests", System.getProperty("ignore.integration.tests")
-}
-
-jar {
-  manifest {
-    attributes(
-      'Main-Class': 'com.tomczarniecki.s3.Main',
-      'Implementation-Version': archiveVersion?: 'dev'
-    )
-  }
 }
