@@ -1,5 +1,5 @@
 plugins {
-  id 'application'
+  id 'java'
   id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
@@ -7,16 +7,19 @@ repositories {
   mavenCentral()
 }
 
-defaultTasks 'clean', 'test', 'build', 'shadowJar'
+defaultTasks 'clean', 'test', 'shadowJar'
 
-mainClassName = 'com.tomczarniecki.s3.Main'
+jar {
+  manifest {
+    attributes 'Main-Class': 'com.tomczarniecki.s3.Main'
+  }
+}
 
 configurations.all {
   exclude(group: 'commons-logging')
 }
 
 dependencies {
-  implementation 'joda-time:joda-time:2.1'
   implementation 'org.slf4j:slf4j-simple:1.6.6'
   implementation 'org.slf4j:jcl-over-slf4j:1.6.6'
 
@@ -24,10 +27,9 @@ dependencies {
   implementation 'commons-cli:commons-cli:1.2'
   implementation 'commons-lang:commons-lang:2.6'
 
+  implementation 'joda-time:joda-time:2.1'
   implementation 'com.formdev:flatlaf:1.1.1'
-
   implementation 'com.jgoodies:jgoodies-forms:1.9.0'
-
   implementation 'com.amazonaws:aws-java-sdk-s3:1.11.1030'
 
   testImplementation 'junit:junit:4.13.2'
